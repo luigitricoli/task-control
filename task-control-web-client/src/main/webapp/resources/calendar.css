@@ -1,0 +1,168 @@
+#tasks-in-calendar{
+    position: relative;
+}
+#calendar-layer{
+    border-collapse: collapse;
+}
+#calendar-layer th {
+    font-size: 12px;
+    text-align: center;
+}
+#calendar-layer td,th{
+    padding: 1px;
+}
+.border-top{
+    border-top: 1px solid #636363;
+}
+.border-right{
+    border-right: 1px solid #636363;
+}        
+#calendar-layer td {
+    font-size: 11px;
+    text-align: right;
+    vertical-align: top;  
+    width: 131px;       
+}
+.subline td{
+    height: 70px;
+}
+#calendar-layer .today{
+    font-weight: bold;
+    background: #fffdcd;
+}
+#tasks-layer {
+    position: absolute;
+    top: 17px;
+    left: 0px;
+    width: 937px;
+}
+.week{
+  width: 639px;
+  margin-top: 15px;
+  width: 100%;
+  height: 58px;
+}
+.task{
+    font-size: 0px;
+    margin: 3px 5px 5px 0px;
+    position: relative;
+}
+.foreseen{
+    border: 1px solid #fff;
+    background: #a8a8a8;
+    width: 100%;  
+    height: 13px;
+    overflow: hidden;
+    position: relative; 
+    z-index: 9999;
+    border-top-left-radius: 50px;
+    border-bottom-right-radius: 50px;
+}
+.task-description {
+    color: #fff;
+    margin: 0px 15px;
+    position: relative;
+    z-index: 999999;
+}
+.stage {
+    border-top-left-radius: 50px;
+    border-bottom-right-radius: 50px;
+    position: absolute;
+    width: 100%;
+    height: 13px;
+    z-index: 99999;
+}
+.finished{
+    background: #2a7bc1;
+}
+.doing{
+     background: #37b247;
+}
+.late .foreseen{
+    background: #ed4230;
+}
+.interval-day-1{
+    width: 122px;
+}
+.interval-day-2{
+    width: 256px;
+}
+.interval-day-3{
+    width: 389px;
+}
+.interval-day-4{
+    width: 524px;
+}
+.interval-day-5{
+    width: 658px;
+}
+.interval-day-6{
+    width: 793px;
+}
+.interval-day-7{
+    width: 928px;
+}
+.start-day-1{
+    margin-left: 5px;
+}
+.start-day-2{
+    margin-left: 140px;
+}
+.start-day-3{
+    margin-left: 274px;
+}
+.start-day-4{
+    margin-left: 407px;
+}
+.start-day-5{
+    margin-left: 541px;
+}
+.start-day-6{
+    margin-left: 675px;
+}
+.start-day-7{
+    margin-left: 810px;
+}
+.continue-right,.continue-right .stage{
+    border-top-right-radius: 0px;
+    border-bottom-right-radius: 0px;
+}
+.continue-left,.continue-left .stage{
+    border-top-left-radius: 0px;
+    border-bottom-left-radius: 0px;
+}
+.hashtags{
+    width: 117px;
+    position: absolute;
+    top: 13px;
+}
+.hashtags span{
+    margin-right: 5px;
+}
+.hashtags .late{
+    color:#ff0000;
+}
+.hashtags .overtime{
+    color:#e8be43;
+}
+.task-day-1{
+    left: 3px;
+}
+.task-day-2{
+    left: 137px;
+}
+.task-day-3{
+    left: 270px;
+}
+.task-day-4{
+    left: 404px;
+}
+.task-day-5{
+    left: 539px;
+}
+.task-day-6{
+    left: 673px;
+}
+.task-day-7{
+    left: 807px;
+}
