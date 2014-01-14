@@ -12,7 +12,7 @@ public class Task {
 	private String description;
 	private Set<HashtagDay> hashtagDays;
 
-	public Task() {
+	public Task(Integer startDay, Integer intervalDay, Stage stage, String description, Set<HashtagDay> hashtagDays) {
 		this.startDay = 6;
 		this.intervalDay = 2;
 		this.stage = Stage.finished;

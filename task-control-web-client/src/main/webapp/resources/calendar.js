@@ -6,6 +6,7 @@ function setMonthCookie(value){
 	$.cookie(CURRENT_MONTH, value, {path:'/'});
 }
 function ajustMonthLines(){
+	$(".subline.days td").height(70);
     var tasks = $(".hashtags");
     tasks.each(function(){
         var task = $(this).parent();
@@ -81,7 +82,9 @@ function loadMonth(){
 function getTasks(month){
 	var url = domain + "tarefas/mes/" + month;
 	$.get(url,function(data){
-		$("#task-week-2").append(data);
+		$("#tasks-layer").empty();
+		$("#tasks-layer").append(data);
+		
 		ajustMonthLines();
 	});
 }
