@@ -42,7 +42,7 @@
 				<artifactId>maven-surefire-plugin</artifactId>
 				<configuration>
 					<excludes>
-						<exclude>**/*RestTest*</exclude>
+						<exclude>**/integrationtests/*</exclude>
 					</excludes>
 				</configuration>
 			</plugin>
@@ -52,7 +52,7 @@
 				<version>2.16</version>
 				<configuration>
 					<includes>
-						<include>**/*RestTest*</include>
+						<include>**/integrationtests/*</include>
 					</includes>
 				</configuration>
 				<executions>
@@ -70,6 +70,7 @@
 				<version>2.0</version>
 				<configuration>
 					<path>/</path>
+					<port>8090</port>
 				</configuration>
 				<executions>
 					<execution>
