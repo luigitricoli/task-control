@@ -13,13 +13,11 @@
 	<url>http://task-control.egs.com.br</url>
 
 	<modules>
-		<module>task-control-core</module>
-		<module>task-control-web-client</module>
+		<module>tc-core</module>
+		<module>tc-web-client</module>
+		<module>tc-core-functional-tests</module>
 	</modules>
 
-	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-	</properties>
 
 	<dependencies>
 		<!-- Web Interface -->
