@@ -5,4 +5,10 @@
 **/.classpath
 **/.project
 **/*.DS_Store
+
 **/tomcat.properties
+tomcat.properties
+
+.idea
+*.iml
+**/*.iml
