@@ -86,7 +86,15 @@ function getTasks(month){
 		$("#tasks-layer").append(data);
 		
 		ajustMonthLines();
+        addClickActionToTasks();
 	});
+}
+
+function addClickActionToTasks(callback){
+    $(".task").click(function(){
+        $("#btn-task-history")[0].click();
+        callback();
+    });
 }
 
 $(document).ready(function(){

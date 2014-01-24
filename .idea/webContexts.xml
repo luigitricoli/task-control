@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="WebContextManager">
+    <option name="state">
+      <map>
+        <entry key="file://$PROJECT_DIR$/tc-web-client/src/main/webapp/WEB-INF/jsp/tasks/tasks.jsp" value="file://$PROJECT_DIR$/tc-web-client/src/main/webapp/WEB-INF/jsp/tasks" />
+      </map>
+    </option>
+  </component>
+</project>
+

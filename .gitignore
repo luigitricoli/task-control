@@ -6,3 +6,4 @@
 **/.project
 **/*.DS_Store
 **/tomcat.properties
+**/.idea
