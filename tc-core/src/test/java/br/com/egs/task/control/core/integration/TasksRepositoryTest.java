@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.List;
 
+import br.com.egs.task.control.core.testutils.TestConnectionFactory;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -19,12 +20,11 @@ import com.mongodb.BasicDBObject;
 public class TasksRepositoryTest {
 
 	private Tasks repository;
-	MongoDbConnection conn;
+	private MongoDbConnection conn;
 	
 	@Before
 	public void setUp() {
-		DbConfiguration testConfiguration = new DbConfiguration("dbconfig.test.properties");
-		conn = new MongoDbConnection(testConfiguration);
+		conn = TestConnectionFactory.getConnection();
 		populateDatabase();
 		repository = new TasksRepositoryImpl(conn);
 	}

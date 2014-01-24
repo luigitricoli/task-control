@@ -1,9 +1,24 @@
+# Eclipse - generated files
 .project
 .settings
-**/target
 **/.settings
 **/.classpath
-**/.project
-**/*.DS_Store
-**/tomcat.properties
+
+# IntelliJ-Idea generated files
 **/.idea
+*.iml
+**/*.iml
+
+# Maven target directory
+**/target
+**/.project
+
+# Files that must be generated from template, one per development machine.
+tomcat.properties
+**/tomcat.properties
+
+# Reserved for the developer's custom deploy procedures
+build.xml
+
+# Others
+**/*.DS_Store
