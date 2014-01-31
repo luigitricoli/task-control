@@ -5,6 +5,7 @@
 **/.classpath
 
 # IntelliJ-Idea generated files
+.idea/
 **/.idea
 *.iml
 **/*.iml
