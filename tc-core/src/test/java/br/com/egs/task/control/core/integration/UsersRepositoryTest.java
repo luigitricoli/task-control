@@ -73,6 +73,12 @@ public class UsersRepositoryTest {
     }
 
     @Test
+    public void getNonexistingUser() {
+        User user = repository.get("doesnotexist");
+        assertNull(user);
+    }
+
+    @Test
     public void getAll() {
         BasicDBObject user1 = createTestUserAsDbObject();
         BasicDBObject user2 = createTestUserAsDbObject().append("_id", "testusr2");

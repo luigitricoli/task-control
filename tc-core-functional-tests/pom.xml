@@ -15,6 +15,18 @@
 			<version>0.0.1-SNAPSHOT</version>
 			<type>war</type>
 		</dependency>
+        <dependency>
+            <groupId>org.mongodb</groupId>
+            <artifactId>mongo-java-driver</artifactId>
+            <version>2.11.3</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.skyscreamer</groupId>
+            <artifactId>jsonassert</artifactId>
+            <version>1.2.2</version>
+            <scope>test</scope>
+        </dependency>
 	</dependencies>
 
 	<build>
@@ -92,12 +104,13 @@
 					<configuration>
 						<properties>
 							<cargo.servlet.port>8090</cargo.servlet.port>
+                            <cargo.tomcat.ajp.port>9009</cargo.tomcat.ajp.port>
 						</properties>
 						<files>
 							<file>
-								<file>${basedir}/src/db/dbconfig.test.properties</file>
+								<file>${basedir}/src/test/resources/dbconfig.test.properties</file>
 								<todir>lib</todir>
-								<tofile>dbconfig.propertie</tofile>
+								<tofile>dbconfig.properties</tofile>
 							</file>
 						</files>
 					</configuration>
