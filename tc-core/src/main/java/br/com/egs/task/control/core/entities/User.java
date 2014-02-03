@@ -1,13 +1,19 @@
 package br.com.egs.task.control.core.entities;
 
+import br.com.egs.task.control.core.exception.ValidationException;
+import org.apache.commons.lang.StringUtils;
+
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
+import java.util.Random;
 
 /**
  * Representation of a Task Control user.
  */
 public class User {
+    private static final char[] PASSWORD_CHARS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%&".toCharArray();
+
     private String login;
     private String name;
     private String email;
@@ -33,6 +39,38 @@ public class User {
         byte[] hashedBytes = digest.digest(pass.getBytes());
         String hashedString = bytesToHexString(hashedBytes);
         this.passwordHash = hashedString;
+    }
+
+
+    public String generateRandomPassword() {
+        Random rnd = new Random();
+        StringBuilder generatedPass = new StringBuilder();
+
+        int passwordLength = 6 + rnd.nextInt(6);
+        for (int i = 0; i < passwordLength; i++) {
+            generatedPass.append(PASSWORD_CHARS[rnd.nextInt(PASSWORD_CHARS.length)]);
+        }
+
+        setPasswordAsText(generatedPass.toString());
+        return generatedPass.toString();
+    }
+
+    public void validate() throws ValidationException {
+        if (StringUtils.isBlank(this.getLogin())) {
+            throw new ValidationException("Login is empty");
+        }
+        if (StringUtils.isBlank(this.getName())) {
+            throw new ValidationException("Name is empty");
+        }
+        if (StringUtils.isBlank(this.getEmail())) {
+            throw new ValidationException("E-mail is empty");
+        }
+        if (StringUtils.isBlank(this.getPasswordHash())) {
+            throw new ValidationException("Password is empty");
+        }
+        if (applications == null || applications.size() == 0) {
+            throw new ValidationException("Application list is empty");
+        }
     }
 
     public String getLogin() {

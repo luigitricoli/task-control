@@ -14,6 +14,8 @@ import org.junit.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  *
@@ -86,6 +88,56 @@ public class UserRestTest {
         RestClient restfulie = Restfulie.custom();
         Response response = restfulie.at("http://localhost:8090/v1/users/doesnotexist").accept("application/json").get();
         assertEquals(404, response.getCode());
+    }
+
+    @Test
+    public void createUser() throws JSONException {
+        RestClient restfulie = Restfulie.custom();
+
+        String userJson = "{" +
+            "'login':'testusr3'," +
+            "'name':'A Third Test User'," +
+            "'email':'test3@example.com'," +
+            "'passwordHash':'AAAAABBBBBZZZZDDDDDEEEEE'," +
+            "'applications':[" +
+                "{'name':'FEM'},{'name':'EMM'}" +
+            "]" +
+        "}";
+
+        // Returned document example: {"generatedPassword":"ABcbd614%#"}
+        String expectedResponseRegexp = "\\{\"generatedPassword\" : \"[a-zA-Z0-9!@#$%&]+\"\\}";
+
+        Response response = restfulie.at("http://localhost:8090/v1/users").accept("application/json")
+                 .as("application/json").post(userJson);
+
+        assertEquals(200, response.getCode());
+
+        String content = response.getContent();
+        assertTrue("POST must return the generated password", content.matches(expectedResponseRegexp));
+
+        assertEquals(3, conn.getDatabase().getCollection("users").count());
+        assertNotNull(conn.getDatabase().getCollection("users").find(new BasicDBObject("login", "testusr3")));
+    }
+
+
+    @Test
+    public void createUser_missingAttribute() throws JSONException {
+        RestClient restfulie = Restfulie.custom();
+
+        String userJson = "{" +
+                // No login
+                "'name':'A Third Test User'," +
+                "'email':'test3@example.com'," +
+                "'passwordHash':'AAAAABBBBBZZZZDDDDDEEEEE'," +
+                "'applications':[" +
+                "{'name':'FEM'},{'name':'EMM'}" +
+                "]" +
+                "}";
+
+        Response response = restfulie.at("http://localhost:8090/v1/users").accept("application/json")
+                .as("application/json").post(userJson);
+
+        assertEquals(400, response.getCode());
     }
 
     /**

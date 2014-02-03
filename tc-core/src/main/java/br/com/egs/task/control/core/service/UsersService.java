@@ -1,8 +1,10 @@
 package br.com.egs.task.control.core.service;
 
 import br.com.egs.task.control.core.entities.User;
+import br.com.egs.task.control.core.exception.ValidationException;
 import br.com.egs.task.control.core.repository.Users;
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,18 +44,36 @@ public class UsersService {
         User user = repository.get(login);
 
         if (user == null) {
-            //throw new WebApplicationException("User [" + login + "] not found", Response.Status.NOT_FOUND);
-            throw new WebApplicationException(Response.Status.NOT_FOUND);
+            throw new WebApplicationException("User [" + login + "] not found", Response.Status.NOT_FOUND);
         }
 
         return new Gson().toJson(user);
     }
 
     @POST
-    public void create(String body) {
+    @Produces(MediaType.APPLICATION_JSON)
+    public String create(String body) {
         if (StringUtils.isBlank(body)) {
-            //throw new WebApplicationException("Request body cannot by null", Response.Status.BAD_REQUEST);
-            throw new WebApplicationException(Response.Status.BAD_REQUEST);
+            throw new WebApplicationException("Request body cannot by null", Response.Status.BAD_REQUEST);
         }
+
+        User user = null;
+        try {
+            user = new Gson().fromJson(body, User.class);
+        } catch (JsonSyntaxException e) {
+            throw new WebApplicationException("Invalid request data", Response.Status.BAD_REQUEST);
+        }
+
+        String generatedPassword = user.generateRandomPassword();
+
+        try {
+            user.validate();
+        } catch (ValidationException ve) {
+            throw new WebApplicationException("Error validating user: " + ve.getMessage(), Response.Status.BAD_REQUEST);
+        }
+
+        repository.add(user);
+
+        return "{\"generatedPassword\" : \"" + generatedPassword + "\"}";
     }
 }
