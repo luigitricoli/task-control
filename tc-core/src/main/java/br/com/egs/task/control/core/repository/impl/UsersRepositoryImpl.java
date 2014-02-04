@@ -55,4 +55,11 @@ public class UsersRepositoryImpl implements Users {
         }
         return results;
     }
+
+    @Override
+    public void update(User user) {
+        DBCollection collection = conn.getDatabase().getCollection("users");
+        BasicDBObject dbUser = mapper.getAsDbObject(user);
+        collection.update(new BasicDBObject("_id", user.getLogin()), dbUser);
+    }
 }

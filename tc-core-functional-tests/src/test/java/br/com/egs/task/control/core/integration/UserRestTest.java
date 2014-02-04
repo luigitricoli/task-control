@@ -7,6 +7,7 @@ import br.com.egs.task.control.core.database.MongoDbConnection;
 import br.com.egs.task.control.core.testutils.TestConnectionFactory;
 import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
+import com.mongodb.DBObject;
 import org.json.JSONException;
 import org.junit.After;
 import org.junit.Before;
@@ -112,7 +113,7 @@ public class UserRestTest {
         assertTrue("POST must return the generated password", content.matches(expectedResponseRegexp));
 
         assertEquals(3, conn.getDatabase().getCollection("users").count());
-        assertNotNull(conn.getDatabase().getCollection("users").find(new BasicDBObject("login", "testusr3")));
+        assertNotNull(conn.getDatabase().getCollection("users").findOne(new BasicDBObject("_id", "testusr3")));
     }
 
 
@@ -134,6 +135,31 @@ public class UserRestTest {
 
         assertEquals(400, response.getCode());
     }
+
+    @Test
+    public void updateUser() throws JSONException {
+        RestClient restfulie = Restfulie.custom();
+
+        String userJson = "{" +
+            "'name':'A Modified Test User'," +
+            "'email':'changed@example.com'," +
+            "'applications':[" +
+                 "{'name':'FEM'},{'name':'EMM'}" +
+            "]" +
+         "}";
+
+        Response response = restfulie.at("http://localhost:8090/v1/users/testusr").accept("application/json")
+                .as("application/json").put(userJson);
+
+        assertEquals(200, response.getCode());
+        String content = response.getContent();
+
+        assertEquals(2, conn.getDatabase().getCollection("users").count());
+
+        DBObject savedUser = conn.getDatabase().getCollection("users").findOne(new BasicDBObject("_id", "testusr"));
+        JSONAssert.assertEquals(userJson, savedUser.toString(), false);
+    }
+
 
     /**
      *

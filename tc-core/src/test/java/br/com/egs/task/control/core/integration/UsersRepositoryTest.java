@@ -8,6 +8,7 @@ import br.com.egs.task.control.core.testutils.TestConnectionFactory;
 import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCursor;
+import com.mongodb.DBObject;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -91,6 +92,27 @@ public class UsersRepositoryTest {
         assertEquals("testusr2", users.get(1).getLogin());
     }
 
+    @Test
+    public void update() {
+        conn.getDatabase().getCollection("users").insert(createTestUserAsDbObject());
+
+        User modified = createTestUser();
+        modified.setName("Changed Test User");
+        modified.setEmail("modified@changes.com");
+        modified.getApplications().add(new Application("EMM"));
+
+        repository.update(modified);
+
+        BasicDBObject expectedObject = createTestUserAsDbObject();
+        expectedObject.append("name", "Changed Test User");
+        expectedObject.append("email", "modified@changes.com");
+        ((List<DBObject>)expectedObject.get("applications")).add(new BasicDBObject("name", "EMM"));
+
+        DBObject savedObject = conn.getDatabase().getCollection("users").findOne();
+
+        assertEquals(expectedObject, savedObject);
+    }
+
     private User createTestUser() {
         User user = new User("testusr");
         user.setName("A Test User");
@@ -120,7 +142,4 @@ public class UsersRepositoryTest {
         return user;
     }
 
-    private String testUserAsJson() {
-        return "{ \"_id\" : \"testusr\" , \"name\" : \"A Test User\" , \"email\" : \"test@example.com\" , \"passwordHash\" : \"AAAAABBBBBCCCCCDDDDDEEEEE\" , \"applications\" : [ { \"name\" : \"OLM\"} , { \"name\" : \"TaskControl\"}]}";
-    }
 }

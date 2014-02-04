@@ -80,4 +80,42 @@ public class UsersService {
 
         return "{\"generatedPassword\" : \"" + generatedPassword + "\"}";
     }
+
+    @PUT
+    @Path("{login}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public String update(@PathParam("login") String login, String body) {
+        if (StringUtils.isBlank(body)) {
+            throw new WebApplicationException("Request body cannot by null", Response.Status.BAD_REQUEST);
+        }
+
+        User user = null;
+        try {
+            user = new Gson().fromJson(body, User.class);
+        } catch (JsonSyntaxException e) {
+            throw new WebApplicationException("Invalid request data", Response.Status.BAD_REQUEST);
+        }
+
+        User currentlySavedUser = repository.get(login);
+        if (currentlySavedUser == null) {
+            throw new WebApplicationException("User does no exist: " + login, Response.Status.NOT_FOUND);
+        }
+
+        // The identification attributes (login and password) will not be changed
+        User updatedUser = new User(login);
+        updatedUser.setPasswordHash(currentlySavedUser.getPasswordHash());
+        updatedUser.setName(user.getName());
+        updatedUser.setEmail(user.getEmail());
+        updatedUser.setApplications(user.getApplications());
+
+        try {
+            updatedUser.validate();
+        } catch (ValidationException ve) {
+            throw new WebApplicationException("Error validating user: " + ve.getMessage(), Response.Status.BAD_REQUEST);
+        }
+
+        repository.update(updatedUser);
+
+        return updatedUser.toJson();
+    }
 }
