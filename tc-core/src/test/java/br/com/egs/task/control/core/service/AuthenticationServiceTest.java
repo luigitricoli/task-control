@@ -6,13 +6,12 @@ import br.com.egs.task.control.core.repository.Users;
 import org.json.JSONException;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mockito;
 import org.skyscreamer.jsonassert.JSONAssert;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
@@ -22,11 +21,13 @@ import static org.junit.Assert.fail;
  */
 public class AuthenticationServiceTest {
 
+    private Users userRepository;
     private AuthenticationService service;
 
     @Before
     public void setUp() {
-        service = new AuthenticationService(new MockUserRepository());
+        userRepository = Mockito.mock(Users.class);
+        service = new AuthenticationService(userRepository);
     }
 
     @Test
@@ -73,28 +74,36 @@ public class AuthenticationServiceTest {
 
     @Test
     public void invalidLogin() {
+        Mockito.when(userRepository.get("wrong")).thenReturn(null);
+
         try {
             service.authenticate("{username: 'wrong', password: 'ABCD1234'}");
             fail("Exception was expected");
 
         } catch (WebApplicationException e) {
             assertEquals(420, e.getResponse().getStatus());
+            Mockito.verify(userRepository, Mockito.only()).get("wrong");
         }
     }
 
     @Test
     public void invalidPassword() {
+        Mockito.when(userRepository.get("mylogin")).thenReturn(testUser());
+
         try {
             service.authenticate("{username: 'mylogin', password: 'wrong'}");
             fail("Exception was expected");
 
         } catch (WebApplicationException e) {
             assertEquals(420, e.getResponse().getStatus());
+            Mockito.verify(userRepository, Mockito.only()).get("mylogin");
         }
     }
 
     @Test
     public void sucessfullLogin() throws JSONException {
+        Mockito.when(userRepository.get("mylogin")).thenReturn(testUser());
+
         String result = service.authenticate("{username: 'mylogin', password: 'ABCD1234'}");
 
         String userJson = "{" +
@@ -105,38 +114,17 @@ public class AuthenticationServiceTest {
                 "}";
 
         JSONAssert.assertEquals(userJson, result, true);
+        Mockito.verify(userRepository, Mockito.only()).get("mylogin");
     }
 
-    /**
-     *
-     */
-    private class MockUserRepository implements Users {
+    private User testUser() {
+        User u = new User("mylogin");
+        u.setName("Authenticated User");
+        u.setEmail("u@ser.com");
+        u.setApplications(Arrays.asList(new Application("OLM")));
 
-        @Override
-        public User get(String login) {
-            if ("mylogin".equals(login)) {
-                User u = new User(login);
-                u.setName("Authenticated User");
-                u.setEmail("u@ser.com");
-                u.setApplications(Arrays.asList(new Application("OLM")));
+        u.setPasswordAsText("ABCD1234");
 
-                u.setPasswordAsText("ABCD1234");
-
-                return u;
-
-            } else {
-                return null;
-            }
-        }
-
-        @Override
-        public void add(User user) {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public List<User> getAll() {
-            throw new UnsupportedOperationException();
-        }
+        return u;
     }
 }
