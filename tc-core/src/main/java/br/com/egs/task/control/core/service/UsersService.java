@@ -4,6 +4,7 @@ import br.com.egs.task.control.core.entities.User;
 import br.com.egs.task.control.core.exception.ValidationException;
 import br.com.egs.task.control.core.repository.Users;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSyntaxException;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -34,7 +35,10 @@ public class UsersService {
     @Produces(MediaType.APPLICATION_JSON)
     public String allUsers() {
         List<User> allUsers = repository.getAll();
-        return new Gson().toJson(allUsers);
+        Gson gson = new GsonBuilder()
+                .registerTypeAdapter(User.class, new User.UserSerializer(true))
+                .create();
+        return gson.toJson(allUsers);
     }
 
     @GET
@@ -47,7 +51,7 @@ public class UsersService {
             throw new WebApplicationException("User [" + login + "] not found", Response.Status.NOT_FOUND);
         }
 
-        return new Gson().toJson(user);
+        return user.toJson();
     }
 
     @POST

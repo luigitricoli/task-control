@@ -19,4 +19,22 @@ public class UserTest {
         u.setPasswordAsText("secret");
         assertEquals("1299DCB1C274905CD58C37A1ABF17B080A06C6C5", u.getPasswordHash());
     }
+
+    @Test
+    public void checkPassword_failure() {
+        User u = new User("user");
+        u.setPasswordAsText("secret");
+
+        boolean check = u.checkPassword("nonono");
+        assertFalse(check);
+    }
+
+    @Test
+    public void checkPassword_ok() {
+        User u = new User("user");
+        u.setPasswordAsText("secret");
+
+        boolean check = u.checkPassword("secret");
+        assertTrue(check);
+    }
 }

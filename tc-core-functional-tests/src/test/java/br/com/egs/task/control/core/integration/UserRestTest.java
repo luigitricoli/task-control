@@ -45,7 +45,6 @@ public class UserRestTest {
                     "'login':'testusr'," +
                     "'name':'A Test User'," +
                     "'email':'test@example.com'," +
-                    "'passwordHash':'AAAAABBBBBCCCCCDDDDDEEEEE'," +
                     "'applications':[" +
                         "{'name':'OLM'},{'name':'TaskControl'}" +
                     "]" +
@@ -53,7 +52,6 @@ public class UserRestTest {
                     "'login':'aseconduser'," +
                     "'name':'Another Test User'," +
                     "'email':'other@example.com'," +
-                    "'passwordHash':'ZZZZZZZZYYYYYYYYXXXXXXXX'," +
                     "'applications':[" +
                         "{'name':'EMM'}" +
                     "]" +
@@ -73,7 +71,6 @@ public class UserRestTest {
                 "'login':'testusr'," +
                 "'name':'A Test User'," +
                 "'email':'test@example.com'," +
-                "'passwordHash':'AAAAABBBBBCCCCCDDDDDEEEEE'," +
                 "'applications':[" +
                    "{'name':'OLM'},{'name':'TaskControl'}" +
                 "]" +
@@ -98,13 +95,12 @@ public class UserRestTest {
             "'login':'testusr3'," +
             "'name':'A Third Test User'," +
             "'email':'test3@example.com'," +
-            "'passwordHash':'AAAAABBBBBZZZZDDDDDEEEEE'," +
             "'applications':[" +
                 "{'name':'FEM'},{'name':'EMM'}" +
             "]" +
         "}";
 
-        // Returned document example: {"generatedPassword":"ABcbd614%#"}
+        // Returned document example: {"generatedPassword":"ABc#bd614%"}
         String expectedResponseRegexp = "\\{\"generatedPassword\" : \"[a-zA-Z0-9!@#$%&]+\"\\}";
 
         Response response = restfulie.at("http://localhost:8090/v1/users").accept("application/json")
@@ -128,7 +124,6 @@ public class UserRestTest {
                 // No login
                 "'name':'A Third Test User'," +
                 "'email':'test3@example.com'," +
-                "'passwordHash':'AAAAABBBBBZZZZDDDDDEEEEE'," +
                 "'applications':[" +
                 "{'name':'FEM'},{'name':'EMM'}" +
                 "]" +

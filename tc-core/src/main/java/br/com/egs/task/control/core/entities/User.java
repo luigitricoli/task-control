@@ -1,8 +1,10 @@
 package br.com.egs.task.control.core.entities;
 
 import br.com.egs.task.control.core.exception.ValidationException;
+import com.google.gson.*;
 import org.apache.commons.lang.StringUtils;
 
+import java.lang.reflect.Type;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
@@ -29,18 +31,9 @@ public class User {
     }
 
     public void setPasswordAsText(String pass) {
-        pass = login + pass;
-        MessageDigest digest = null;
-        try {
-            digest = MessageDigest.getInstance("SHA-1");
-        } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException(e);
-        }
-        byte[] hashedBytes = digest.digest(pass.getBytes());
-        String hashedString = bytesToHexString(hashedBytes);
+        String hashedString = extractHash(pass);
         this.passwordHash = hashedString;
     }
-
 
     public String generateRandomPassword() {
         Random rnd = new Random();
@@ -71,6 +64,27 @@ public class User {
         if (applications == null || applications.size() == 0) {
             throw new ValidationException("Application list is empty");
         }
+    }
+
+    /**
+     * Verifies if the given password matches this users' defined password.
+     * @param pass
+     * @return
+     */
+    public boolean checkPassword(String pass) {
+        String hash = extractHash(pass);
+        return hash.equals(this.passwordHash);
+    }
+
+    /**
+     * Convert the user to a JSON representation, removing the password-related attributes
+     * @return
+     */
+    public String toJson() {
+        return new GsonBuilder()
+                .registerTypeAdapter(this.getClass(), new UserSerializer(true))
+                .create()
+                .toJson(this);
     }
 
     public String getLogin() {
@@ -109,6 +123,18 @@ public class User {
         this.passwordHash = hash;
     }
 
+    private String extractHash(String pass) {
+        pass = login + pass;
+        MessageDigest digest = null;
+        try {
+            digest = MessageDigest.getInstance("SHA-1");
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
+        }
+        byte[] hashedBytes = digest.digest(pass.getBytes());
+        return bytesToHexString(hashedBytes);
+    }
+
     /**
      *
      * @param bytes
@@ -125,4 +151,25 @@ public class User {
         return converted.toString();
     }
 
+    /**
+     * A custom JSON serializer for a User instance, that can (optionally) exclude the
+     * password attribute from the resulting object.
+     */
+    public static class UserSerializer implements JsonSerializer<User> {
+        private boolean excludePassword;
+
+        public UserSerializer(boolean excludePassword) {
+            this.excludePassword = excludePassword;
+        }
+
+        @Override
+        public JsonElement serialize(User user, Type type, JsonSerializationContext jsonSerializationContext) {
+            Gson gson = new Gson();
+            JsonObject jObj = (JsonObject)gson.toJsonTree(user);
+            if (excludePassword) {
+                jObj.remove("passwordHash");
+            }
+            return jObj;
+        }
+    }
 }
