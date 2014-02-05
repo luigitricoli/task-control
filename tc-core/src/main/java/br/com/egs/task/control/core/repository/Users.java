@@ -11,4 +11,5 @@ public interface Users {
     public User get(String login);
     public void add(User user);
     public List<User> getAll();
+    public void update(User user);
 }

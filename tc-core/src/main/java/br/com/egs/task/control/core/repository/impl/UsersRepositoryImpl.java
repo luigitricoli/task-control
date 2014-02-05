@@ -29,7 +29,11 @@ public class UsersRepositoryImpl implements Users {
     public User get(String login) {
         DBCollection collection = conn.getDatabase().getCollection("users");
         BasicDBObject dbUser = (BasicDBObject) collection.findOne(new BasicDBObject("_id", login));
-        return mapper.getAsUser(dbUser);
+        if (dbUser == null) {
+            return null;
+        } else {
+            return mapper.getAsUser(dbUser);
+        }
     }
 
     @Override
@@ -50,5 +54,12 @@ public class UsersRepositoryImpl implements Users {
             results.add(mapper.getAsUser(obj));
         }
         return results;
+    }
+
+    @Override
+    public void update(User user) {
+        DBCollection collection = conn.getDatabase().getCollection("users");
+        BasicDBObject dbUser = mapper.getAsDbObject(user);
+        collection.update(new BasicDBObject("_id", user.getLogin()), dbUser);
     }
 }

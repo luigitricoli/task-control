@@ -1,6 +1,5 @@
 package br.com.egs.task.control.core.database;
 
-import br.com.egs.task.control.core.exception.EnvironmentException;
 import com.mongodb.DB;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientOptions;
@@ -30,7 +29,7 @@ public class MongoDbConnection {
 					new ServerAddress(props.getDatabaseHost(), props.getDatabasePort()),
 					options);
 		} catch (Exception e) {
-			throw new EnvironmentException("Error initializing database client", e);
+			throw new RuntimeException("Error initializing database client", e);
 		}
 		
 		this.mongo = mongoClient;
