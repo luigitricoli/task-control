@@ -1,6 +1,7 @@
 package br.com.egs.task.control.web.controller;
 
 import br.com.caelum.vraptor.Get;
+import br.com.caelum.vraptor.Post;
 import br.com.caelum.vraptor.Resource;
 import br.com.caelum.vraptor.Result;
 import br.com.egs.task.control.web.model.repository.TaskRepository;
@@ -17,8 +18,10 @@ public class TasksController {
 	}
 
 	@Get("/tarefas")
-	public void index(){
-		
+	public void index(String task){
+        if(task != null){
+            result.include("openTask", task);
+        }
 	}
 	
 	@Get("/tarefas/mes/{month}")
@@ -26,9 +29,15 @@ public class TasksController {
 		result.include("weeks", tasks.weekByMonth(month));
 	}
 
-    @Get("/tarefas/{id}/historico")
-    public void postsBy(Integer task){
+    @Get("/tarefas/{task}/historico")
+    public void postsBy(String task){
         result.include("posts", tasks.postBy(task));
+    }
+
+    @Post("/tarefas/{task}/historico")
+    public void addPost(String task){
+        //TODO add
+        result.redirectTo(this).index(task);
     }
 	
 }

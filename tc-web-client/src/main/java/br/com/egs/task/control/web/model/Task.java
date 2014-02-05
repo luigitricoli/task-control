@@ -2,8 +2,6 @@ package br.com.egs.task.control.web.model;
 
 import br.com.egs.task.control.web.model.stage.AbstractStage;
 import br.com.egs.task.control.web.model.stage.Stage;
-import br.com.egs.task.control.web.model.stage.Waiting;
-import com.google.inject.internal.cglib.core.$ReflectUtils;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -11,6 +9,7 @@ import java.util.Set;
 
 public class Task {
 
+    private String id;
     private Integer startDay;
     private Integer daysInterval;
     private Stage stage;
@@ -18,13 +17,18 @@ public class Task {
     private Map<Integer, Hashtags> hashtagsByDay;
     private Integer daysRun;
 
-    private Task(Integer startDay, Integer daysInterval, Integer daysRun, Stage stage, String description, Map<Integer, Hashtags> hashtagsByDay) {
+    private Task(String id, Integer startDay, Integer daysInterval, Integer daysRun, Stage stage, String description, Map<Integer, Hashtags> hashtagsByDay) {
+        this.id = id;
         this.startDay = startDay;
         this.daysInterval = daysInterval;
         this.stage = stage;
         this.description = description;
         this.hashtagsByDay = hashtagsByDay;
         this.daysRun = daysRun;
+    }
+
+    public String getId() {
+        return id;
     }
 
     public Integer getStartDay() {
@@ -57,6 +61,7 @@ public class Task {
 
     public static class Builder {
 
+        private String id;
         private Integer start;
         private Integer interval;
         private Stage st;
@@ -64,7 +69,8 @@ public class Task {
         private Map<Integer, Hashtags> htsByDay;
         private Integer run;
 
-        public Builder(Integer startDay, Integer intervalDay, String description) {
+        public Builder(String id, Integer startDay, Integer intervalDay, String description) {
+            this.id = id;
             this.start = startDay;
             this.interval = intervalDay;
             this.run = intervalDay;
@@ -100,14 +106,14 @@ public class Task {
             return this;
         }
 
-        public Builder daysRun(Integer days){
+        public Builder daysRun(Integer days) {
             this.run = days;
             return this;
         }
 
         public Task build() {
             AbstractStage stage = st.getInstance(interval, run);
-            return new Task(start, stage.calculateDaysInterval(), stage.calculateDaysRun(), st, desc, htsByDay);
+            return new Task(id, start, stage.calculateDaysInterval(), stage.calculateDaysRun(), st, desc, htsByDay);
         }
 
     }

@@ -10,6 +10,6 @@ public interface TaskRepository {
 
 	List<Week> weekByMonth(Integer month);
 
-    List<Post> postBy(Integer id);
+    List<Post> postBy(String id);
 
 }
