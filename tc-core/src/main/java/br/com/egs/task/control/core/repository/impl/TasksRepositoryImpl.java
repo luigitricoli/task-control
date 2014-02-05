@@ -22,21 +22,5 @@ public class TasksRepositoryImpl implements Tasks {
 		this.connection = connection;
 	}
 
-	@Override
-	public List<Task> listAll() {
-		DB db = connection.getDatabase();
-		
-		DBCursor cur = db.getCollection("tasks").find();
-		
-		List<Task> results = new ArrayList<Task>();
-		while (cur.hasNext()) {
-			BasicDBObject obj = (BasicDBObject) cur.next();
-			Task task = new Task();
-			task.setDescription(obj.getString("description"));
-			task.setOwner(obj.getString("owner"));
-			results.add(task);
-		}
-		return results;
-	}
 
 }
