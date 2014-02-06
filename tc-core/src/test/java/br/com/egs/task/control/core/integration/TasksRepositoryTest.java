@@ -52,30 +52,39 @@ public class TasksRepositoryTest {
 
         assertEquals(4, result.size());
 
+        assertEquals("111122223333aaaabbbbccc1", result.get(0).getId());
+        assertEquals("111122223333aaaabbbbccc2", result.get(1).getId());
+        assertEquals("111122223333aaaabbbbccc3", result.get(2).getId());
+        assertEquals("111122223333aaaabbbbccc4", result.get(3).getId());
+
         Task resultSample = result.get(0);
+        compareWithFirstTestRecord(resultSample);
+    }
 
-        assertEquals("111122223333aaaabbbbccc1", resultSample.getId());
-        assertEquals("Test the Task Implementation", resultSample.getDescription());
+    /**
+     * Checks the database-to-object mapping by performing a detailed validation
+     * of a returned record.
+     * @throws Exception
+     */
+    @Test
+    public void searchAll_detailedRecordValidation() throws Exception {
+        TaskSearchCriteria criteria = new TaskSearchCriteria();
+        List<Task> result = repository.searchTasks(criteria);
 
-        assertEquals(timestampFormat.parse("2014-01-02 00:00:00.000"), resultSample.getStartDate());
-        assertEquals(timestampFormat.parse("2014-01-10 23:59:59.999"), resultSample.getForeseenEndDate());
-        assertEquals(timestampFormat.parse("2014-01-09 23:59:59.999"), resultSample.getEndDate());
+        Task resultSample = result.get(0);
+        compareWithFirstTestRecord(resultSample);
+    }
 
-        assertEquals("Sup.Producao", resultSample.getSource());
-        assertEquals(new Application("OLM"), resultSample.getApplication());
+    @Test
+    public void searchByMonth() throws Exception {
+        TaskSearchCriteria criteria = new TaskSearchCriteria()
+                .month(2014, 1);
+        List<Task> result = repository.searchTasks(criteria);
 
-        assertEquals(2, resultSample.getOwners().size());
-        assertEquals(new TaskOwner("john"), resultSample.getOwners().get(0));
-        assertEquals(new TaskOwner("mary"), resultSample.getOwners().get(1));
+        assertEquals(2, result.size());
 
-        assertEquals(2, resultSample.getPosts().size());
-        assertEquals(timestampFormat.parse("2014-01-03 09:15:30.700"), resultSample.getPosts().get(0).getTimestamp());
-        assertEquals("john", resultSample.getPosts().get(0).getUser());
-        assertEquals("Scope changed. No re-scheduling will be necessary", resultSample.getPosts().get(0).getText());
-
-        assertEquals(timestampFormat.parse("2014-01-08 18:20:49.150"), resultSample.getPosts().get(1).getTimestamp());
-        assertEquals("john", resultSample.getPosts().get(1).getUser());
-        assertEquals("Doing #overtime to finish it sooner", resultSample.getPosts().get(1).getText());
+        assertEquals("111122223333aaaabbbbccc1", result.get(0).getId());
+        assertEquals("111122223333aaaabbbbccc2", result.get(1).getId());
     }
 
 	private void populateDatabase() throws Exception {
@@ -138,5 +147,35 @@ public class TasksRepositoryTest {
         t.append("posts", posts);
 
         return t;
+    }
+
+    /**
+     * Validates each field of this Task against the first inserted record.
+     * @param task
+     * @throws ParseException
+     */
+    private void compareWithFirstTestRecord(Task task) throws ParseException {
+        assertEquals("111122223333aaaabbbbccc1", task.getId());
+        assertEquals("Test the Task Implementation", task.getDescription());
+
+        assertEquals(timestampFormat.parse("2014-01-02 00:00:00.000"), task.getStartDate());
+        assertEquals(timestampFormat.parse("2014-01-10 23:59:59.999"), task.getForeseenEndDate());
+        assertEquals(timestampFormat.parse("2014-01-09 23:59:59.999"), task.getEndDate());
+
+        assertEquals("Sup.Producao", task.getSource());
+        assertEquals(new Application("OLM"), task.getApplication());
+
+        assertEquals(2, task.getOwners().size());
+        assertEquals(new TaskOwner("john"), task.getOwners().get(0));
+        assertEquals(new TaskOwner("mary"), task.getOwners().get(1));
+
+        assertEquals(2, task.getPosts().size());
+        assertEquals(timestampFormat.parse("2014-01-03 09:15:30.700"), task.getPosts().get(0).getTimestamp());
+        assertEquals("john", task.getPosts().get(0).getUser());
+        assertEquals("Scope changed. No re-scheduling will be necessary", task.getPosts().get(0).getText());
+
+        assertEquals(timestampFormat.parse("2014-01-08 18:20:49.150"), task.getPosts().get(1).getTimestamp());
+        assertEquals("john", task.getPosts().get(1).getUser());
+        assertEquals("Doing #overtime to finish it sooner", task.getPosts().get(1).getText());
     }
 }
