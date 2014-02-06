@@ -1,4 +1,6 @@
-var CURRENT_MONTH='currentMonth';
+var CURRENT_MONTH="currentMonth";
+var activeFilters="";
+
 function getIntCookie(name){
 	return parseInt($.cookie(name));
 }
@@ -34,9 +36,8 @@ function populateCalendar(days){
 		var value = days[index];
 		
 		//highlight today
-		var pattern = /hoje/i;
 		$(this).removeClass("today");
-		if(pattern.test(value)){
+		if(/hoje/i.test(value)){
 			$(this).addClass("today");	
 		}
     	
@@ -44,7 +45,7 @@ function populateCalendar(days){
 	});
 }
 function getMonth(month){
-	var url = domain + "calendario/mes/" + month;
+	var url = DOMAIN + "calendario/mes/" + month;
 	$.getJSON(url,function(data){
 		populateCalendar(data.days);
 	});
@@ -80,28 +81,83 @@ function loadMonth(){
 }
 
 function getTasks(month){
-	var url = domain + "tarefas/mes/" + month;
+	var url = DOMAIN + "tarefas/mes/" + month;
+    if(activeFilters !== "" && activeFilters !== undefined){
+        url = url + "?filters=" + activeFilters;
+    }
 	$.get(url,function(data){
 		$("#tasks-layer").empty();
 		$("#tasks-layer").append(data);
 		
 		ajustMonthLines();
         addClickActionToTasks();
+        openTask();
 	});
+
 }
 
-function addClickActionToTasks(callback){
+function openTask(){
+    if(OPEN_TASK !== undefined){
+        var id = "#task-"+OPEN_TASK;
+        OPEN_TASK = undefined;
+        $(id)[0].click();
+    }
+}
+
+function addClickActionToTasks(){
     $(".task").click(function(){
-        $("#btn-task-history")[0].click();
-        callback();
+        populateTimeline($(this));
     });
 }
 
+function populateTimeline(task){
+    var url = DOMAIN + "tarefas/" + task.data("id") + "/historico";
+    $.get(url,function(data){
+        $("#task-history").empty();
+        $("#task-history").show();
+
+        var html = $($.parseHTML(data));
+        html.find("form").attr("action", url);
+        $("#task-history").append(html);
+        $("#task-description").text(task.find(".task-description").text())
+
+        $( ".post:contains('#atraso')" ).addClass("late");
+        $( ".post:contains('#horaextra')" ).addClass("overtime");
+
+        $("#btn-task-history")[0].click();
+    });
+}
+
+function toogleFilterTasks(filter){
+    var name = filter.data("filter");
+    if(activeFilters.indexOf(name) < 0){
+        if(activeFilters === "" || activeFilters === undefined){
+            activeFilters = name;
+        } else {
+            activeFilters = activeFilters + "," + name;
+        }
+    } else {
+        activeFilters = activeFilters.replace(","+name, "");
+        activeFilters = activeFilters.replace(name+",", "");
+        activeFilters = activeFilters.replace(name, "");
+    }
+    console.log(activeFilters);
+    loadMonth();
+}
+
 $(document).ready(function(){
-	$( "#next-month" ).click(function() {
+    $(".filter-group label").click(function(){
+            toogleFilterTasks($(this));
+        }
+    );
+    $(".filter-group input:checkbox").click(function(event){
+            toogleFilterTasks($(this));
+        }
+    );
+	$("#next-month").click(function() {
 		nextMonth();
 	});
-	$( "#previous-month" ).click(function() {
+	$("#previous-month").click(function() {
 		prevMonth();
 	});
 	loadMonth();

@@ -1,6 +1,6 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
-<div class="task start-day-${task.startDay} late">
+<div id="task-${task.id}" class="task start-day-${task.startDay} late" data-id="${task.id}">
     <div class="foreseen interval-day-${task.daysInterval}">
         <div class="stage doing interval-day-${task.daysRun}"></div>
         <span class="task-description">${task.description}</span>

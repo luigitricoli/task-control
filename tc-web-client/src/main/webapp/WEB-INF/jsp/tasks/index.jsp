@@ -8,7 +8,11 @@
     <script src="<c:url value="/resources/jquery.easydropdown.min.js"/>"></script>
     <script src="<c:url value="/resources/calendar.js"/>"></script>
     <script type="text/javascript">
-		var domain='<c:url value="/"/>';
+		var DOMAIN='<c:url value="/"/>';
+        var OPEN_TASK = undefined;
+        <c:if test="${openTask ne null}">
+            OPEN_TASK="<c:out value="${openTask}" />";
+        </c:if>
 	</script>
     <link rel="stylesheet" type="text/css" href="<c:url value="/resources/easydropdown.css"/>">
     <link rel="stylesheet" type="text/css" href="<c:url value="/resources/calendar.css"/>">
@@ -32,48 +36,50 @@
         </header>
         <div id="container-left">
             <div class="filter-group">
-                <h4>Sistema</h4>
-                <div class="constraint">
-                    <input type="checkbox">
-                    <label>GOL</label>
-                </div>
-                <div class="constraint">
-                    <input type="checkbox">
-                    <label>EMA</label>
-                </div>
-                <div class="constraint">
-                    <input type="checkbox">
-                    <label>OLM</label>
-                </div>
-            </div>              
+                <form>
+                    <h4>Sistema</h4>
+                    <div class="constraint">
+                        <input type="checkbox" data-filter="GOL" id="chb-GOL">
+                        <label for="chb-GOL" data-filter="GOL">GOL</label>
+                    </div>
+                    <div class="constraint">
+                        <input type="checkbox" data-filter="EMA" id="chb-EMA">
+                        <label for="chb-EMA" data-filter="EMA">EMA</label>
+                    </div>
+                    <div class="constraint">
+                        <input type="checkbox" data-filter="OLM" id="chb-OLM">
+                        <label for="chb-OLM" data-filter="OLM">OLM</label>
+                    </div>
+                </form>
+            </div>
             <div class="filter-group">
                 <h4>Status</h4>
                 <div class="constraint">
-                    <input type="checkbox">
-                    <label>Andiantado</label>
+                    <input type="checkbox" data-filter="finished" id="chb-finished">
+                    <label for="chb-finished" data-filter="finished">Finalizado</label>
                 </div>
                 <div class="constraint">
-                    <input type="checkbox">
-                    <label>No Prazo</label>
+                    <input type="checkbox" data-filter="doing" id="chb-doing">
+                    <label for="chb-doing" data-filter="doing">Em andamento</label>
                 </div>
                 <div class="constraint">
-                    <input type="checkbox">
-                    <label>Atrasado</label>
+                    <input type="checkbox" data-filter="late" id="chb-late">
+                    <label for="chb-late" data-filter="late">Atrasado</label>
                 </div>
             </div>
             <div class="filter-group">
                 <h4>Tipo da Demanda</h4>
                 <div class="constraint">
-                    <input type="checkbox">
-                    <label>CCC</label>
+                    <input type="checkbox" data-filter="ccc" id="chb-ccc">
+                    <label for="chb-ccc" data-filter="ccc">CCC</label>
                 </div>
                 <div class="constraint">
-                    <input type="checkbox">
-                    <label>Interna</label>
+                    <input type="checkbox" data-filter="internal" id="chb-internal">
+                    <label for="chb-internal" data-filter="internal">Interna</label>
                 </div>
                 <div class="constraint">
-                    <input type="checkbox">
-                    <label>Suporte a produ&ccedil;&atilde;o</label>
+                    <input type="checkbox" data-filter="sup-prod" id="chb--sup-prod">
+                    <label for="chb--sup-prod" data-filter="sup-prod">Suporte a produ&ccedil;&atilde;o</label>
                 </div>
             </div>
             <div class="filter-group">
@@ -178,109 +184,8 @@
                 </div>
             </div>
             <div id="task-history">
-                <h3>Hist&oacute;rico de Itera&ccedil;&otilde;es</h3>
-                <p id="task-description">SR123456789 - Beef ribs chicken tail boudin.</p>
-                <div id="iteraction-menu">
-                    <a href="" id="finish" class="btn green"><span class="icon add">V</span>Encerrar</a>
-                    <a href="" id="replan" class="btn green"><span class="icon add">R</span>Replanejar</a>
-                    <a href="" id="cancel" class="btn red"><span class="icon add">X</span>Cancelar</a>
-                </div>
-                <div id="iteraction-form">
-                    <label>No que voc&ecirc; est&aacute; pensando?</label>
-                    <textarea id="comantary"></textarea>
-                    <button id="add_comentary" class="btn green"><span class="icon add">+</span></button>
-                    <button id="remove_comentary" class="btn red"><span class="icon remove">X</span></button>
-                </div>
-                <div id="timeline">
-                    <div class="post">
-                        <span class="datetime">08/12/2013 12:34:50</span>
-                        <div class="timeline_dot">
-                            <div class="dot"></div>
-                            <div class="speak_ballon">
-                                <div class="arrow"></div>
-                                <p class="speaker">Luigi:</p>
-                                <p class="message">In&iacute;cio esta tarefa com Rodrigo e Kaue</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="post">
-                        <span class="datetime">08/12/2013 12:34:50</span>
-                        <div class="timeline_dot">
-                            <div class="dot"></div>
-                            <div class="speak_ballon">
-                                <div class="arrow"></div>
-                                <p class="speaker">Luigi:</p>
-                                <p class="message">Beef ribs chicken tail boudin pork chop filet mignon kevin chuck.Beef ribs chicken tail boudin pork chop filet mignon kevin chuck.Beef ribs chicken tail boudin pork chop filet mignon kevin chuck.Beef ribs chicken tail boudin pork chop filet mignon kevin chuck.Beef ribs chicken tail boudin pork chop filet mignon kevin chuck.Beef ribs chicken tail boudin pork chop filet mignon kevin chuck.Beef ribs chicken tail boudin pork chop filet mignon kevin chuck.Beef ribs chicken tail boudin pork chop filet mignon kevin chuck.Beef ribs chicken tail boudin pork chop filet mignon kevin chuck.Beef ribs chicken tail boudin pork chop filet mignon kevin chuck.</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="post">
-                        <span class="datetime">08/12/2013 12:34:50</span>
-                        <div class="timeline_dot">
-                            <div class="dot"></div>
-                            <div class="speak_ballon">
-                                <div class="arrow"></div>
-                                <p class="speaker">Luigi:</p>
-                                <p class="message">Beef ribs chicken tail boudin pork chop filet mignon kevin chuck.</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="post late">
-                        <span class="datetime">08/12/2013 12:34:50</span>
-                        <div class="timeline_dot">
-                            <div class="dot"></div>
-                            <div class="speak_ballon">
-                                <div class="arrow"></div>
-                                <p class="speaker">Luigi:</p>
-                                <p class="message">Altera&ccedil;&atilde;o de escopo. <span>#atraso</span></p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="post">
-                        <span class="datetime">08/12/2013 12:34:50</span>
-                        <div class="timeline_dot">
-                            <div class="dot"></div>
-                            <div class="speak_ballon">
-                                <div class="arrow"></div>
-                                <p class="speaker">Luigi:</p>
-                                <p class="message">Beef ribs chicken tail boudin pork chop filet mignon kevin chuck.</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="post overtime">
-                        <span class="datetime">08/12/2013 12:34:50</span>
-                        <div class="timeline_dot">
-                            <div class="dot"></div>
-                            <div class="speak_ballon">
-                                <div class="arrow"></div>
-                                <p class="speaker">Luigi:</p>
-                                <p class="message">2 <span>#horasextra</span></p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="post">
-                        <span class="datetime">08/12/2013 12:34:50</span>
-                        <div class="timeline_dot">
-                            <div class="dot"></div>
-                            <div class="speak_ballon">
-                                <div class="arrow"></div>
-                                <p class="speaker">Luigi:</p>
-                                <p class="message">Beef ribs chicken tail boudin pork chop filet mignon kevin chuck.</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="post">
-                        <span class="datetime">08/12/2013 12:34:50</span>
-                        <div class="timeline_dot">
-                            <div class="dot"></div>
-                            <div class="speak_ballon">
-                                <div class="arrow"></div>
-                                <p class="speaker">Luigi:</p>
-                                <p class="message">Beef ribs chicken tail boudin pork chop filet mignon kevin chuck.</p>
-                            </div>
-                        </div>
-                    </div>                    
-                </div>
+
+
             </div>
         </div>
         <script type="text/javascript">

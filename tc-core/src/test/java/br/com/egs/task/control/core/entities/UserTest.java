@@ -1,6 +1,7 @@
 package br.com.egs.task.control.core.entities;
 
 import org.junit.Test;
+
 import static org.junit.Assert.*;
 
 /**
@@ -37,4 +38,5 @@ public class UserTest {
         boolean check = u.checkPassword("secret");
         assertTrue(check);
     }
+
 }
