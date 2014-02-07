@@ -56,9 +56,6 @@ public class TasksRepositoryTest {
         assertEquals("111122223333aaaabbbbccc2", result.get(1).getId());
         assertEquals("111122223333aaaabbbbccc3", result.get(2).getId());
         assertEquals("111122223333aaaabbbbccc4", result.get(3).getId());
-
-        Task resultSample = result.get(0);
-        compareWithFirstTestRecord(resultSample);
     }
 
     /**
@@ -129,8 +126,8 @@ public class TasksRepositoryTest {
         t.append("application", new BasicDBObject("name", "OLM"));
 
         List<BasicDBObject> owners = new ArrayList<>();
-        owners.add(new BasicDBObject("user", "john"));
-        owners.add(new BasicDBObject("user", "mary"));
+        owners.add(new BasicDBObject("login", "john"));
+        owners.add(new BasicDBObject("login", "mary"));
         t.append("owners", owners);
 
         List<BasicDBObject> posts = new ArrayList<>();

@@ -4,14 +4,14 @@ package br.com.egs.task.control.core.entities;
  * Represents a task owner. This is a short version of a User.
  */
 public class TaskOwner {
-    private String user;
+    private String login;
 
-    public TaskOwner(String user) {
-        this.user = user;
+    public TaskOwner(String login) {
+        this.login = login;
     }
 
-    public String getUser() {
-        return user;
+    public String getLogin() {
+        return login;
     }
 
     @Override
@@ -21,13 +21,13 @@ public class TaskOwner {
 
         TaskOwner taskOwner = (TaskOwner) o;
 
-        if (user != null ? !user.equals(taskOwner.user) : taskOwner.user != null) return false;
+        if (login != null ? !login.equals(taskOwner.login) : taskOwner.login != null) return false;
 
         return true;
     }
 
     @Override
     public int hashCode() {
-        return user != null ? user.hashCode() : 0;
+        return login != null ? login.hashCode() : 0;
     }
 }

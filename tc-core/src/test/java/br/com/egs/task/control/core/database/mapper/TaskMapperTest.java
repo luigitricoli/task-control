@@ -102,8 +102,8 @@ public class TaskMapperTest {
         List<BasicDBObject> owners = (List<BasicDBObject>) dbTask.get("owners");
 
         assertEquals(2, owners.size());
-        assertEquals("john", owners.get(0).get("user"));
-        assertEquals("mary", owners.get(1).get("user"));
+        assertEquals("john", owners.get(0).get("login"));
+        assertEquals("mary", owners.get(1).get("login"));
     }
 
     @Test
@@ -256,8 +256,8 @@ public class TaskMapperTest {
         t.append("application", new BasicDBObject("name", "OLM"));
 
         List<BasicDBObject> owners = new ArrayList<>();
-        owners.add(new BasicDBObject("user", "john"));
-        owners.add(new BasicDBObject("user", "mary"));
+        owners.add(new BasicDBObject("login", "john"));
+        owners.add(new BasicDBObject("login", "mary"));
         t.append("owners", owners);
 
         List<BasicDBObject> posts = new ArrayList<>();

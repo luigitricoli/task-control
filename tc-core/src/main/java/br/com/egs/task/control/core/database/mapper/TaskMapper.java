@@ -37,7 +37,7 @@ public class TaskMapper {
 
         List<BasicDBObject> owners = new ArrayList<>();
         for (TaskOwner owner : task.getOwners()) {
-            owners.add(new BasicDBObject("user", owner.getUser()));
+            owners.add(new BasicDBObject("login", owner.getLogin()));
         }
         obj.append("owners", owners);
 
@@ -70,7 +70,7 @@ public class TaskMapper {
         List<TaskOwner> owners = new ArrayList<>();
         List<BasicDBObject> dbOwners = (List<BasicDBObject>) dbTask.get("owners");
         for (BasicDBObject dbOwner : dbOwners) {
-            owners.add(new TaskOwner(dbOwner.getString("user")));
+            owners.add(new TaskOwner(dbOwner.getString("login")));
         }
         task.setOwners(owners);
 

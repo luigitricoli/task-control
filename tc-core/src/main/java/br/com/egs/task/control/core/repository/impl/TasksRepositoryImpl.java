@@ -30,7 +30,7 @@ public class TasksRepositoryImpl implements Tasks {
 
 
     @Override
-    public List<Task> searchTasks(TaskSearchCriteria criteria) {
+         public List<Task> searchTasks(TaskSearchCriteria criteria) {
 
         DBObject filterObject = createFilterObject(criteria);
 

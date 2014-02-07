@@ -1,16 +1,8 @@
-package br.com.egs.task.control.core.integration;
+package helper_programs;
 
-import br.com.caelum.restfulie.Response;
-import br.com.caelum.restfulie.RestClient;
-import br.com.caelum.restfulie.Restfulie;
+import br.com.egs.task.control.core.database.DbConfiguration;
 import br.com.egs.task.control.core.database.MongoDbConnection;
-import br.com.egs.task.control.core.testutils.TestConnectionFactory;
 import com.mongodb.BasicDBObject;
-import org.bson.types.ObjectId;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.skyscreamer.jsonassert.JSONAssert;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -18,53 +10,37 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
+/**
+ * Inserts some records on the production database.
+ * Be sure to have the dbconfig.properties file on the classpath when running this program.
+ */
+public class TaskInsert {
 
-public class TaskRestTest {
-
-    private MongoDbConnection conn;
-
-    @Before
-    public void setUp() throws Exception {
-        conn = TestConnectionFactory.getConnection();
-        populateDatabase();
+    public static void main(String[] args) throws Exception {
+         populateDatabase();
+        System.out.println("Done");
     }
 
-    @After
-    public void tearDown() {
-        conn.getDatabase().getCollection("tasks").drop();
-        conn.close();
-    }
 
-	@Test
-	public void listTasks() throws Exception {
-		RestClient restfulie = Restfulie.custom();
-		Response response = restfulie.at("http://localhost:8090/v1/tasks?year=2014&month=1").accept("application/json").get();
+    private static void populateDatabase() throws Exception {
+        MongoDbConnection conn = new MongoDbConnection(new DbConfiguration());
 
-        String content = response.getContent();
-
-        assertEquals(200, response.getCode());
-        JSONAssert.assertEquals("[{id:'111122223333aaaabbbbccf1'}]", content, false);
-	}
-
-    private void populateDatabase() throws Exception {
         BasicDBObject t = createTestTask();
         conn.getDatabase().getCollection("tasks").insert(t);
     }
 
-    private BasicDBObject createTestTask() throws ParseException {
+    private static BasicDBObject createTestTask() throws ParseException {
         DateFormat timestampFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 
         BasicDBObject t = new BasicDBObject();
 
-        t.append("_id", new ObjectId("111122223333aaaabbbbccf1"));
-        t.append("description", "Test the Task Implementation");
+        t.append("description", "My First Task");
 
         t.append("startDate", timestampFormat.parse("2014-01-02 00:00:00.000"));
         t.append("foreseenEndDate", timestampFormat.parse("2014-01-10 23:59:59.999"));
         t.append("endDate", timestampFormat.parse("2014-01-09 23:59:59.999"));
 
-        t.append("source", "Sup.Producao");
+        t.append("source", "CCC");
         t.append("application", new BasicDBObject("name", "OLM"));
 
         List<BasicDBObject> owners = new ArrayList<>();

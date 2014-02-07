@@ -27,4 +27,24 @@ public class TaskSearchCriteria {
     public int getMonth() {
         return month;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        TaskSearchCriteria that = (TaskSearchCriteria) o;
+
+        if (month != that.month) return false;
+        if (year != that.year) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = year;
+        result = 31 * result + month;
+        return result;
+    }
 }
