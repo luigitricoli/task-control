@@ -1,19 +1,17 @@
 package br.com.egs.task.control.core.service;
 
-import javax.inject.Inject;
-import javax.ws.rs.*;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-
 import br.com.egs.task.control.core.entities.Task;
 import br.com.egs.task.control.core.repository.TaskSearchCriteria;
 import br.com.egs.task.control.core.repository.Tasks;
-import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.inject.Inject;
+import javax.ws.rs.*;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import java.util.List;
 
 @Path("tasks")
@@ -32,7 +30,8 @@ public class TasksService {
 	@Produces(MediaType.APPLICATION_JSON)
 	public String searchTasks(
                             @QueryParam("year") String year,
-                            @QueryParam("month") String month) {
+                            @QueryParam("month") String month,
+                            @QueryParam("owner") String owner) {
 
         TaskSearchCriteria criteria = new TaskSearchCriteria();
 
@@ -46,6 +45,10 @@ public class TasksService {
             throw new WebApplicationException("Invalid year/month value", Response.Status.BAD_REQUEST);
         } catch (IllegalArgumentException iae) {
             throw new WebApplicationException(iae.getMessage(), Response.Status.BAD_REQUEST);
+        }
+
+        if (StringUtils.isNotBlank(owner)) {
+            criteria.ownerLogin(owner);
         }
 
         List<Task> result = repository.searchTasks(criteria);

@@ -42,7 +42,7 @@ public class TasksServiceTest {
     @Test
     public void searchTasks_nullMonth() {
         try {
-            service.searchTasks("2014", null);
+            service.searchTasks("2014", null, null);
             fail("Exception was expected");
         } catch (WebApplicationException e) {
             assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), e.getResponse().getStatus());
@@ -52,7 +52,7 @@ public class TasksServiceTest {
     @Test
     public void searchTasks_nullYear() {
         try {
-            service.searchTasks(null, "01");
+            service.searchTasks(null, "01", null);
             fail("Exception was expected");
         } catch (WebApplicationException e) {
             assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), e.getResponse().getStatus());
@@ -62,7 +62,7 @@ public class TasksServiceTest {
     @Test
     public void searchTasks_invalidMonth() {
         try {
-            service.searchTasks("2014", "x");
+            service.searchTasks("2014", "x", null);
             fail("Exception was expected");
         } catch (WebApplicationException e) {
             assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), e.getResponse().getStatus());
@@ -72,7 +72,7 @@ public class TasksServiceTest {
     @Test
     public void searchTasks_invalidMonthValue() {
         try {
-            service.searchTasks("2014", "13");
+            service.searchTasks("2014", "13", null);
             fail("Exception was expected");
         } catch (WebApplicationException e) {
             assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), e.getResponse().getStatus());
@@ -82,7 +82,7 @@ public class TasksServiceTest {
     @Test
     public void searchTasks_invalidYear() {
         try {
-            service.searchTasks("a", "1");
+            service.searchTasks("a", "1", null);
             fail("Exception was expected");
         } catch (WebApplicationException e) {
             assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), e.getResponse().getStatus());
@@ -96,7 +96,7 @@ public class TasksServiceTest {
         List<Task> empty = Collections.emptyList();
         Mockito.when(taskRepository.searchTasks(generatedCriteria)).thenReturn(empty);
 
-        String result = service.searchTasks("2014", "1");
+        String result = service.searchTasks("2014", "1", null);
 
         JSONAssert.assertEquals("[]", result, true);
     }
@@ -113,9 +113,30 @@ public class TasksServiceTest {
         List<Task> taskList = Arrays.asList(t1, t2);
         Mockito.when(taskRepository.searchTasks(generatedCriteria)).thenReturn(taskList);
 
-        String result = service.searchTasks("2014", "1");
+        String result = service.searchTasks("2014", "1", null);
 
-        System.out.println(result);
+        Mockito.verify(taskRepository).searchTasks(generatedCriteria);
+
+        JSONAssert.assertEquals("[" + t1.toJson() + "," + t2.toJson() + "]", result, true);
+    }
+
+    @Test
+    public void searchTasks_byMonthYearAndOwner() throws Exception {
+        TaskSearchCriteria generatedCriteria = new TaskSearchCriteria()
+                .month(2014, 1)
+                .ownerLogin("john");
+
+        Task t1 = createTestTask();
+
+        Task t2 = createTestTask();
+        t2.setId("111122223333aaaabbbbXXXX");
+
+        List<Task> taskList = Arrays.asList(t1, t2);
+        Mockito.when(taskRepository.searchTasks(generatedCriteria)).thenReturn(taskList);
+
+        String result = service.searchTasks("2014", "1", "john");
+
+        Mockito.verify(taskRepository).searchTasks(generatedCriteria);
 
         JSONAssert.assertEquals("[" + t1.toJson() + "," + t2.toJson() + "]", result, true);
     }

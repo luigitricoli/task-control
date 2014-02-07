@@ -6,6 +6,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import br.com.egs.task.control.core.entities.Application;
@@ -84,6 +85,30 @@ public class TasksRepositoryTest {
         assertEquals("111122223333aaaabbbbccc2", result.get(1).getId());
     }
 
+    @Test
+    public void searchByOwner() throws Exception {
+        TaskSearchCriteria criteria = new TaskSearchCriteria()
+                .ownerLogin("bob");
+        List<Task> result = repository.searchTasks(criteria);
+
+        assertEquals(2, result.size());
+
+        assertEquals("111122223333aaaabbbbccc3", result.get(0).getId());
+        assertEquals("111122223333aaaabbbbccc4", result.get(1).getId());
+    }
+
+    @Test
+    public void searchByMonthAndOwner() throws Exception {
+        TaskSearchCriteria criteria = new TaskSearchCriteria()
+                .month(2013, 12)
+                .ownerLogin("bob");
+        List<Task> result = repository.searchTasks(criteria);
+
+        assertEquals(1, result.size());
+
+        assertEquals("111122223333aaaabbbbccc3", result.get(0).getId());
+    }
+
 	private void populateDatabase() throws Exception {
         BasicDBObject t = createTestTask();
         conn.getDatabase().getCollection("tasks").insert(t);
@@ -99,6 +124,9 @@ public class TasksRepositoryTest {
             .append("startDate", timestampFormat.parse("2013-12-15 00:00:00.000"))
             .append("foreseenEndDate", timestampFormat.parse("2013-12-20 23:59:59.999"))
             .append("endDate", timestampFormat.parse("2013-12-20 23:59:59.999"))
+            .append("owners", Arrays.asList(
+                    new BasicDBObject("login", "bob"),
+                    new BasicDBObject("login", "buzz")))
         ;
         conn.getDatabase().getCollection("tasks").insert(t);
 
@@ -106,6 +134,8 @@ public class TasksRepositoryTest {
             .append("_id", new ObjectId("111122223333aaaabbbbccc4"))
             .append("startDate", timestampFormat.parse("2014-02-01 00:00:00.000"))
             .append("foreseenEndDate", timestampFormat.parse("2014-02-07 23:59:59.999"))
+            .append("owners", Arrays.asList(
+                    new BasicDBObject("login", "bob")))
         ;
         t.remove("endDate");
 

@@ -17,6 +17,7 @@ import br.com.egs.task.control.core.database.MongoDbConnection;
 import br.com.egs.task.control.core.entities.Task;
 import br.com.egs.task.control.core.repository.Tasks;
 import com.mongodb.DBObject;
+import org.apache.commons.lang.StringUtils;
 
 public class TasksRepositoryImpl implements Tasks {
 
@@ -46,27 +47,48 @@ public class TasksRepositoryImpl implements Tasks {
     }
 
     BasicDBObject createFilterObject(TaskSearchCriteria criteria) {
-        BasicDBObject filter = new BasicDBObject();
+        List<BasicDBObject> filters = new ArrayList<>();
 
         if (criteria.getMonth() > 0) {
             Date[] interval = createDateIntervalForMonth(criteria.getYear(), criteria.getMonth());
 
-            filter.append("$or", new BasicDBObject[] {
-                   new BasicDBObject("startDate", new BasicDBObject()
+            filters.add(new BasicDBObject("$or", new BasicDBObject[]{
+                    new BasicDBObject("startDate", new BasicDBObject()
                             .append("$gte", interval[0])
                             .append("$lte", interval[1]))
-                   ,
-                   new BasicDBObject("foreseenEndDate", new BasicDBObject()
+                    ,
+                    new BasicDBObject("foreseenEndDate", new BasicDBObject()
                             .append("$gte", interval[0])
                             .append("$lte", interval[1]))
-                   ,
-                   new BasicDBObject("endDate", new BasicDBObject()
+                    ,
+                    new BasicDBObject("endDate", new BasicDBObject()
                             .append("$gte", interval[0])
                             .append("$lte", interval[1]))
-            });
+            }));
         }
 
-        return filter;
+        if (StringUtils.isNotBlank(criteria.getApplication())) {
+            filters.add(new BasicDBObject("application", criteria.getApplication()));
+        }
+
+        if (StringUtils.isNotBlank(criteria.getSource())) {
+            filters.add(new BasicDBObject("source", criteria.getSource()));
+        }
+
+        if (StringUtils.isNotBlank(criteria.getOwnerLogin())) {
+            filters.add(new BasicDBObject("owners.login", criteria.getOwnerLogin()));
+        }
+
+        if (filters.size() == 0) {
+            // No filters
+            return new BasicDBObject();
+        } else if (filters.size() == 1) {
+            // A single filter. Return the corresponding criteria directly
+            return filters.get(0);
+        } else {
+            // Multiple filters. Join them in a $and structure
+            return new BasicDBObject("$and", filters);
+        }
     }
 
     /**
