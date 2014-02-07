@@ -1,10 +1,15 @@
 package br.com.egs.task.control.core.entities;
 
 import com.google.gson.*;
+import com.mongodb.BasicDBObject;
+import org.apache.commons.lang.StringUtils;
+import org.bson.types.ObjectId;
 
 import java.lang.reflect.Type;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -35,6 +40,84 @@ public class Task {
         return new GsonBuilder().registerTypeAdapter(Task.class, new TaskSerializer())
                 .create()
                 .toJson(this);
+    }
+
+    /**
+     * Converts to the MongoDB Object representation
+     * @return
+     */
+    public BasicDBObject toDbObject() {
+        BasicDBObject obj = new BasicDBObject();
+
+        if (StringUtils.isNotBlank(this.getId())) {
+            obj.append("_id", new ObjectId(this.getId()));
+        }
+
+        obj.append("description", this.getDescription());
+
+        obj.append("startDate", toZeroHourDate(this.getStartDate()));
+        obj.append("foreseenEndDate", toMaxHourDate(this.getForeseenEndDate()));
+        if (this.getEndDate() != null) {
+            obj.append("endDate", toMaxHourDate(this.getEndDate()));
+        }
+
+        obj.append("source", this.getSource());
+        obj.append("application", new BasicDBObject("name", this.getApplication().getName()));
+
+        List<BasicDBObject> owners = new ArrayList<>();
+        for (TaskOwner owner : this.getOwners()) {
+            owners.add(new BasicDBObject("login", owner.getLogin()));
+        }
+        obj.append("owners", owners);
+
+        List<BasicDBObject> posts = new ArrayList<>();
+        for (Post post : this.getPosts()) {
+            posts.add(new BasicDBObject()
+                    .append("timestamp", post.getTimestamp())
+                    .append("user", post.getUser())
+                    .append("text", post.getText()));
+        }
+        obj.append("posts", posts);
+        return obj;
+    }
+
+    /**
+     * Converts a MongoDB object representation to a Task instance
+     * @param dbTask
+     * @return
+     */
+    public static Task fromDbObject(BasicDBObject dbTask) {
+        Task task = new Task();
+
+        task.setId(dbTask.getObjectId("_id").toString());
+        task.setDescription(dbTask.getString("description"));
+
+        task.setStartDate(dbTask.getDate("startDate"));
+        task.setForeseenEndDate(dbTask.getDate("foreseenEndDate"));
+        task.setEndDate(dbTask.getDate("endDate"));
+
+        task.setSource(dbTask.getString("source"));
+        task.setApplication(new Application(((BasicDBObject)dbTask.get("application")).getString("name")));
+
+        List<TaskOwner> owners = new ArrayList<>();
+        List<BasicDBObject> dbOwners = (List<BasicDBObject>) dbTask.get("owners");
+        for (BasicDBObject dbOwner : dbOwners) {
+            owners.add(new TaskOwner(dbOwner.getString("login")));
+        }
+        task.setOwners(owners);
+
+        List<Post> posts = new ArrayList<>();
+        List<BasicDBObject> dbPosts = (List<BasicDBObject>) dbTask.get("posts");
+        for (BasicDBObject dbPost : dbPosts) {
+            Post p = new Post();
+            p.setTimestamp(dbPost.getDate("timestamp"));
+            p.setUser(dbPost.getString("user"));
+            p.setText(dbPost.getString("text"));
+            posts.add(p);
+        }
+        task.setPosts(posts);
+
+        return task;
     }
 
     public String getId() {
@@ -107,6 +190,26 @@ public class Task {
 
     public void setSource(String source) {
         this.source = source;
+    }
+
+    private Date toZeroHourDate(Date dt) {
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(dt);
+        cal.set(Calendar.HOUR_OF_DAY, 0);
+        cal.set(Calendar.MINUTE, 0);
+        cal.set(Calendar.SECOND, 0);
+        cal.set(Calendar.MILLISECOND, 0);
+        return cal.getTime();
+    }
+
+    private Date toMaxHourDate(Date dt) {
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(dt);
+        cal.set(Calendar.HOUR_OF_DAY, 23);
+        cal.set(Calendar.MINUTE, 59);
+        cal.set(Calendar.SECOND, 59);
+        cal.set(Calendar.MILLISECOND, 999);
+        return cal.getTime();
     }
 
     /**

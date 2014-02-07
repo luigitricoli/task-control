@@ -7,10 +7,8 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import br.com.egs.task.control.core.database.mapper.TaskMapper;
 import br.com.egs.task.control.core.repository.TaskSearchCriteria;
 import com.mongodb.BasicDBObject;
-import com.mongodb.DB;
 import com.mongodb.DBCursor;
 
 import br.com.egs.task.control.core.database.MongoDbConnection;
@@ -22,13 +20,11 @@ import org.apache.commons.lang.StringUtils;
 public class TasksRepositoryImpl implements Tasks {
 
 	private MongoDbConnection connection;
-    private TaskMapper mapper = new TaskMapper();
 
     @Inject
 	public TasksRepositoryImpl(MongoDbConnection connection) {
 		this.connection = connection;
 	}
-
 
     @Override
          public List<Task> searchTasks(TaskSearchCriteria criteria) {
@@ -40,7 +36,7 @@ public class TasksRepositoryImpl implements Tasks {
         List<Task> result = new ArrayList<>();
         while (cursor.hasNext()) {
             BasicDBObject dbObject = (BasicDBObject) cursor.next();
-            result.add(mapper.getAsTask(dbObject));
+            result.add(Task.fromDbObject(dbObject));
         }
 
         return result;

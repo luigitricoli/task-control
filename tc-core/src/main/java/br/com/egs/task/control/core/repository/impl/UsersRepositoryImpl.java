@@ -1,7 +1,6 @@
 package br.com.egs.task.control.core.repository.impl;
 
 import br.com.egs.task.control.core.database.MongoDbConnection;
-import br.com.egs.task.control.core.database.mapper.UserMapper;
 import br.com.egs.task.control.core.entities.User;
 import br.com.egs.task.control.core.repository.Users;
 import com.mongodb.BasicDBObject;
@@ -18,7 +17,6 @@ import java.util.List;
 public class UsersRepositoryImpl implements Users {
 
     private MongoDbConnection conn;
-    private UserMapper mapper = new UserMapper();
 
     @Inject
     public UsersRepositoryImpl(MongoDbConnection conn) {
@@ -32,14 +30,14 @@ public class UsersRepositoryImpl implements Users {
         if (dbUser == null) {
             return null;
         } else {
-            return mapper.getAsUser(dbUser);
+            return User.fromDbObject(dbUser);
         }
     }
 
     @Override
     public void add(User user) {
         DBCollection collection = conn.getDatabase().getCollection("users");
-        BasicDBObject dbUser = mapper.getAsDbObject(user);
+        BasicDBObject dbUser = user.toDbObject();
         collection.insert(dbUser);
     }
 
@@ -48,10 +46,10 @@ public class UsersRepositoryImpl implements Users {
         DBCollection collection = conn.getDatabase().getCollection("users");
         DBCursor cursor = collection.find();
 
-        List<User> results = new ArrayList<User>();
+        List<User> results = new ArrayList<>();
         while (cursor.hasNext()) {
             BasicDBObject obj = (BasicDBObject) cursor.next();
-            results.add(mapper.getAsUser(obj));
+            results.add(User.fromDbObject(obj));
         }
         return results;
     }
@@ -59,7 +57,7 @@ public class UsersRepositoryImpl implements Users {
     @Override
     public void update(User user) {
         DBCollection collection = conn.getDatabase().getCollection("users");
-        BasicDBObject dbUser = mapper.getAsDbObject(user);
+        BasicDBObject dbUser = user.toDbObject();
         collection.update(new BasicDBObject("_id", user.getLogin()), dbUser);
     }
 }
