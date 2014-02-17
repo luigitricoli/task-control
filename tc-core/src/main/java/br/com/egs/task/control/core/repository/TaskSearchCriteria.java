@@ -1,5 +1,7 @@
 package br.com.egs.task.control.core.repository;
 
+import java.util.Arrays;
+
 /**
  *
  */
@@ -8,7 +10,7 @@ public class TaskSearchCriteria {
     private int month;
     private String application;
     private Status[] status;
-    private String source;
+    private String[] sources;
     private String ownerLogin;
 
     public TaskSearchCriteria month(int year, int month) {
@@ -29,8 +31,8 @@ public class TaskSearchCriteria {
         return this;
     }
 
-    public TaskSearchCriteria source(String src) {
-        this.source = src;
+    public TaskSearchCriteria sources(String... src) {
+        this.sources = src;
         return this;
     }
 
@@ -60,8 +62,8 @@ public class TaskSearchCriteria {
         return status;
     }
 
-    public String getSource() {
-        return source;
+    public String[] getSources() {
+        return sources;
     }
 
     public String getOwnerLogin() {
@@ -79,8 +81,8 @@ public class TaskSearchCriteria {
         if (year != that.year) return false;
         if (application != null ? !application.equals(that.application) : that.application != null) return false;
         if (ownerLogin != null ? !ownerLogin.equals(that.ownerLogin) : that.ownerLogin != null) return false;
-        if (source != null ? !source.equals(that.source) : that.source != null) return false;
-        if (status != that.status) return false;
+        if (!Arrays.equals(sources, that.sources)) return false;
+        if (!Arrays.equals(status, that.status)) return false;
 
         return true;
     }
@@ -90,8 +92,8 @@ public class TaskSearchCriteria {
         int result = year;
         result = 31 * result + month;
         result = 31 * result + (application != null ? application.hashCode() : 0);
-        result = 31 * result + (status != null ? status.hashCode() : 0);
-        result = 31 * result + (source != null ? source.hashCode() : 0);
+        result = 31 * result + (status != null ? Arrays.hashCode(status) : 0);
+        result = 31 * result + (sources != null ? Arrays.hashCode(sources) : 0);
         result = 31 * result + (ownerLogin != null ? ownerLogin.hashCode() : 0);
         return result;
     }
@@ -103,10 +105,9 @@ public class TaskSearchCriteria {
      */
     public static enum Status {
         DOING,
-        DOING_LATE,
-        FINISHED_IN_ADVANCE,
-        FINISHED_ON_TIME,
-        FINISHED_LATE
+        FINISHED,
+        WAITING,
+        LATE
     }
 
 }
