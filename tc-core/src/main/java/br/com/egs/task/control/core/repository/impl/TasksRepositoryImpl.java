@@ -39,8 +39,14 @@ public class TasksRepositoryImpl implements Tasks {
          public List<Task> searchTasks(TaskSearchCriteria criteria) {
 
         DBObject filterObject = createFilterObject(criteria);
+        DBObject keys = createKeysObject(criteria);
 
-        DBCursor cursor = connection.getDatabase().getCollection("tasks").find(filterObject);
+        DBCursor cursor;
+        if (keys == null) {
+            cursor = connection.getDatabase().getCollection("tasks").find(filterObject);
+        } else {
+            cursor = connection.getDatabase().getCollection("tasks").find(filterObject, keys);
+        }
 
         List<Task> result = new ArrayList<>();
         while (cursor.hasNext()) {
@@ -49,6 +55,14 @@ public class TasksRepositoryImpl implements Tasks {
         }
 
         return result;
+    }
+
+    private DBObject createKeysObject(TaskSearchCriteria criteria) {
+        if (criteria.isExcludePosts()) {
+            return new BasicDBObject("posts", 0);
+        } else {
+            return null;
+        }
     }
 
     BasicDBObject createFilterObject(TaskSearchCriteria criteria) {
@@ -158,7 +172,7 @@ public class TasksRepositoryImpl implements Tasks {
     }
 
     private BasicDBObject createApplicationFilter(String application) {
-        return new BasicDBObject("application", application);
+        return new BasicDBObject("application.name", application);
     }
 
     private BasicDBObject createYearMonthFilter(int year, int month) {

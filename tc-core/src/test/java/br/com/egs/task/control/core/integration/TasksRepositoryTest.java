@@ -1,6 +1,18 @@
 package br.com.egs.task.control.core.integration;
 
-import static org.junit.Assert.assertEquals;
+import br.com.egs.task.control.core.database.MongoDbConnection;
+import br.com.egs.task.control.core.entities.Application;
+import br.com.egs.task.control.core.entities.Task;
+import br.com.egs.task.control.core.entities.TaskOwner;
+import br.com.egs.task.control.core.repository.TaskSearchCriteria;
+import br.com.egs.task.control.core.repository.Tasks;
+import br.com.egs.task.control.core.repository.impl.TasksRepositoryImpl;
+import br.com.egs.task.control.core.testutils.TestConnectionFactory;
+import com.mongodb.BasicDBObject;
+import org.bson.types.ObjectId;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -9,26 +21,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import br.com.egs.task.control.core.entities.Application;
-import br.com.egs.task.control.core.entities.TaskOwner;
-import br.com.egs.task.control.core.repository.TaskSearchCriteria;
-import br.com.egs.task.control.core.testutils.TestConnectionFactory;
-import org.bson.types.ObjectId;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-
-import br.com.egs.task.control.core.database.DbConfiguration;
-import br.com.egs.task.control.core.database.MongoDbConnection;
-import br.com.egs.task.control.core.entities.Task;
-import br.com.egs.task.control.core.repository.Tasks;
-import br.com.egs.task.control.core.repository.impl.TasksRepositoryImpl;
-
-import com.mongodb.BasicDBObject;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 public class TasksRepositoryTest {
 
     private final DateFormat timestampFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+
+    private final String TODAY = "2014-01-11 15:15:15.000";
 
 	private Tasks repository;
 	private MongoDbConnection conn;
@@ -37,7 +37,7 @@ public class TasksRepositoryTest {
 	public void setUp() throws Exception {
 		conn = TestConnectionFactory.getConnection();
 		populateDatabase();
-		repository = new TasksRepositoryImpl(conn);
+		repository = new TasksRepositoryImpl(conn, timestampFormat.parse(TODAY));
 	}
 
 	@After
@@ -109,6 +109,41 @@ public class TasksRepositoryTest {
         assertEquals("111122223333aaaabbbbccc3", result.get(0).getId());
     }
 
+    @Test
+    public void searchByApplication() throws Exception {
+        TaskSearchCriteria criteria = new TaskSearchCriteria()
+                .application("TaskControl");
+        List<Task> result = repository.searchTasks(criteria);
+
+        assertEquals(1, result.size());
+
+        assertEquals("111122223333aaaabbbbccc2", result.get(0).getId());
+    }
+
+    @Test
+    public void excludeHistory() throws Exception {
+        TaskSearchCriteria criteria = new TaskSearchCriteria()
+                .excludePosts();
+
+        List<Task> result = repository.searchTasks(criteria);
+
+        for (Task task : result) {
+              assertNull(task.getPosts());
+        }
+    }
+
+    @Test
+    public void searchLateTasks() throws Exception {
+        TaskSearchCriteria criteria = new TaskSearchCriteria()
+                .status(TaskSearchCriteria.Status.LATE);
+        List<Task> result = repository.searchTasks(criteria);
+
+        assertEquals(2, result.size());
+
+        assertEquals("111122223333aaaabbbbccc2", result.get(0).getId());
+        assertEquals("111122223333aaaabbbbccc3", result.get(1).getId());
+    }
+
 	private void populateDatabase() throws Exception {
         BasicDBObject t = createTestTask();
         conn.getDatabase().getCollection("tasks").insert(t);
@@ -116,14 +151,16 @@ public class TasksRepositoryTest {
         t = createTestTask()
             .append("_id", new ObjectId("111122223333aaaabbbbccc2"))
             .append("startDate", timestampFormat.parse("2014-01-05 00:00:00.000"))
+            .append("application", new BasicDBObject("name", "TaskControl"))
         ;
+        t.remove("endDate");
         conn.getDatabase().getCollection("tasks").insert(t);
 
         t = createTestTask()
             .append("_id", new ObjectId("111122223333aaaabbbbccc3"))
             .append("startDate", timestampFormat.parse("2013-12-15 00:00:00.000"))
             .append("foreseenEndDate", timestampFormat.parse("2013-12-20 23:59:59.999"))
-            .append("endDate", timestampFormat.parse("2013-12-20 23:59:59.999"))
+            .append("endDate", timestampFormat.parse("2013-12-21 23:59:59.999"))
             .append("owners", Arrays.asList(
                     new BasicDBObject("login", "bob"),
                     new BasicDBObject("login", "buzz")))

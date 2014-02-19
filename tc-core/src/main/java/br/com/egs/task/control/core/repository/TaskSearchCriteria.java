@@ -12,6 +12,7 @@ public class TaskSearchCriteria {
     private Status[] status;
     private String[] sources;
     private String ownerLogin;
+    private boolean excludePosts;
 
     public TaskSearchCriteria month(int year, int month) {
         if (month < 1 || month > 12) {
@@ -46,6 +47,11 @@ public class TaskSearchCriteria {
         return this;
     }
 
+    public TaskSearchCriteria excludePosts() {
+        this.excludePosts = true;
+        return this;
+    }
+
     public int getYear() {
         return year;
     }
@@ -70,6 +76,10 @@ public class TaskSearchCriteria {
         return ownerLogin;
     }
 
+    public boolean isExcludePosts() {
+        return excludePosts;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -77,6 +87,7 @@ public class TaskSearchCriteria {
 
         TaskSearchCriteria that = (TaskSearchCriteria) o;
 
+        if (excludePosts != that.excludePosts) return false;
         if (month != that.month) return false;
         if (year != that.year) return false;
         if (application != null ? !application.equals(that.application) : that.application != null) return false;
@@ -95,7 +106,21 @@ public class TaskSearchCriteria {
         result = 31 * result + (status != null ? Arrays.hashCode(status) : 0);
         result = 31 * result + (sources != null ? Arrays.hashCode(sources) : 0);
         result = 31 * result + (ownerLogin != null ? ownerLogin.hashCode() : 0);
+        result = 31 * result + (excludePosts ? 1 : 0);
         return result;
+    }
+
+    @Override
+    public String toString() {
+        return "TaskSearchCriteria{" +
+                "year=" + year +
+                ", month=" + month +
+                ", application='" + application + '\'' +
+                ", status=" + (status == null ? null : Arrays.asList(status)) +
+                ", sources=" + (sources == null ? null : Arrays.asList(sources)) +
+                ", ownerLogin='" + ownerLogin + '\'' +
+                ", excludePosts=" + excludePosts +
+                '}';
     }
 
     /**

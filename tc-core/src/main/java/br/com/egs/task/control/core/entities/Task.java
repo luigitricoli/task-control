@@ -108,14 +108,21 @@ public class Task {
 
         List<Post> posts = new ArrayList<>();
         List<BasicDBObject> dbPosts = (List<BasicDBObject>) dbTask.get("posts");
-        for (BasicDBObject dbPost : dbPosts) {
-            Post p = new Post();
-            p.setTimestamp(dbPost.getDate("timestamp"));
-            p.setUser(dbPost.getString("user"));
-            p.setText(dbPost.getString("text"));
-            posts.add(p);
+        if (dbPosts != null) {
+            for (BasicDBObject dbPost : dbPosts) {
+                Post p = new Post();
+                p.setTimestamp(dbPost.getDate("timestamp"));
+                p.setUser(dbPost.getString("user"));
+                p.setText(dbPost.getString("text"));
+                posts.add(p);
+            }
+            task.setPosts(posts);
+
+        } else {
+            // The Posts were excluded using a query option, the result object will also
+            // contain null.
+            task.setPosts(null);
         }
-        task.setPosts(posts);
 
         return task;
     }
@@ -244,15 +251,17 @@ public class Task {
             }
             json.add("owners", owners);
 
-            JsonArray posts = new JsonArray();
-            for (Post p : task.getPosts()) {
-                JsonObject post = new JsonObject();
-                post.addProperty("timestamp", timestampFormat.format(p.getTimestamp()));
-                post.addProperty("user", p.getUser());
-                post.addProperty("text", p.getText());
-                posts.add(post);
+            if (task.getPosts() != null) {
+                JsonArray posts = new JsonArray();
+                for (Post p : task.getPosts()) {
+                    JsonObject post = new JsonObject();
+                    post.addProperty("timestamp", timestampFormat.format(p.getTimestamp()));
+                    post.addProperty("user", p.getUser());
+                    post.addProperty("text", p.getText());
+                    posts.add(post);
+                }
+                json.add("posts", posts);
             }
-            json.add("posts", posts);
             
             return json;
         }

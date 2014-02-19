@@ -19,6 +19,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public class TaskRestTest {
 
@@ -45,7 +47,26 @@ public class TaskRestTest {
 
         assertEquals(200, response.getCode());
         JSONAssert.assertEquals("[{id:'111122223333aaaabbbbccf1'}]", content, false);
+        assertTrue(content.contains("posts"));
 	}
+
+    @Test
+    public void listTasksWithDetailedFilters() throws Exception {
+        RestClient restfulie = Restfulie.custom();
+        Response response = restfulie.at(
+                "http://localhost:8090/v1/tasks?year=2014&month=1" +
+                        "&owner=john" +
+                        "&application=OLM" +
+                        "&status=finished" +
+                        "&sources=Sup.Producao,CCC" +
+                        "&excludePosts=true")
+                .accept("application/json").get();
+
+        String content = response.getContent();
+
+        assertEquals(200, response.getCode());
+        assertFalse(content.contains("posts"));
+    }
 
     private void populateDatabase() throws Exception {
         BasicDBObject t = createTestTask();

@@ -42,7 +42,7 @@ public class TasksServiceTest {
     @Test
     public void searchTasks_nullMonth() {
         try {
-            service.searchTasks("2014", null, null);
+            service.searchTasks("2014", null, null, null, null, null, null);
             fail("Exception was expected");
         } catch (WebApplicationException e) {
             assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), e.getResponse().getStatus());
@@ -52,7 +52,7 @@ public class TasksServiceTest {
     @Test
     public void searchTasks_nullYear() {
         try {
-            service.searchTasks(null, "01", null);
+            service.searchTasks(null, "01", null, null, null, null, null);
             fail("Exception was expected");
         } catch (WebApplicationException e) {
             assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), e.getResponse().getStatus());
@@ -62,7 +62,7 @@ public class TasksServiceTest {
     @Test
     public void searchTasks_invalidMonth() {
         try {
-            service.searchTasks("2014", "x", null);
+            service.searchTasks("2014", "x", null, null, null, null, null);
             fail("Exception was expected");
         } catch (WebApplicationException e) {
             assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), e.getResponse().getStatus());
@@ -72,7 +72,7 @@ public class TasksServiceTest {
     @Test
     public void searchTasks_invalidMonthValue() {
         try {
-            service.searchTasks("2014", "13", null);
+            service.searchTasks("2014", "13", null, null, null, null, null);
             fail("Exception was expected");
         } catch (WebApplicationException e) {
             assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), e.getResponse().getStatus());
@@ -82,7 +82,7 @@ public class TasksServiceTest {
     @Test
     public void searchTasks_invalidYear() {
         try {
-            service.searchTasks("a", "1", null);
+            service.searchTasks("a", "1", null, null, null, null, null);
             fail("Exception was expected");
         } catch (WebApplicationException e) {
             assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), e.getResponse().getStatus());
@@ -96,7 +96,7 @@ public class TasksServiceTest {
         List<Task> empty = Collections.emptyList();
         Mockito.when(taskRepository.searchTasks(generatedCriteria)).thenReturn(empty);
 
-        String result = service.searchTasks("2014", "1", null);
+        String result = service.searchTasks("2014", "1", null, null, null, null, null);
 
         JSONAssert.assertEquals("[]", result, true);
     }
@@ -113,7 +113,7 @@ public class TasksServiceTest {
         List<Task> taskList = Arrays.asList(t1, t2);
         Mockito.when(taskRepository.searchTasks(generatedCriteria)).thenReturn(taskList);
 
-        String result = service.searchTasks("2014", "1", null);
+        String result = service.searchTasks("2014", "1", null, null, null, null, null);
 
         Mockito.verify(taskRepository).searchTasks(generatedCriteria);
 
@@ -134,11 +134,111 @@ public class TasksServiceTest {
         List<Task> taskList = Arrays.asList(t1, t2);
         Mockito.when(taskRepository.searchTasks(generatedCriteria)).thenReturn(taskList);
 
-        String result = service.searchTasks("2014", "1", "john");
+        String result = service.searchTasks("2014", "1", "john", null, null, null, null);
 
         Mockito.verify(taskRepository).searchTasks(generatedCriteria);
 
         JSONAssert.assertEquals("[" + t1.toJson() + "," + t2.toJson() + "]", result, true);
+    }
+
+    @Test
+    public void searchTasks_byApplication() throws Exception {
+        TaskSearchCriteria generatedCriteria = new TaskSearchCriteria()
+                .month(2014, 1)
+                .application("OLM");
+
+        Task t1 = createTestTask();
+
+        List<Task> taskList = Arrays.asList(t1);
+        Mockito.when(taskRepository.searchTasks(generatedCriteria)).thenReturn(taskList);
+
+        String result = service.searchTasks("2014", "1", null, "OLM", null, null, null);
+
+        // Other tests check the resulting data. Here we only ensure that the repository
+        // was called with the appropriate Criteria object.
+        Mockito.verify(taskRepository).searchTasks(generatedCriteria);
+    }
+
+    @Test
+    public void searchTasks_byStatus() throws Exception {
+        TaskSearchCriteria generatedCriteria = new TaskSearchCriteria()
+                .month(2014, 1)
+                .status(TaskSearchCriteria.Status.FINISHED);
+
+        Task t1 = createTestTask();
+
+        List<Task> taskList = Arrays.asList(t1);
+        Mockito.when(taskRepository.searchTasks(generatedCriteria)).thenReturn(taskList);
+
+        String result = service.searchTasks("2014", "1", null, null, "finished", null, null);
+
+        // Other tests check the resulting data. Here we only ensure that the repository
+        // was called with the appropriate Criteria object.
+        Mockito.verify(taskRepository).searchTasks(generatedCriteria);
+    }
+
+    @Test
+    public void searchTasks_byStatus_invalid() throws Exception {
+        try {
+            service.searchTasks("2014", "1", null, null, "crazyStatus", null, null);
+            fail("Exception was expected");
+        } catch (WebApplicationException e) {
+            assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), e.getResponse().getStatus());
+        }
+    }
+
+    @Test
+    public void searchTasks_byStatus_multiple() throws Exception {
+        TaskSearchCriteria generatedCriteria = new TaskSearchCriteria()
+                .month(2014, 1)
+                .status(TaskSearchCriteria.Status.DOING, TaskSearchCriteria.Status.WAITING);
+
+        Task t1 = createTestTask();
+
+        List<Task> taskList = Arrays.asList(t1);
+        Mockito.when(taskRepository.searchTasks(generatedCriteria)).thenReturn(taskList);
+
+        String result = service.searchTasks("2014", "1", null, null, "doing,waiting", null, null);
+
+        // Other tests check the resulting data. Here we only ensure that the repository
+        // was called with the appropriate Criteria object.
+        Mockito.verify(taskRepository).searchTasks(generatedCriteria);
+    }
+
+    @Test
+    public void searchTasks_bySource() throws Exception {
+        TaskSearchCriteria generatedCriteria = new TaskSearchCriteria()
+                .month(2014, 1)
+                .sources("CCC", "Internal");
+
+        Task t1 = createTestTask();
+
+        List<Task> taskList = Arrays.asList(t1);
+        Mockito.when(taskRepository.searchTasks(generatedCriteria)).thenReturn(taskList);
+
+        String result = service.searchTasks("2014", "1", null, null, null, "CCC,Internal", null);
+
+        // Other tests check the resulting data. Here we only ensure that the repository
+        // was called with the appropriate Criteria object.
+        Mockito.verify(taskRepository).searchTasks(generatedCriteria);
+    }
+
+    @Test
+    public void searchTasks_excludePosts() throws Exception {
+        TaskSearchCriteria generatedCriteria = new TaskSearchCriteria()
+                .month(2014, 1)
+                .excludePosts();
+
+        Task t1 = createTestTask();
+
+        List<Task> taskList = Arrays.asList(t1);
+        Mockito.when(taskRepository.searchTasks(generatedCriteria)).thenReturn(taskList);
+
+        String result = service.searchTasks("2014", "1", null, null, null, null, "true");
+
+        // Other tests check the resulting data. Here we only ensure that the repository
+        // was called with the appropriate Criteria object.
+        Mockito.verify(taskRepository).searchTasks(generatedCriteria);
     }
 
     private Task createTestTask() throws ParseException {

@@ -54,6 +54,30 @@ public class TaskTest {
     }
 
     @Test
+    public void toJson_noPosts() throws Exception {
+        Task t = createTestTask();
+        t.setPosts(null);
+
+        String json = t.toJson();
+
+        String expectedJson = "{" +
+                "id: '111122223333aaaabbbbcccc'," +
+                "description: 'Test the Task Implementation'," +
+                "startDate: '2014-01-02'," +
+                "foreseenEndDate: '2014-01-10'," +
+                "endDate: '2014-01-09'," +
+                "source: 'Sup.Producao'," +
+                "application: 'OLM'," +
+                "owners: [" +
+                "           {login: 'john'}," +
+                "           {login: 'mary'}" +
+                "]" +
+        "}";
+
+        JSONAssert.assertEquals(expectedJson, json, true);
+    }
+
+    @Test
     public void fromTaskToDbObject_id() throws Exception {
         Task t = createTestTask();
         BasicDBObject dbTask = t.toDbObject();

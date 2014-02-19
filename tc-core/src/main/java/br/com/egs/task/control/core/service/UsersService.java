@@ -3,6 +3,7 @@ package br.com.egs.task.control.core.service;
 import br.com.egs.task.control.core.entities.User;
 import br.com.egs.task.control.core.exception.ValidationException;
 import br.com.egs.task.control.core.repository.Users;
+import br.com.egs.task.control.core.utils.WebserviceUtils;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSyntaxException;
@@ -48,7 +49,7 @@ public class UsersService {
         User user = repository.get(login);
 
         if (user == null) {
-            throw new WebApplicationException("User [" + login + "] not found", Response.Status.NOT_FOUND);
+            WebserviceUtils.throwWebApplicationException(Response.Status.NOT_FOUND, "User [" + login + "] not found");
         }
 
         return user.toJson();
@@ -58,14 +59,14 @@ public class UsersService {
     @Produces(MediaType.APPLICATION_JSON)
     public String create(String body) {
         if (StringUtils.isBlank(body)) {
-            throw new WebApplicationException("Request body cannot by null", Response.Status.BAD_REQUEST);
+            WebserviceUtils.throwWebApplicationException(Response.Status.BAD_REQUEST, "Request body cannot by null");
         }
 
         User user = null;
         try {
             user = new Gson().fromJson(body, User.class);
         } catch (JsonSyntaxException e) {
-            throw new WebApplicationException("Invalid request data", Response.Status.BAD_REQUEST);
+            WebserviceUtils.throwWebApplicationException(Response.Status.BAD_REQUEST, "Invalid request data");
         }
 
         String generatedPassword = user.generateRandomPassword();
@@ -73,7 +74,7 @@ public class UsersService {
         try {
             user.validate();
         } catch (ValidationException ve) {
-            throw new WebApplicationException("Error validating user: " + ve.getMessage(), Response.Status.BAD_REQUEST);
+            WebserviceUtils.throwWebApplicationException(Response.Status.BAD_REQUEST, "Error validating user: " + ve.getMessage());
         }
 
         repository.add(user);
@@ -86,19 +87,19 @@ public class UsersService {
     @Produces(MediaType.APPLICATION_JSON)
     public String update(@PathParam("login") String login, String body) {
         if (StringUtils.isBlank(body)) {
-            throw new WebApplicationException("Request body cannot by null", Response.Status.BAD_REQUEST);
+            WebserviceUtils.throwWebApplicationException(Response.Status.BAD_REQUEST, "Request body cannot by null");
         }
 
         User user = null;
         try {
             user = new Gson().fromJson(body, User.class);
         } catch (JsonSyntaxException e) {
-            throw new WebApplicationException("Invalid request data", Response.Status.BAD_REQUEST);
+            WebserviceUtils.throwWebApplicationException(Response.Status.BAD_REQUEST, "Invalid request data");
         }
 
         User currentlySavedUser = repository.get(login);
         if (currentlySavedUser == null) {
-            throw new WebApplicationException("User does no exist: " + login, Response.Status.NOT_FOUND);
+            WebserviceUtils.throwWebApplicationException(Response.Status.NOT_FOUND, "User does no exist: " + login);
         }
 
         // The identification attributes (login and password) will not be changed
@@ -111,7 +112,7 @@ public class UsersService {
         try {
             updatedUser.validate();
         } catch (ValidationException ve) {
-            throw new WebApplicationException("Error validating user: " + ve.getMessage(), Response.Status.BAD_REQUEST);
+            WebserviceUtils.throwWebApplicationException(Response.Status.BAD_REQUEST, "Error validating user: " + ve.getMessage());
         }
 
         repository.update(updatedUser);

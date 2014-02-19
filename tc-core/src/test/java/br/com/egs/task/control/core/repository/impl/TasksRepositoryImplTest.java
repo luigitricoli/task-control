@@ -74,7 +74,7 @@ public class TasksRepositoryImplTest {
 
         BasicDBObject filter = repository.createFilterObject(criteria);
 
-        String expectedFilter = "{application: 'TaskControl'}";
+        String expectedFilter = "{'application.name': 'TaskControl'}";
 
         JSONAssert.assertEquals(expectedFilter, filter.toString(), true);
     }
@@ -209,7 +209,7 @@ public class TasksRepositoryImplTest {
         BasicDBObject filter = repository.createFilterObject(criteria);
 
         String expectedFilter = "{$and: [" +
-                                        "{'application':'EMM'}," +
+                                        "{'application.name':'EMM'}," +
                                         "{'source':'CCC'}," +
                                         "{'owners.login': 'mr.dev'}" +
                                 "]}";
