@@ -10,7 +10,6 @@ public class Post {
 
     public static final String OPEN_TAG = "<span>";
     public static final String CLOSE_TAG = "</span>";
-    private static final String HASH = "#";
     private Calendar time;
     private String user;
     private String text;
