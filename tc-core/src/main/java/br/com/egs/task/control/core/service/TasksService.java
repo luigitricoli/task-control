@@ -31,6 +31,22 @@ public class TasksService {
     }
 
     @GET
+    @Path("{id}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public String findById(@PathParam("id") String id) {
+        if (!id.matches("[0-9a-fA-F]{24}")) {
+            WebserviceUtils.throwWebApplicationException(Response.Status.NOT_FOUND, "Invalid Task ID");
+        }
+
+        Task result = repository.get(id);
+        if (result == null) {
+            WebserviceUtils.throwWebApplicationException(Response.Status.NOT_FOUND, "Task not found");
+        }
+
+        return result.toJson();
+    }
+
+    @GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public String searchTasks(
                             @QueryParam("year") String year,

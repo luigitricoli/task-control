@@ -49,6 +49,24 @@ public class TasksRepositoryTest {
 	}
 
     @Test
+    public void getById() {
+        Task task = repository.get("111122223333aaaabbbbccc1");
+        assertNotNull(task);
+        assertEquals("111122223333aaaabbbbccc1", task.getId());
+    }
+
+    @Test
+    public void getById_notFound() {
+        Task task = repository.get("999999999999999999999999");
+        assertNull(task);
+    }
+
+    @Test (expected = IllegalArgumentException.class)
+    public void getById_invalid() {
+        Task task = repository.get("ZZZ");
+    }
+
+    @Test
     public void searchAll() throws Exception {
         TaskSearchCriteria criteria = new TaskSearchCriteria();
         List<Task> result = repository.searchTasks(criteria);

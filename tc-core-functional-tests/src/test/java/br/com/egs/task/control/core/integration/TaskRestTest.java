@@ -38,6 +38,20 @@ public class TaskRestTest {
         conn.close();
     }
 
+    @Test
+    public void findTask() throws Exception {
+        RestClient restfulie = Restfulie.custom();
+        Response response = restfulie.at("http://localhost:8090/v1/tasks/111122223333aaaabbbbccf1")
+                .accept("application/json").get();
+
+        assertEquals(200, response.getCode());
+
+        String content = response.getContent();
+
+        String expected = "{id: '111122223333aaaabbbbccf1'}";
+        JSONAssert.assertEquals(expected, content, false);
+    }
+
 	@Test
 	public void listTasks() throws Exception {
 		RestClient restfulie = Restfulie.custom();
@@ -92,7 +106,6 @@ public class TaskRestTest {
         String content = response.getContent();
 
         assertEquals(200, response.getCode());
-        System.out.println(content);
         assertTrue(content.matches("\\{\"id\" ?: ?\"[0-9a-fA-F]{24}\".+"));
     }
 

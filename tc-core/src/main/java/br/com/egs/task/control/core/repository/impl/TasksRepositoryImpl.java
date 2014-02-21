@@ -6,6 +6,7 @@ import br.com.egs.task.control.core.repository.TaskSearchCriteria;
 import br.com.egs.task.control.core.repository.Tasks;
 import com.mongodb.*;
 import org.apache.commons.lang.StringUtils;
+import org.bson.types.ObjectId;
 
 import javax.inject.Inject;
 import java.util.*;
@@ -31,6 +32,18 @@ public class TasksRepositoryImpl implements Tasks {
     public TasksRepositoryImpl(MongoDbConnection connection, Date fixedReferenceDate) {
         this.connection = connection;
         this.fixedReferenceDate = fixedReferenceDate;
+    }
+
+    @Override
+    public Task get(String id) {
+        ObjectId idObject = new ObjectId(id);
+        BasicDBObject filter = new BasicDBObject("_id", idObject);
+        BasicDBObject result = (BasicDBObject) connection.getDatabase().getCollection("tasks").findOne(filter);
+        if (result == null) {
+            return null;
+        } else {
+            return Task.fromDbObject(result);
+        }
     }
 
     @Override
