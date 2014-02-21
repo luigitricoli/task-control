@@ -25,7 +25,7 @@ public class UsersRepositoryImpl implements Users {
 
     @Override
     public User get(String login) {
-        DBCollection collection = conn.getDatabase().getCollection("users");
+        DBCollection collection = conn.getCollection("users");
         BasicDBObject dbUser = (BasicDBObject) collection.findOne(new BasicDBObject("_id", login));
         if (dbUser == null) {
             return null;
@@ -36,14 +36,14 @@ public class UsersRepositoryImpl implements Users {
 
     @Override
     public void add(User user) {
-        DBCollection collection = conn.getDatabase().getCollection("users");
+        DBCollection collection = conn.getCollection("users");
         BasicDBObject dbUser = user.toDbObject();
         collection.insert(dbUser);
     }
 
     @Override
     public List<User> getAll() {
-        DBCollection collection = conn.getDatabase().getCollection("users");
+        DBCollection collection = conn.getCollection("users");
         DBCursor cursor = collection.find();
 
         List<User> results = new ArrayList<>();
@@ -56,7 +56,7 @@ public class UsersRepositoryImpl implements Users {
 
     @Override
     public void update(User user) {
-        DBCollection collection = conn.getDatabase().getCollection("users");
+        DBCollection collection = conn.getCollection("users");
         BasicDBObject dbUser = user.toDbObject();
         collection.update(new BasicDBObject("_id", user.getLogin()), dbUser);
     }

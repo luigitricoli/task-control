@@ -29,7 +29,7 @@ public class AuthenticationRestTest {
 
     @After
     public void tearDown() {
-        conn.getDatabase().getCollection("users").drop();
+        conn.getCollection("users").drop();
         conn.close();
     }
 
@@ -71,6 +71,6 @@ public class AuthenticationRestTest {
         applications.add(new BasicDBObject("name", "TaskControl"));
         user.append("applications", applications);
 
-        conn.getDatabase().getCollection("users").insert(user);
+        conn.getCollection("users").insert(user);
     }
 }

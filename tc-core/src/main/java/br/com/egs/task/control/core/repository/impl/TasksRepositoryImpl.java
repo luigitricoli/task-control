@@ -38,7 +38,7 @@ public class TasksRepositoryImpl implements Tasks {
     public Task get(String id) {
         ObjectId idObject = new ObjectId(id);
         BasicDBObject filter = new BasicDBObject("_id", idObject);
-        BasicDBObject result = (BasicDBObject) connection.getDatabase().getCollection("tasks").findOne(filter);
+        BasicDBObject result = (BasicDBObject) connection.getCollection("tasks").findOne(filter);
         if (result == null) {
             return null;
         } else {
@@ -54,9 +54,9 @@ public class TasksRepositoryImpl implements Tasks {
 
         DBCursor cursor;
         if (keys == null) {
-            cursor = connection.getDatabase().getCollection("tasks").find(filterObject);
+            cursor = connection.getCollection("tasks").find(filterObject);
         } else {
-            cursor = connection.getDatabase().getCollection("tasks").find(filterObject, keys);
+            cursor = connection.getCollection("tasks").find(filterObject, keys);
         }
 
         List<Task> result = new ArrayList<>();
@@ -71,7 +71,7 @@ public class TasksRepositoryImpl implements Tasks {
     @Override
     public Task add(Task task) {
         BasicDBObject dbObject = task.toDbObject();
-        DBCollection collection = connection.getDatabase().getCollection("tasks");
+        DBCollection collection = connection.getCollection("tasks");
 
         collection.insert(dbObject);
 

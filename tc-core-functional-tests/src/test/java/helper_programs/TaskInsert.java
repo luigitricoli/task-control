@@ -26,7 +26,7 @@ public class TaskInsert {
         MongoDbConnection conn = new MongoDbConnection(new DbConfiguration());
 
         BasicDBObject t = createTestTask();
-        conn.getDatabase().getCollection("tasks").insert(t);
+        conn.getCollection("tasks").insert(t);
     }
 
     private static BasicDBObject createTestTask() throws ParseException {

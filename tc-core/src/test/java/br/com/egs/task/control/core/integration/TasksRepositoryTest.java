@@ -44,7 +44,7 @@ public class TasksRepositoryTest {
 
 	@After
 	public void tearDown() {
-		conn.getDatabase().getCollection("tasks").drop();
+		conn.getCollection("tasks").drop();
 		conn.close();
 	}
 
@@ -166,7 +166,7 @@ public class TasksRepositoryTest {
 
     @Test
     public void addTask() {
-        DBCollection collection = conn.getDatabase().getCollection("tasks");
+        DBCollection collection = conn.getCollection("tasks");
         assertEquals(4, collection.count());
 
         Task t = new Task();
@@ -187,7 +187,7 @@ public class TasksRepositoryTest {
 
 	private void populateDatabase() throws Exception {
         BasicDBObject t = createTestTask();
-        conn.getDatabase().getCollection("tasks").insert(t);
+        conn.getCollection("tasks").insert(t);
 
         t = createTestTask()
             .append("_id", new ObjectId("111122223333aaaabbbbccc2"))
@@ -195,7 +195,7 @@ public class TasksRepositoryTest {
             .append("application", new BasicDBObject("name", "TaskControl"))
         ;
         t.remove("endDate");
-        conn.getDatabase().getCollection("tasks").insert(t);
+        conn.getCollection("tasks").insert(t);
 
         t = createTestTask()
             .append("_id", new ObjectId("111122223333aaaabbbbccc3"))
@@ -206,7 +206,7 @@ public class TasksRepositoryTest {
                     new BasicDBObject("login", "bob"),
                     new BasicDBObject("login", "buzz")))
         ;
-        conn.getDatabase().getCollection("tasks").insert(t);
+        conn.getCollection("tasks").insert(t);
 
         t = createTestTask()
             .append("_id", new ObjectId("111122223333aaaabbbbccc4"))
@@ -217,7 +217,7 @@ public class TasksRepositoryTest {
         ;
         t.remove("endDate");
 
-        conn.getDatabase().getCollection("tasks").insert(t);
+        conn.getCollection("tasks").insert(t);
 	}
 
     private BasicDBObject createTestTask() throws ParseException {

@@ -34,7 +34,7 @@ public class TaskRestTest {
 
     @After
     public void tearDown() {
-        conn.getDatabase().getCollection("tasks").drop();
+        conn.getCollection("tasks").drop();
         conn.close();
     }
 
@@ -123,7 +123,7 @@ public class TaskRestTest {
 
     private void populateDatabase() throws Exception {
         BasicDBObject t = createTestTask();
-        conn.getDatabase().getCollection("tasks").insert(t);
+        conn.getCollection("tasks").insert(t);
     }
 
     private BasicDBObject createTestTask() throws ParseException {
