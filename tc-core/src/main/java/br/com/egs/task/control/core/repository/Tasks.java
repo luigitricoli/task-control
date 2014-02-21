@@ -26,4 +26,10 @@ public interface Tasks {
      * @return The task, containing the generated ID.
      */
     public Task add(Task task);
+
+    /**
+     *
+     * @param task
+     */
+    public void update(Task task);
 }

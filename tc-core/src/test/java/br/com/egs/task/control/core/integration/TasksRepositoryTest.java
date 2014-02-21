@@ -2,6 +2,7 @@ package br.com.egs.task.control.core.integration;
 
 import br.com.egs.task.control.core.database.MongoDbConnection;
 import br.com.egs.task.control.core.entities.Application;
+import br.com.egs.task.control.core.entities.Post;
 import br.com.egs.task.control.core.entities.Task;
 import br.com.egs.task.control.core.entities.TaskOwner;
 import br.com.egs.task.control.core.repository.TaskSearchCriteria;
@@ -183,6 +184,29 @@ public class TasksRepositoryTest {
 
         assertEquals(5, collection.count());
         assertFalse(StringUtils.isBlank(t.getId()));
+    }
+
+    @Test
+    public void updateTask() throws ParseException {
+        DBCollection collection = conn.getCollection("tasks");
+
+        // Assume that the object returned by createTestTask() was persisted during test SetUp
+        Task task = Task.fromDbObject(createTestTask());
+
+        task.setDescription("Modified task");
+        Post p = new Post("bob", "Posting into a modified task", new Date());
+        task.addPost(p);
+
+        repository.update(task);
+
+        /////////////////////////////////////////////
+        assertEquals(4, collection.count());
+
+        BasicDBObject modifiedObjectFilter = new BasicDBObject("_id", new ObjectId("111122223333aaaabbbbccc1"));
+        BasicDBObject dbObject = (BasicDBObject) collection.findOne(modifiedObjectFilter);
+
+        assertEquals("Modified task", dbObject.get("description"));
+        assertEquals(3, ((List)dbObject.get("posts")).size());
     }
 
 	private void populateDatabase() throws Exception {

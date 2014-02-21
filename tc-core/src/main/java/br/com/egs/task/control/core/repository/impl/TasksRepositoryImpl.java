@@ -79,6 +79,15 @@ public class TasksRepositoryImpl implements Tasks {
         return Task.fromDbObject(dbObject);
     }
 
+    @Override
+    public void update(Task task) {
+        ObjectId id = new ObjectId(task.getId());
+        BasicDBObject filter = new BasicDBObject("_id", id);
+        BasicDBObject newTask = task.toDbObject();
+
+        connection.getCollection("tasks").update(filter, newTask);
+    }
+
     private DBObject createKeysObject(TaskSearchCriteria criteria) {
         if (criteria.isExcludePosts()) {
             return new BasicDBObject("posts", 0);
