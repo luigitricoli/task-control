@@ -1,10 +1,12 @@
 package br.com.egs.task.control.core.service;
 
 import br.com.egs.task.control.core.entities.Task;
+import br.com.egs.task.control.core.exception.ValidationException;
 import br.com.egs.task.control.core.repository.TaskSearchCriteria;
 import br.com.egs.task.control.core.repository.Tasks;
 import br.com.egs.task.control.core.utils.WebserviceUtils;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonParseException;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,6 +15,7 @@ import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.text.ParseException;
 import java.util.List;
 
 @Path("tasks")
@@ -44,6 +47,35 @@ public class TasksService {
         return new GsonBuilder().registerTypeAdapter(Task.class, new Task.TaskSerializer())
                    .create().toJson(result);
 	}
+
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    public String create(String body) {
+        if (StringUtils.isBlank(body)) {
+            WebserviceUtils.throwWebApplicationException(Response.Status.BAD_REQUEST, "Request body cannot by null");
+        }
+
+        Task task = null;
+        try {
+            task = Task.fromJson(body);
+        } catch (JsonParseException jpe) {
+            if (jpe.getCause() instanceof ParseException) {
+                // Error generated when parsing a specific field
+                WebserviceUtils.throwWebApplicationException(Response.Status.BAD_REQUEST, jpe.getMessage());
+            } else {
+                // General JSON parse error
+            }   WebserviceUtils.throwWebApplicationException(Response.Status.BAD_REQUEST, "Invalid JSON body");
+        }
+
+        try {
+            task.validateForInsert();
+        } catch (ValidationException ve) {
+            WebserviceUtils.throwWebApplicationException(Response.Status.BAD_REQUEST, "Error validating task: " + ve.getMessage());
+        }
+
+        task = repository.add(task);
+        return task.toJson();
+    }
 
     private TaskSearchCriteria buildSearchCriteria(String year, String month, String owner, String application, String sources, String status, String excludePosts) {
         TaskSearchCriteria criteria = new TaskSearchCriteria();

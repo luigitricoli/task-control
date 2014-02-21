@@ -1,5 +1,6 @@
 package br.com.egs.task.control.core.entities;
 
+import com.google.gson.JsonParseException;
 import com.mongodb.BasicDBObject;
 import org.bson.types.ObjectId;
 import org.junit.Test;
@@ -19,7 +20,6 @@ import static org.junit.Assert.*;
  */
 public class TaskTest {
 
-    private final DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
     private final DateFormat timestampFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 
     @Test
@@ -75,6 +75,62 @@ public class TaskTest {
         "}";
 
         JSONAssert.assertEquals(expectedJson, json, true);
+    }
+
+    @Test
+    public void jsonToTask_allAttributesSet() throws Exception {
+        String jsonString = "{" +
+                "id: '111122223333aaaabbbbcccc'," +
+                "description: 'Test the Task Implementation'," +
+                "startDate: '2014-01-02'," +
+                "foreseenEndDate: '2014-01-10'," +
+                "endDate: '2014-01-09'," +
+                "source: 'Sup.Producao'," +
+                "application: 'OLM'," +
+                "owners: [" +
+                "           {login: 'john'}," +
+                "           {login: 'mary'}" +
+                "]" +
+        "}";
+
+        Task t = Task.fromJson(jsonString);
+        assertEquals("111122223333aaaabbbbcccc", t.getId());
+        assertEquals("Test the Task Implementation", t.getDescription());
+        assertEquals(timestampFormat.parse("2014-01-02 00:00:00.000"), t.getStartDate());
+        assertEquals(timestampFormat.parse("2014-01-10 23:59:59.999"), t.getForeseenEndDate());
+        assertEquals(timestampFormat.parse("2014-01-09 23:59:59.999"), t.getEndDate());
+        assertEquals("Sup.Producao", t.getSource());
+        assertEquals("OLM", t.getApplication().getName());
+        assertEquals(2, t.getOwners().size());
+        assertEquals("john", t.getOwners().get(0).getLogin());
+        assertEquals("mary", t.getOwners().get(1).getLogin());
+    }
+
+    @Test
+    public void jsonToTask_nullAttributes() throws Exception {
+        String jsonString = "{}";
+
+        Task t = Task.fromJson(jsonString);
+        assertNull(t.getId());
+        assertNull(t.getDescription());
+        assertNull(t.getStartDate());
+        assertNull(t.getForeseenEndDate());
+        assertNull(t.getEndDate());
+        assertNull(t.getSource());
+        assertNull(t.getApplication());
+        assertNull(t.getOwners());
+    }
+
+    @Test
+    public void jsonToTask_invalidDate() throws Exception {
+        String jsonString = "{startDate: 'WRONG'}";
+
+        try {
+            Task.fromJson(jsonString);
+            fail("Exception was expected");
+        } catch (JsonParseException e) {
+            assertTrue(e.getCause() instanceof ParseException);
+        }
     }
 
     @Test
@@ -176,6 +232,17 @@ public class TaskTest {
         assertEquals("john", posts.get(1).get("user"));
         assertEquals("Doing #overtime to finish it sooner", posts.get(1).get("text"));
 
+    }
+
+    @Test
+    public void fromTaskToDbObject_noPosts() throws Exception {
+        Task t = createTestTask();
+        t.setPosts(null);
+        BasicDBObject dbTask = t.toDbObject();
+
+        List<BasicDBObject> posts = (List<BasicDBObject>) dbTask.get("posts");
+
+        assertTrue(posts.isEmpty());
     }
 
     @Test

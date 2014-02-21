@@ -4,9 +4,7 @@ import br.com.egs.task.control.core.database.MongoDbConnection;
 import br.com.egs.task.control.core.entities.Task;
 import br.com.egs.task.control.core.repository.TaskSearchCriteria;
 import br.com.egs.task.control.core.repository.Tasks;
-import com.mongodb.BasicDBObject;
-import com.mongodb.DBCursor;
-import com.mongodb.DBObject;
+import com.mongodb.*;
 import org.apache.commons.lang.StringUtils;
 
 import javax.inject.Inject;
@@ -36,7 +34,7 @@ public class TasksRepositoryImpl implements Tasks {
     }
 
     @Override
-         public List<Task> searchTasks(TaskSearchCriteria criteria) {
+    public List<Task> searchTasks(TaskSearchCriteria criteria) {
 
         DBObject filterObject = createFilterObject(criteria);
         DBObject keys = createKeysObject(criteria);
@@ -55,6 +53,17 @@ public class TasksRepositoryImpl implements Tasks {
         }
 
         return result;
+    }
+
+    @Override
+    public Task add(Task task) {
+        BasicDBObject dbObject = task.toDbObject();
+        DBCollection collection = connection.getDatabase().getCollection("tasks");
+
+        collection.insert(dbObject);
+
+        // Now the document has the _id attribute set.
+        return Task.fromDbObject(dbObject);
     }
 
     private DBObject createKeysObject(TaskSearchCriteria criteria) {

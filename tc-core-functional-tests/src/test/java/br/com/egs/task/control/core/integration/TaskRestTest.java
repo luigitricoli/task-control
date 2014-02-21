@@ -46,6 +46,7 @@ public class TaskRestTest {
         String content = response.getContent();
 
         assertEquals(200, response.getCode());
+
         JSONAssert.assertEquals("[{id:'111122223333aaaabbbbccf1'}]", content, false);
         assertTrue(content.contains("posts"));
 	}
@@ -66,6 +67,45 @@ public class TaskRestTest {
 
         assertEquals(200, response.getCode());
         assertFalse(content.contains("posts"));
+    }
+
+    @Test
+    public void createTask_ok() throws Exception {
+        String jsonString = "{" +
+                "description: 'Test the Task Implementation'," +
+                "startDate: '2014-01-02'," +
+                "foreseenEndDate: '2014-01-10'," +
+                "source: 'Sup.Producao'," +
+                "application: 'OLM'," +
+                "owners: [" +
+                "           {login: 'john'}," +
+                "           {login: 'mary'}" +
+                "]" +
+        "}";
+
+        RestClient restfulie = Restfulie.custom();
+        Response response = restfulie.at("http://localhost:8090/v1/tasks")
+                .accept("application/json")
+                .as("application/json")
+                .post(jsonString);
+
+        String content = response.getContent();
+
+        assertEquals(200, response.getCode());
+        System.out.println(content);
+        assertTrue(content.matches("\\{\"id\" ?: ?\"[0-9a-fA-F]{24}\".+"));
+    }
+
+    @Test
+    public void createTask_invalidDocument() throws Exception {
+        String jsonString = "{aCompletelyUnrelatedAttribute: 1}";
+
+        RestClient restfulie = Restfulie.custom();
+        Response response = restfulie.at("http://localhost:8090/v1/tasks")
+                .accept("application/json")
+                .as("application/json")
+                .post(jsonString);
+        assertEquals(400, response.getCode());
     }
 
     private void populateDatabase() throws Exception {

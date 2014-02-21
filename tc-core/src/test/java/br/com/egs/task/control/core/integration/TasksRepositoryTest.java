@@ -9,6 +9,8 @@ import br.com.egs.task.control.core.repository.Tasks;
 import br.com.egs.task.control.core.repository.impl.TasksRepositoryImpl;
 import br.com.egs.task.control.core.testutils.TestConnectionFactory;
 import com.mongodb.BasicDBObject;
+import com.mongodb.DBCollection;
+import org.apache.commons.lang.StringUtils;
 import org.bson.types.ObjectId;
 import org.junit.After;
 import org.junit.Before;
@@ -19,10 +21,10 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.*;
 
 public class TasksRepositoryTest {
 
@@ -121,7 +123,7 @@ public class TasksRepositoryTest {
     }
 
     @Test
-    public void excludeHistory() throws Exception {
+    public void search_excludeHistory() throws Exception {
         TaskSearchCriteria criteria = new TaskSearchCriteria()
                 .excludePosts();
 
@@ -142,6 +144,27 @@ public class TasksRepositoryTest {
 
         assertEquals("111122223333aaaabbbbccc2", result.get(0).getId());
         assertEquals("111122223333aaaabbbbccc3", result.get(1).getId());
+    }
+
+    @Test
+    public void addTask() {
+        DBCollection collection = conn.getDatabase().getCollection("tasks");
+        assertEquals(4, collection.count());
+
+        Task t = new Task();
+        t.setId(null);
+        t.setDescription("Testing insert");
+        t.setStartDate(new Date());
+        t.setForeseenEndDate(new Date());
+        t.setEndDate(null);
+        t.setSource("CCC");
+        t.setApplication(new Application("OLM"));
+        t.setOwners(Arrays.asList(new TaskOwner("joe")));
+
+        t = repository.add(t);
+
+        assertEquals(5, collection.count());
+        assertFalse(StringUtils.isBlank(t.getId()));
     }
 
 	private void populateDatabase() throws Exception {
