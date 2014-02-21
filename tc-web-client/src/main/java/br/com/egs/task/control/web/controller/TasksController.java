@@ -26,7 +26,7 @@ public class TasksController {
 	
 	@Get("/tarefas/mes/{month}")
 	public void tasksBy(Integer month){
-		result.include("weeks", tasks.weekByMonth(month));
+		result.include("weeks", tasks.weeksByMonth(month));
 	}
 
     @Get("/tarefas/{task}/historico")

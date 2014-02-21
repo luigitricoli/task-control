@@ -7,7 +7,7 @@ import java.util.Set;
 
 public class Hashtags implements Collection<Hashtag> {
 
-    Set<Hashtag> hashtags;
+    private Set<Hashtag> hashtags;
 
     private Hashtags() {
         this.hashtags = new HashSet<>();
@@ -88,5 +88,22 @@ public class Hashtags implements Collection<Hashtag> {
         throw new UnsupportedOperationException();
     }
 
+    @Override
+    public String toString() {
+        return hashtags.toString();
+    }
 
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+
+        Hashtags h = (Hashtags) obj;
+        return hashtags.equals(h.hashtags);
+    }
+
+    @Override
+    public int hashCode() {
+        return hashtags.hashCode();
+    }
 }

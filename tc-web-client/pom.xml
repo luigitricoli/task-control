@@ -23,6 +23,10 @@
 			<artifactId>vraptor</artifactId>
 			<version>3.5.3</version>
 			<exclusions>
+                <exclusion>
+                    <groupId>br.com.caelum</groupId>
+                    <artifactId>restfulie</artifactId>
+                </exclusion>
 				<exclusion>
 					<groupId>org.slf4j</groupId>
 					<artifactId>slf4j-api</artifactId>
@@ -42,12 +46,6 @@
 			<groupId>org.seleniumhq.selenium</groupId>
 			<artifactId>selenium-java</artifactId>
 			<version>2.39.0</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.httpcomponents</groupId>
-			<artifactId>httpclient</artifactId>
-			<version>4.3.1</version>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>

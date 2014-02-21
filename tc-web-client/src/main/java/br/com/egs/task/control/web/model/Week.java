@@ -3,20 +3,20 @@ package br.com.egs.task.control.web.model;
 import java.util.*;
 
 
-public class Week implements Collection<Task>{
+public class Week implements Collection<OneWeekTask>{
 
-	private List<Task> tasks;
+	private List<OneWeekTask> tasks;
 
     public Week(){
         this.tasks = new LinkedList<>();
     }
 
-	public Week(List<Task> tasks){
+	public Week(List<OneWeekTask> tasks){
 		this.tasks = tasks;
 	}
 
     @Override
-    public Iterator<Task> iterator() {
+    public Iterator<OneWeekTask> iterator() {
         return tasks.iterator();
     }
 
@@ -46,7 +46,7 @@ public class Week implements Collection<Task>{
 	}
 
     @Override
-	public boolean add(Task e) {
+	public boolean add(OneWeekTask e) {
 		return tasks.add(e);
 	}
 
@@ -61,7 +61,7 @@ public class Week implements Collection<Task>{
     }
 
     @Override
-    public boolean addAll(Collection<? extends Task> c) {
+    public boolean addAll(Collection<? extends OneWeekTask> c) {
         throw new UnsupportedOperationException();
     }
 

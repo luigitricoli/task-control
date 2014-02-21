@@ -20,6 +20,12 @@
 
 
 	<dependencies>
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>2.2.4</version>
+        </dependency>
+
 		<!-- Web Interface -->
 		<dependency>
 			<groupId>javax</groupId>
@@ -44,6 +50,12 @@
 			<artifactId>slf4j-log4j12</artifactId>
 			<version>1.7.5</version>
 		</dependency>
+
+        <dependency>
+            <groupId>commons-lang</groupId>
+            <artifactId>commons-lang</artifactId>
+            <version>2.6</version>
+        </dependency>
 
 		<dependency>
 			<groupId>br.com.caelum</groupId>

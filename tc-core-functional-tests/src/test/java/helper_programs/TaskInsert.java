@@ -23,7 +23,7 @@ public class TaskInsert {
 
 
     private static void populateDatabase() throws Exception {
-        MongoDbConnection conn = new MongoDbConnection(new DbConfiguration());
+        MongoDbConnection conn = new MongoDbConnection(new DbConfiguration("/dbconfig.dev.properties"));
 
         BasicDBObject t = createTestTask();
         conn.getCollection("tasks").insert(t);
