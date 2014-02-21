@@ -32,7 +32,7 @@ public class UserRestTest {
 
     @After
     public void tearDown() {
-        conn.getDatabase().getCollection("users").drop();
+        conn.getCollection("users").drop();
         conn.close();
     }
 
@@ -112,8 +112,8 @@ public class UserRestTest {
         String content = response.getContent();
         assertTrue("POST must return the generated password", content.matches(expectedResponseRegexp));
 
-        assertEquals(3, conn.getDatabase().getCollection("users").count());
-        assertNotNull(conn.getDatabase().getCollection("users").findOne(new BasicDBObject("_id", "testusr3")));
+        assertEquals(3, conn.getCollection("users").count());
+        assertNotNull(conn.getCollection("users").findOne(new BasicDBObject("_id", "testusr3")));
     }
 
 
@@ -154,9 +154,9 @@ public class UserRestTest {
         assertEquals(200, response.getCode());
         String content = response.getContent();
 
-        assertEquals(2, conn.getDatabase().getCollection("users").count());
+        assertEquals(2, conn.getCollection("users").count());
 
-        DBObject savedUser = conn.getDatabase().getCollection("users").findOne(new BasicDBObject("_id", "testusr"));
+        DBObject savedUser = conn.getCollection("users").findOne(new BasicDBObject("_id", "testusr"));
         JSONAssert.assertEquals(userJson, savedUser.toString(), false);
     }
 
@@ -176,7 +176,7 @@ public class UserRestTest {
         applications.add(new BasicDBObject("name", "TaskControl"));
         user.append("applications", applications);
 
-        conn.getDatabase().getCollection("users").insert(user);
+        conn.getCollection("users").insert(user);
 
         ///////
         user = new BasicDBObject()
@@ -189,6 +189,6 @@ public class UserRestTest {
         applications.add(new BasicDBObject("name", "EMM"));
         user.append("applications", applications);
 
-        conn.getDatabase().getCollection("users").insert(user);
+        conn.getCollection("users").insert(user);
     }
 }

@@ -1,10 +1,17 @@
 package br.com.egs.task.control.core.entities;
 
+import br.com.egs.task.control.core.exception.ValidationException;
 import com.google.gson.*;
+import com.mongodb.BasicDBObject;
+import org.apache.commons.lang.StringUtils;
+import org.bson.types.ObjectId;
 
 import java.lang.reflect.Type;
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -35,6 +42,134 @@ public class Task {
         return new GsonBuilder().registerTypeAdapter(Task.class, new TaskSerializer())
                 .create()
                 .toJson(this);
+    }
+
+    public static Task fromJson(String jsonString) {
+        return new GsonBuilder().registerTypeAdapter(Task.class, new TaskDeserializer())
+                .create()
+                .fromJson(jsonString, Task.class);
+    }
+
+    /**
+     * Converts to the MongoDB Object representation
+     * @return
+     */
+    public BasicDBObject toDbObject() {
+        BasicDBObject obj = new BasicDBObject();
+
+        if (StringUtils.isNotBlank(this.getId())) {
+            obj.append("_id", new ObjectId(this.getId()));
+        }
+
+        obj.append("description", this.getDescription());
+
+        obj.append("startDate", toZeroHourDate(this.getStartDate()));
+        obj.append("foreseenEndDate", toMaxHourDate(this.getForeseenEndDate()));
+        if (this.getEndDate() != null) {
+            obj.append("endDate", toMaxHourDate(this.getEndDate()));
+        }
+
+        obj.append("source", this.getSource());
+        obj.append("application", new BasicDBObject("name", this.getApplication().getName()));
+
+        List<BasicDBObject> owners = new ArrayList<>();
+        for (TaskOwner owner : this.getOwners()) {
+            owners.add(new BasicDBObject("login", owner.getLogin()));
+        }
+        obj.append("owners", owners);
+
+        List<BasicDBObject> posts = new ArrayList<>();
+        if (this.getPosts() != null) {
+            for (Post post : this.getPosts()) {
+                posts.add(new BasicDBObject()
+                        .append("timestamp", post.getTimestamp())
+                        .append("user", post.getUser())
+                        .append("text", post.getText()));
+            }
+        }
+        obj.append("posts", posts);
+
+        return obj;
+    }
+
+    /**
+     * Converts a MongoDB object representation to a Task instance
+     * @param dbTask
+     * @return
+     */
+    public static Task fromDbObject(BasicDBObject dbTask) {
+        Task task = new Task();
+
+        task.setId(dbTask.getObjectId("_id").toString());
+        task.setDescription(dbTask.getString("description"));
+
+        task.setStartDate(dbTask.getDate("startDate"));
+        task.setForeseenEndDate(dbTask.getDate("foreseenEndDate"));
+        task.setEndDate(dbTask.getDate("endDate"));
+
+        task.setSource(dbTask.getString("source"));
+        task.setApplication(new Application(((BasicDBObject)dbTask.get("application")).getString("name")));
+
+        List<TaskOwner> owners = new ArrayList<>();
+        List<BasicDBObject> dbOwners = (List<BasicDBObject>) dbTask.get("owners");
+        for (BasicDBObject dbOwner : dbOwners) {
+            owners.add(new TaskOwner(dbOwner.getString("login")));
+        }
+        task.setOwners(owners);
+
+        List<Post> posts = new ArrayList<>();
+        List<BasicDBObject> dbPosts = (List<BasicDBObject>) dbTask.get("posts");
+        if (dbPosts != null) {
+            for (BasicDBObject dbPost : dbPosts) {
+                Post p = new Post();
+                p.setTimestamp(dbPost.getDate("timestamp"));
+                p.setUser(dbPost.getString("user"));
+                p.setText(dbPost.getString("text"));
+                posts.add(p);
+            }
+            task.setPosts(posts);
+
+        } else {
+            // The Posts were excluded using a query option, the result object will also
+            // contain null.
+            task.setPosts(null);
+        }
+
+        return task;
+    }
+
+    public void validateForInsert() throws ValidationException {
+        if (id != null) {
+            throw new ValidationException("The id field must not be set for a new Task");
+        }
+
+        if (StringUtils.isBlank(description)) {
+            throw new ValidationException("The description is required");
+        }
+
+        if (startDate == null) {
+            throw new ValidationException("The startDate is required");
+        }
+
+        if (foreseenEndDate == null) {
+            throw new ValidationException("The foreseenEndDate is required");
+        }
+
+        if (endDate != null) {
+            throw new ValidationException("The endDate must not be set for a new Task");
+        }
+
+        if (StringUtils.isBlank(source)) {
+            throw new ValidationException("The source is required");
+        }
+
+        if (application == null || StringUtils.isBlank(application.getName())) {
+            throw new ValidationException("The application is required");
+        }
+
+        if (owners == null || owners.isEmpty()) {
+            throw new ValidationException("At least one owner is required");
+        }
     }
 
     public String getId() {
@@ -109,6 +244,26 @@ public class Task {
         this.source = source;
     }
 
+    private Date toZeroHourDate(Date dt) {
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(dt);
+        cal.set(Calendar.HOUR_OF_DAY, 0);
+        cal.set(Calendar.MINUTE, 0);
+        cal.set(Calendar.SECOND, 0);
+        cal.set(Calendar.MILLISECOND, 0);
+        return cal.getTime();
+    }
+
+    private Date toMaxHourDate(Date dt) {
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(dt);
+        cal.set(Calendar.HOUR_OF_DAY, 23);
+        cal.set(Calendar.MINUTE, 59);
+        cal.set(Calendar.SECOND, 59);
+        cal.set(Calendar.MILLISECOND, 999);
+        return cal.getTime();
+    }
+
     /**
      * Custom JSON serialization.
      */
@@ -125,9 +280,9 @@ public class Task {
             json.addProperty("description", task.getDescription());
 
             json.addProperty("startDate", dateFormat.format(task.getStartDate()));
-            json.addProperty("endDate", dateFormat.format(task.getEndDate()));
-            if (task.getForeseenEndDate() != null) {
-                json.addProperty("foreseenEndDate", dateFormat.format(task.getForeseenEndDate()));
+            json.addProperty("foreseenEndDate", dateFormat.format(task.getForeseenEndDate()));
+            if (task.getEndDate() != null) {
+                json.addProperty("endDate", dateFormat.format(task.getEndDate()));
             }
 
             json.addProperty("source", task.getSource());
@@ -141,17 +296,80 @@ public class Task {
             }
             json.add("owners", owners);
 
-            JsonArray posts = new JsonArray();
-            for (Post p : task.getPosts()) {
-                JsonObject post = new JsonObject();
-                post.addProperty("timestamp", timestampFormat.format(p.getTimestamp()));
-                post.addProperty("user", p.getUser());
-                post.addProperty("text", p.getText());
-                posts.add(post);
+            if (task.getPosts() != null) {
+                JsonArray posts = new JsonArray();
+                for (Post p : task.getPosts()) {
+                    JsonObject post = new JsonObject();
+                    post.addProperty("timestamp", timestampFormat.format(p.getTimestamp()));
+                    post.addProperty("user", p.getUser());
+                    post.addProperty("text", p.getText());
+                    posts.add(post);
+                }
+                json.add("posts", posts);
             }
-            json.add("posts", posts);
             
             return json;
+        }
+    }
+
+    public static class TaskDeserializer implements JsonDeserializer<Task> {
+
+        private static final DateFormat dateParser = new SimpleDateFormat("yyyy-MM-dd");
+
+        @Override
+        public Task deserialize(JsonElement jsonElement, Type type,
+                                JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+            Task t = new Task();
+
+            JsonObject obj = jsonElement.getAsJsonObject();
+            t.setId(obj.get("id") == null ? null : obj.get("id").getAsString());
+            t.setDescription(obj.get("description") == null ? null : obj.get("description").getAsString());
+            t.setStartDate(obj.get("startDate") == null ? null : parseDate(obj.get("startDate").getAsString(), false));
+            t.setForeseenEndDate(obj.get("foreseenEndDate") == null ? null : parseDate(obj.get("foreseenEndDate").getAsString(), true));
+            t.setEndDate(obj.get("endDate") == null ? null : parseDate(obj.get("endDate").getAsString(), true));
+            t.setSource(obj.get("source") == null ? null : obj.get("source").getAsString());
+            t.setApplication(obj.get("application") == null ? null : new Application(obj.get("application").getAsString()));
+
+            if (obj.get("owners") != null) {
+                List<TaskOwner> owners = new ArrayList<>();
+
+                for (JsonElement jsonOwner : obj.get("owners").getAsJsonArray()) {
+                    JsonObject jsonOwnerObject = jsonOwner.getAsJsonObject();
+                    TaskOwner o = new TaskOwner(jsonOwnerObject.get("login").getAsString());
+                    owners.add(o);
+                }
+                t.setOwners(owners);
+            }
+
+            return t;
+        }
+
+        private Date parseDate(String dtString, boolean moveToEndOfDay) {
+            if (StringUtils.isBlank(dtString)) {
+                return null;
+            }
+
+            Date dt;
+            try {
+                dt = dateParser.parse(dtString);
+            } catch (ParseException e) {
+                throw new JsonParseException("Invalid date: " + dtString, e);
+            }
+
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(dt);
+            if (moveToEndOfDay) {
+                cal.set(Calendar.HOUR_OF_DAY, 23);
+                cal.set(Calendar.MINUTE, 59);
+                cal.set(Calendar.SECOND, 59);
+                cal.set(Calendar.MILLISECOND, 999);
+            } else {
+                cal.set(Calendar.HOUR_OF_DAY, 0);
+                cal.set(Calendar.MINUTE, 0);
+                cal.set(Calendar.SECOND, 0);
+                cal.set(Calendar.MILLISECOND, 0);
+            }
+            return cal.getTime();
         }
     }
 }

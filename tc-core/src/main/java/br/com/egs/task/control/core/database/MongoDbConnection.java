@@ -1,10 +1,7 @@
 package br.com.egs.task.control.core.database;
 
 import br.com.egs.task.control.core.exception.EnvironmentException;
-import com.mongodb.DB;
-import com.mongodb.MongoClient;
-import com.mongodb.MongoClientOptions;
-import com.mongodb.ServerAddress;
+import com.mongodb.*;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -44,7 +41,16 @@ public class MongoDbConnection {
 	public DB getDatabase() {
 		return mongo.getDB(properties.getDatabaseName());
 	}
-	
+
+    /**
+     * Gets a reference to the specified collection.
+     * @param name
+     * @return
+     */
+    public DBCollection getCollection(String name) {
+        return getDatabase().getCollection(name);
+    }
+
 	/**
 	 * Close the database connections.
 	 */

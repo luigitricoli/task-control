@@ -34,7 +34,7 @@ public class UsersRepositoryTest {
 
     @After
     public void tearDown() {
-        conn.getDatabase().getCollection("users").drop();
+        conn.getCollection("users").drop();
         conn.close();
     }
 
@@ -43,7 +43,7 @@ public class UsersRepositoryTest {
         User user = createTestUser();
         repository.add(user);
 
-        DBCursor cursor = conn.getDatabase().getCollection("users").find();
+        DBCursor cursor = conn.getCollection("users").find();
 
         assertEquals(1, cursor.count());
         BasicDBObject dbObject = (BasicDBObject) cursor.next();
@@ -54,7 +54,7 @@ public class UsersRepositoryTest {
     public void getByLogin() {
         BasicDBObject user1 = createTestUserAsDbObject();
         BasicDBObject user2 = createTestUserAsDbObject().append("_id", "testusr2");
-        conn.getDatabase().getCollection("users").insert(user1, user2);
+        conn.getCollection("users").insert(user1, user2);
 
         User result = repository.get("testusr2");
 
@@ -83,7 +83,7 @@ public class UsersRepositoryTest {
     public void getAll() {
         BasicDBObject user1 = createTestUserAsDbObject();
         BasicDBObject user2 = createTestUserAsDbObject().append("_id", "testusr2");
-        conn.getDatabase().getCollection("users").insert(user1, user2);
+        conn.getCollection("users").insert(user1, user2);
 
         List<User> users = repository.getAll();
 
@@ -94,7 +94,7 @@ public class UsersRepositoryTest {
 
     @Test
     public void update() {
-        conn.getDatabase().getCollection("users").insert(createTestUserAsDbObject());
+        conn.getCollection("users").insert(createTestUserAsDbObject());
 
         User modified = createTestUser();
         modified.setName("Changed Test User");
@@ -108,7 +108,7 @@ public class UsersRepositoryTest {
         expectedObject.append("email", "modified@changes.com");
         ((List<DBObject>)expectedObject.get("applications")).add(new BasicDBObject("name", "EMM"));
 
-        DBObject savedObject = conn.getDatabase().getCollection("users").findOne();
+        DBObject savedObject = conn.getCollection("users").findOne();
 
         assertEquals(expectedObject, savedObject);
     }

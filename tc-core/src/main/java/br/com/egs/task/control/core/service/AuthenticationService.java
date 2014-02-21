@@ -2,6 +2,7 @@ package br.com.egs.task.control.core.service;
 
 import br.com.egs.task.control.core.entities.User;
 import br.com.egs.task.control.core.repository.Users;
+import br.com.egs.task.control.core.utils.WebserviceUtils;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import org.apache.commons.lang.StringUtils;
@@ -12,7 +13,6 @@ import javax.inject.Inject;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
-import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -38,31 +38,31 @@ public class AuthenticationService {
     @Produces(MediaType.APPLICATION_JSON)
     public String authenticate(String body) {
         if (StringUtils.isBlank(body)) {
-            throw new WebApplicationException("Request body cannot by null", Response.Status.BAD_REQUEST);
+            WebserviceUtils.throwWebApplicationException(Response.Status.BAD_REQUEST, "Request body cannot by null");
         }
 
-        AuthenticationData authData;
+        AuthenticationData authData = null;
         try {
             authData = new Gson().fromJson(body, AuthenticationData.class);
         } catch (JsonSyntaxException e) {
-            throw new WebApplicationException("Malformed authentication data", Response.Status.BAD_REQUEST);
+            WebserviceUtils.throwWebApplicationException(Response.Status.BAD_REQUEST, "Malformed authentication data");
         }
 
         if (StringUtils.isBlank(authData.username)) {
-            throw new WebApplicationException("The 'username' attribute is missing", Response.Status.BAD_REQUEST);
+            WebserviceUtils.throwWebApplicationException(Response.Status.BAD_REQUEST, "The 'username' attribute is missing");
         }
         if (StringUtils.isBlank(authData.password)) {
-            throw new WebApplicationException("The 'password' attribute is missing", Response.Status.BAD_REQUEST);
+            WebserviceUtils.throwWebApplicationException(Response.Status.BAD_REQUEST, "The 'password' attribute is missing");
         }
 
         User user = repository.get(authData.username);
 
         if (user == null) {
-            throw new WebApplicationException("Invalid username and/or password", LOGIN_FAILURE_STATUS);
+            WebserviceUtils.throwWebApplicationException(LOGIN_FAILURE_STATUS, "Invalid username and/or password");
         }
 
         if (!user.checkPassword(authData.password)) {
-            throw new WebApplicationException("Invalid username and/or password", LOGIN_FAILURE_STATUS);
+            WebserviceUtils.throwWebApplicationException(LOGIN_FAILURE_STATUS, "Invalid username and/or password");
         }
 
         return user.toJson();

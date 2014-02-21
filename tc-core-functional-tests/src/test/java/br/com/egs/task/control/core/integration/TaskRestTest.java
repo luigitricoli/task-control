@@ -19,6 +19,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public class TaskRestTest {
 
@@ -32,8 +34,22 @@ public class TaskRestTest {
 
     @After
     public void tearDown() {
-        conn.getDatabase().getCollection("tasks").drop();
+        conn.getCollection("tasks").drop();
         conn.close();
+    }
+
+    @Test
+    public void findTask() throws Exception {
+        RestClient restfulie = Restfulie.custom();
+        Response response = restfulie.at("http://localhost:8090/v1/tasks/111122223333aaaabbbbccf1")
+                .accept("application/json").get();
+
+        assertEquals(200, response.getCode());
+
+        String content = response.getContent();
+
+        String expected = "{id: '111122223333aaaabbbbccf1'}";
+        JSONAssert.assertEquals(expected, content, false);
     }
 
 	@Test
@@ -44,12 +60,70 @@ public class TaskRestTest {
         String content = response.getContent();
 
         assertEquals(200, response.getCode());
+
         JSONAssert.assertEquals("[{id:'111122223333aaaabbbbccf1'}]", content, false);
+        assertTrue(content.contains("posts"));
 	}
+
+    @Test
+    public void listTasksWithDetailedFilters() throws Exception {
+        RestClient restfulie = Restfulie.custom();
+        Response response = restfulie.at(
+                "http://localhost:8090/v1/tasks?year=2014&month=1" +
+                        "&owner=john" +
+                        "&application=OLM" +
+                        "&status=finished" +
+                        "&sources=Sup.Producao,CCC" +
+                        "&excludePosts=true")
+                .accept("application/json").get();
+
+        String content = response.getContent();
+
+        assertEquals(200, response.getCode());
+        assertFalse(content.contains("posts"));
+    }
+
+    @Test
+    public void createTask_ok() throws Exception {
+        String jsonString = "{" +
+                "description: 'Test the Task Implementation'," +
+                "startDate: '2014-01-02'," +
+                "foreseenEndDate: '2014-01-10'," +
+                "source: 'Sup.Producao'," +
+                "application: 'OLM'," +
+                "owners: [" +
+                "           {login: 'john'}," +
+                "           {login: 'mary'}" +
+                "]" +
+        "}";
+
+        RestClient restfulie = Restfulie.custom();
+        Response response = restfulie.at("http://localhost:8090/v1/tasks")
+                .accept("application/json")
+                .as("application/json")
+                .post(jsonString);
+
+        String content = response.getContent();
+
+        assertEquals(200, response.getCode());
+        assertTrue(content.matches("\\{\"id\" ?: ?\"[0-9a-fA-F]{24}\".+"));
+    }
+
+    @Test
+    public void createTask_invalidDocument() throws Exception {
+        String jsonString = "{aCompletelyUnrelatedAttribute: 1}";
+
+        RestClient restfulie = Restfulie.custom();
+        Response response = restfulie.at("http://localhost:8090/v1/tasks")
+                .accept("application/json")
+                .as("application/json")
+                .post(jsonString);
+        assertEquals(400, response.getCode());
+    }
 
     private void populateDatabase() throws Exception {
         BasicDBObject t = createTestTask();
-        conn.getDatabase().getCollection("tasks").insert(t);
+        conn.getCollection("tasks").insert(t);
     }
 
     private BasicDBObject createTestTask() throws ParseException {

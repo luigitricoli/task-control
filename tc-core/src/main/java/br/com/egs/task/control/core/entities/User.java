@@ -2,13 +2,15 @@ package br.com.egs.task.control.core.entities;
 
 import br.com.egs.task.control.core.exception.ValidationException;
 import com.google.gson.*;
+import com.mongodb.BasicDBList;
+import com.mongodb.BasicDBObject;
 import org.apache.commons.lang.StringUtils;
+import org.bson.types.ObjectId;
 
 import java.lang.reflect.Type;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 /**
  * Representation of a Task Control user.
@@ -85,6 +87,56 @@ public class User {
                 .registerTypeAdapter(this.getClass(), new UserSerializer(true))
                 .create()
                 .toJson(this);
+    }
+
+    /**
+     * Converts to the MongoDB Object representation
+     *
+     * @return
+     */
+    public BasicDBObject toDbObject() {
+        BasicDBObject result = new BasicDBObject();
+        result.put("_id", this.getLogin());
+        result.put("name", this.getName());
+        result.put("email", this.getEmail());
+        result.put("passwordHash", this.getPasswordHash());
+
+        BasicDBList resultApplications = new BasicDBList();
+        for (Application app : this.getApplications()) {
+            resultApplications.add(new BasicDBObject()
+                    .append("name", app.getName())
+            );
+        }
+
+        result.put("applications", resultApplications);
+
+        return result;
+    }
+
+    /**
+     * Converts a MongoDB object representation to a User instance
+     *
+     * @param dbUser
+     * @return
+     */
+    public static User fromDbObject(BasicDBObject dbUser) {
+        String login = dbUser.getString("_id");
+
+        User u = new User(login);
+        u.setName(dbUser.getString("name"));
+        u.setEmail(dbUser.getString("email"));
+        u.setPasswordHash(dbUser.getString("passwordHash"));
+
+        @SuppressWarnings("unchecked")
+        List<BasicDBObject> dbApplications = (List<BasicDBObject>) dbUser.get("applications");
+
+        List<Application> applications = new ArrayList<Application>();
+        for (BasicDBObject dbApp : dbApplications) {
+            applications.add(new Application(dbApp.getString("name")));
+        }
+        u.setApplications(applications);
+
+        return u;
     }
 
     public String getLogin() {
