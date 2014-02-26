@@ -1,5 +1,6 @@
 package br.com.egs.task.control.core.entities;
 
+import br.com.egs.task.control.core.exception.LateTaskException;
 import br.com.egs.task.control.core.exception.ValidationException;
 import com.google.gson.*;
 import com.mongodb.BasicDBObject;
@@ -169,6 +170,39 @@ public class Task {
         if (owners == null || owners.isEmpty()) {
             throw new ValidationException("At least one owner is required");
         }
+    }
+
+    /**
+     *
+     * @param date
+     * @throws ValidationException
+     */
+    public void finish(Date date) throws ValidationException {
+        if (date == null) {
+            throw new IllegalArgumentException("End date cannot be null");
+        }
+
+        if (this.endDate != null) {
+            throw new ValidationException("Task already finished");
+        }
+        date = toMaxHourDate(date);
+
+        if (date.after(this.foreseenEndDate)) {
+            boolean atrasoCommentExists = false;
+            for (Post post : posts) {
+                if (post.getText().contains("#atraso")) {
+                    atrasoCommentExists = true;
+                    break;
+                }
+            }
+
+            if (!atrasoCommentExists) {
+                throw new LateTaskException(
+                        "A late task can only be finished if a #atraso message is present in the posts");
+            }
+        }
+
+        this.endDate = date;
     }
 
     public String getId() {
