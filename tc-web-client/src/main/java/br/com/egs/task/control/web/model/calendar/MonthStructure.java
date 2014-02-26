@@ -15,8 +15,8 @@ public class MonthStructure {
     private int maxPreviousMonth;
     private int maxNextMonth;
 
-    public MonthStructure(int month, int year) {
-        this.month = Month.getByMonthId(month);
+    public MonthStructure(Month m, int year) {
+        this.month = m;
         this.year = year;
 
         Calendar reference = Calendar.getInstance();
@@ -28,7 +28,7 @@ public class MonthStructure {
 
         Calendar prevous = Calendar.getInstance();
         prevous.set(Calendar.YEAR, year);
-        prevous.set(Calendar.MONTH, month);
+        prevous.set(Calendar.MONTH, month.getId());
         prevous.add(Calendar.MONTH, -1);
         prevous.set(Calendar.DAY_OF_MONTH, FIRST_DAY);
         maxPreviousMonth = prevous.getActualMaximum(Calendar.DAY_OF_MONTH);
@@ -104,40 +104,6 @@ public class MonthStructure {
             days.append(CLOSE_ELEMENT);
         }
         return days.toString();
-    }
-
-    public static enum Month {
-        Jan(0),
-        Fev(1),
-        Mar(2),
-        Abr(3),
-        Mai(4),
-        Jun(5),
-        Jul(6),
-        Ago(7),
-        Set(8),
-        Out(9),
-        Nov(10),
-        Dez(11);
-
-        private int id;
-
-        Month(int id) {
-            this.id = id;
-        }
-
-        public static Month getByMonthId(int id) {
-            return Month.values()[id];
-        }
-
-        public Month getNext() {
-            return Month.values()[id + 1];
-        }
-
-        public int getId() {
-            return id;
-        }
-
     }
 
 }

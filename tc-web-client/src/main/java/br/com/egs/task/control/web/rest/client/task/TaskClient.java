@@ -5,34 +5,28 @@ import java.util.LinkedList;
 import java.util.List;
 
 import br.com.caelum.vraptor.ioc.Component;
-import br.com.egs.task.control.web.model.Post;
 import br.com.egs.task.control.web.model.OneWeekTask;
+import br.com.egs.task.control.web.model.Post;
 import br.com.egs.task.control.web.model.Week;
 import br.com.egs.task.control.web.model.repository.TaskRepository;
 import br.com.egs.task.control.web.model.stage.Stage;
 import br.com.egs.task.control.web.rest.client.JsonClient;
-import br.com.egs.task.control.web.rest.client.gson.DateTaskDeserializer;
-import br.com.egs.task.control.web.rest.client.gson.StringListDeserializer;
-
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.reflect.TypeToken;
 
 @Component
 public class TaskClient implements TaskRepository {
 
 	private JsonClient jsonClient;
-	private Calendar today;
-	
+	private TaskCalendar today;
+
 	public TaskClient(JsonClient jsonClient) {
 		this(jsonClient, Calendar.getInstance());
 	}
-	
+
 	public TaskClient(JsonClient jsonClient, Calendar today) {
 		this.jsonClient = jsonClient;
-		this.today = (Calendar) today.clone();
-	}	
-	
+		this.today = new TaskCalendar(today);
+	}
+
 	@Override
 	public List<Week> weeksByMonth(Integer month) {
 		String response = jsonClient.at("tasks").addUrlParam("year", "2014").addUrlParam("month", month.toString()).getAsJson();
@@ -54,21 +48,41 @@ public class TaskClient implements TaskRepository {
 					task.foreseenEnd(coreTask.foreseenEndDate.getDayOfWeek());
 				}
 
-				Stage st = getStage(coreTask.foreseenEndDate, coreTask.endDate);
-				task.as(st);
-				
-				if (Stage.DOING.equals(st)) {
-					task.runUntil(today.get(Calendar.DAY_OF_WEEK));
-				}
-				
-				if (isFinishedAndInSameWeek(st, coreTask, weekIndex)) {
-					task.runUntil(coreTask.endDate.getDayOfWeek());
-				}
+				if (isFinished(coreTask)) {
+					task.as(Stage.FINISHED);
 
+					if (isInSameWeek(coreTask.endDate, weekIndex)) {
+						task.runUntil(coreTask.endDate.getDayOfWeek());
+					}
+				} else {
+					if (isBeyondTheForeseen(coreTask)) {
+						task.as(Stage.LATE);
+					} else if (isStarted(coreTask)) {
+						task.as(Stage.DOING);
+					}
+
+					if (isInSameWeek(today, weekIndex)) {
+						task.runUntil(today.getDayOfWeek());
+					}
+	
+				}
+				
 				weeks.get(weekIndex).add(task.build());
 			}
 		}
 		return weeks;
+	}
+
+	private boolean isStarted(CoreTask coreTask) {
+		return today.compareTo(coreTask.startDate) >= 0;
+	}
+
+	private boolean isBeyondTheForeseen(CoreTask coreTask) {
+		return today.compareTo(coreTask.foreseenEndDate) > 0;
+	}
+
+	private boolean isFinished(CoreTask coreTask) {
+		return coreTask.endDate != null;
 	}
 
 	private boolean isFirstWeek(CoreTask coreTask, int weekIndex) {
@@ -79,8 +93,8 @@ public class TaskClient implements TaskRepository {
 		return weekIndex == coreTask.foreseenEndDate.getWeekOfYear();
 	}
 
-	private boolean isFinishedAndInSameWeek(Stage stage, CoreTask coreTask, int weekIndex) {
-		return Stage.FINISHED.equals(stage) && coreTask.endDate.getWeekOfYear().equals(weekIndex);
+	private boolean isInSameWeek(TaskCalendar today, int weekIndex) {
+		return today.getWeekOfYear().equals(weekIndex);
 	}
 
 	private List<Week> loadWeeks() {
@@ -89,19 +103,6 @@ public class TaskClient implements TaskRepository {
 			weeks.add(new Week());
 		}
 		return weeks;
-	}
-
-	private Stage getStage(TaskCalendar forseen, TaskCalendar end) {
-		if (end == null) {
-			return Stage.DOING;
-		}
-		if (forseen.getDayOfWeek().compareTo(end.getDayOfWeek()) >= 0) {
-			return Stage.FINISHED;
-		}
-		if (forseen.getDayOfWeek().compareTo(end.getDayOfWeek()) < 0) {
-			return Stage.LATE;
-		}
-		return Stage.WAITING;
 	}
 
 	@Override
@@ -125,35 +126,6 @@ public class TaskClient implements TaskRepository {
 		posts.add(new Post(c4, "Luigi", "Beef ribs chicken tail boudin pork chop filet mignon kevin chuck. #atraso #hashtag"));
 
 		return posts;
-	}
-
-	private static class CoreTask {
-
-		private String id;
-		private String description;
-		private TaskCalendar startDate;
-		private TaskCalendar foreseenEndDate;
-		private TaskCalendar endDate;
-		private String source;
-		private String application;
-		private List<String> owners;
-
-		public static class JsonList {
-
-			private static Gson parser() {
-				GsonBuilder gson = new GsonBuilder();
-				gson.registerTypeAdapter(TaskCalendar.class, new DateTaskDeserializer());
-				gson.registerTypeAdapter(new TypeToken<List<String>>(){}.getType(), new StringListDeserializer());
-				return gson.create();
-			}
-
-			public static List<CoreTask> parse(String json) {
-				return parser().fromJson(json, new TypeToken<List<CoreTask>>() {
-				}.getType());
-			}
-
-		}
-
 	}
 
 }

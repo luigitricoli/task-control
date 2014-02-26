@@ -1,14 +1,13 @@
-package helper_programs;
-
-import br.com.egs.task.control.core.database.DbConfiguration;
-import br.com.egs.task.control.core.database.MongoDbConnection;
-import com.mongodb.BasicDBObject;
-
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+
+import br.com.egs.task.control.core.database.DbConfiguration;
+import br.com.egs.task.control.core.database.MongoDbConnection;
+
+import com.mongodb.BasicDBObject;
 
 /**
  * Inserts some records on the production database.
@@ -34,11 +33,12 @@ public class TaskInsert {
 
         BasicDBObject t = new BasicDBObject();
 
-        t.append("description", "My First Task");
+        Long time = System.currentTimeMillis();
+        t.append("description", "SR".concat(time.toString()));
 
-        t.append("startDate", timestampFormat.parse("2014-01-02 00:00:00.000"));
-        t.append("foreseenEndDate", timestampFormat.parse("2014-01-10 23:59:59.999"));
-        t.append("endDate", timestampFormat.parse("2014-01-09 23:59:59.999"));
+        t.append("startDate", timestampFormat.parse("2014-02-24 00:00:00.000"));
+        t.append("foreseenEndDate", timestampFormat.parse("2014-02-27 23:59:59.999"));
+//        t.append("endDate", timestampFormat.parse("2014-02-06 23:59:59.999"));
 
         t.append("source", "CCC");
         t.append("application", new BasicDBObject("name", "OLM"));

@@ -116,7 +116,7 @@ public class OneWeekTask {
             this.id = id;
             this.sday = 2;
             this.fday = 5;
-            this.runUntil = 5;
+            this.runUntil = 0;
             this.desc = description;
             this.htsByDay = new HashMap<>();
 
@@ -124,12 +124,14 @@ public class OneWeekTask {
         }
 
         public Builder starDay(Integer startDayOfWeek){
-            this.sday = startDayOfWeek;
+            sday = startDayOfWeek;
+            foreseenEnd(++fday);
             return this;
         }
 
         public Builder foreseenEnd(Integer dayOfWeek){
-            this.fday = (dayOfWeek - sday)+1;
+            fday = (dayOfWeek - sday);
+            fday++;
             return this;
         }
 
@@ -146,6 +148,9 @@ public class OneWeekTask {
 
         public Builder as(Stage st) {
             this.st = st;
+            if(!Stage.WAITING.equals(st)){
+            	runAtEnd();            	
+            }
             return this;
         }
 
@@ -153,6 +158,11 @@ public class OneWeekTask {
             dayOfWeek = dayOfWeek + 1;
             this.runUntil = dayOfWeek-sday;
             return this;
+        }
+        
+        public Builder runAtEnd(){
+            this.runUntil = 7-sday;
+            return this;        	
         }
 
         public OneWeekTask build() {
