@@ -14,16 +14,15 @@ import org.skyscreamer.jsonassert.JSONAssert;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
-
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 /**
  * Unit tests for the Tasks Service implementation.
@@ -257,21 +256,13 @@ public class TasksServiceTest {
 
         t.setOwners(Arrays.asList(new TaskOwner("john"), new TaskOwner("mary")));
 
-        List<Post> posts = new ArrayList<>();
+        Post p1 = new Post("john", "Scope changed. No re-scheduling will be necessary",
+                timestampFormat.parse("2014-01-03 09:15:30.700"));
+        t.addPost(p1);
 
-        Post p1 = new Post();
-        p1.setTimestamp(timestampFormat.parse("2014-01-03 09:15:30.700"));
-        p1.setUser("john");
-        p1.setText("Scope changed. No re-scheduling will be necessary");
-        posts.add(p1);
-
-        Post p2 = new Post();
-        p2.setTimestamp(timestampFormat.parse("2014-01-08 18:20:49.150"));
-        p2.setUser("john");
-        p2.setText("Doing #overtime to finish it sooner");
-        posts.add(p2);
-
-        t.setPosts(posts);
+        Post p2 = new Post("john", "Doing #overtime to finish it sooner",
+                timestampFormat.parse("2014-01-08 18:20:49.150"));
+        t.addPost(p2);
 
         return t;
     }

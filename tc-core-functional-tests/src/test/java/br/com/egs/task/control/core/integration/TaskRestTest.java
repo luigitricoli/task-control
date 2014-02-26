@@ -6,6 +6,7 @@ import br.com.caelum.restfulie.Restfulie;
 import br.com.egs.task.control.core.database.MongoDbConnection;
 import br.com.egs.task.control.core.testutils.TestConnectionFactory;
 import com.mongodb.BasicDBObject;
+import com.mongodb.DBCollection;
 import org.bson.types.ObjectId;
 import org.junit.After;
 import org.junit.Before;
@@ -106,7 +107,36 @@ public class TaskRestTest {
         String content = response.getContent();
 
         assertEquals(200, response.getCode());
+
         assertTrue(content.matches("\\{\"id\" ?: ?\"[0-9a-fA-F]{24}\".+"));
+    }
+
+
+    @Test
+    public void createPost() throws Exception {
+        DBCollection collection = conn.getCollection("tasks");
+        BasicDBObject dbFilter = new BasicDBObject("_id", new ObjectId("111122223333aaaabbbbccf1"));
+        assertEquals(2, ((List)collection.findOne(dbFilter).get("posts")).size());
+
+        String jsonString = "{" +
+                "user: 'mary'," +
+                "text: 'Using the service to add a post'," +
+                "timestamp: '2014-01-08 15:20:30' }";
+
+        RestClient restfulie = Restfulie.custom();
+        Response response = restfulie.at("http://localhost:8090/v1/tasks/111122223333aaaabbbbccf1")
+                .accept("application/json")
+                .as("application/json")
+                .post(jsonString);
+
+        String content = response.getContent();
+
+        assertEquals(200, response.getCode());
+
+        @SuppressWarnings("unchecked")
+        List<BasicDBObject> posts = (List<BasicDBObject>) collection.findOne(dbFilter).get("posts");
+        assertEquals(3, posts.size());
+        assertEquals("Using the service to add a post", posts.get(2).getString("text"));
     }
 
     @Test

@@ -1,5 +1,6 @@
 package br.com.egs.task.control.core.entities;
 
+import br.com.egs.task.control.core.exception.LateTaskException;
 import br.com.egs.task.control.core.exception.ValidationException;
 import com.google.gson.*;
 import com.mongodb.BasicDBObject;
@@ -108,7 +109,7 @@ public class Task {
         task.setEndDate(dbTask.getDate("endDate"));
 
         task.setSource(dbTask.getString("source"));
-        task.setApplication(new Application(((BasicDBObject)dbTask.get("application")).getString("name")));
+        task.setApplication(new Application(((BasicDBObject) dbTask.get("application")).getString("name")));
 
         List<TaskOwner> owners = new ArrayList<>();
         List<BasicDBObject> dbOwners = (List<BasicDBObject>) dbTask.get("owners");
@@ -117,17 +118,16 @@ public class Task {
         }
         task.setOwners(owners);
 
-        List<Post> posts = new ArrayList<>();
         List<BasicDBObject> dbPosts = (List<BasicDBObject>) dbTask.get("posts");
         if (dbPosts != null) {
             for (BasicDBObject dbPost : dbPosts) {
-                Post p = new Post();
-                p.setTimestamp(dbPost.getDate("timestamp"));
-                p.setUser(dbPost.getString("user"));
-                p.setText(dbPost.getString("text"));
-                posts.add(p);
+                Post p = new Post(
+                        dbPost.getString("user"),
+                        dbPost.getString("text"),
+                        dbPost.getDate("timestamp")
+                );
+                task.addPost(p);
             }
-            task.setPosts(posts);
 
         } else {
             // The Posts were excluded using a query option, the result object will also
@@ -170,6 +170,39 @@ public class Task {
         if (owners == null || owners.isEmpty()) {
             throw new ValidationException("At least one owner is required");
         }
+    }
+
+    /**
+     *
+     * @param date
+     * @throws ValidationException
+     */
+    public void finish(Date date) throws ValidationException {
+        if (date == null) {
+            throw new IllegalArgumentException("End date cannot be null");
+        }
+
+        if (this.endDate != null) {
+            throw new ValidationException("Task already finished");
+        }
+        date = toMaxHourDate(date);
+
+        if (date.after(this.foreseenEndDate)) {
+            boolean atrasoCommentExists = false;
+            for (Post post : posts) {
+                if (post.getText().contains("#atraso")) {
+                    atrasoCommentExists = true;
+                    break;
+                }
+            }
+
+            if (!atrasoCommentExists) {
+                throw new LateTaskException(
+                        "A late task can only be finished if a #atraso message is present in the posts");
+            }
+        }
+
+        this.endDate = date;
     }
 
     public String getId() {
@@ -234,6 +267,13 @@ public class Task {
 
     public void setPosts(List<Post> posts) {
         this.posts = posts;
+    }
+
+    public void addPost(Post p) {
+        if (this.posts == null) {
+            this.posts = new ArrayList<>();
+        }
+        this.posts.add(p);
     }
 
     public String getSource() {

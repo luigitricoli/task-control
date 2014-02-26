@@ -1,5 +1,7 @@
 package br.com.egs.task.control.core.entities;
 
+import br.com.egs.task.control.core.exception.LateTaskException;
+import br.com.egs.task.control.core.exception.ValidationException;
 import com.google.gson.JsonParseException;
 import com.mongodb.BasicDBObject;
 import org.bson.types.ObjectId;
@@ -11,6 +13,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 import static org.junit.Assert.*;
@@ -329,6 +332,47 @@ public class TaskTest {
         assertEquals("Doing #overtime to finish it sooner", task.getPosts().get(1).getText());
     }
 
+    @Test
+    public void finishTask_ontime() throws Exception {
+        Task t = createTestTask();
+        t.setEndDate(null);
+
+        Date endDate = timestampFormat.parse("2014-01-10 14:47:48.555");
+        t.finish(endDate);
+
+        assertEquals(timestampFormat.parse("2014-01-10 23:59:59.999"), t.getEndDate());
+    }
+
+    @Test(expected = ValidationException.class)
+    public void finishTask_alreadyFinished() throws Exception {
+        Task t = createTestTask();
+
+        Date endDate = timestampFormat.parse("2014-01-10 14:47:48.555");
+        t.finish(endDate);
+    }
+
+    @Test(expected = LateTaskException.class)
+    public void finishTask_lateWithNoAtrasoPost() throws Exception {
+        Task t = createTestTask();
+        t.setEndDate(null);
+
+        Date endDate = timestampFormat.parse("2014-01-20 14:47:48.555");
+        t.finish(endDate);
+    }
+
+    @Test
+    public void finishTask_lateWithAtrasoPost() throws Exception {
+        Task t = createTestTask();
+        t.setEndDate(null);
+        t.addPost(new Post("testusr", "Some #atraso has occured", new Date()));
+
+        Date endDate = timestampFormat.parse("2014-01-20 14:47:48.555");
+        t.finish(endDate);
+
+        assertEquals(timestampFormat.parse("2014-01-20 23:59:59.999"), t.getEndDate());
+    }
+
+
     private Task createTestTask() throws ParseException {
         DateFormat timestampFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 
@@ -337,29 +381,21 @@ public class TaskTest {
         t.setDescription("Test the Task Implementation");
 
         t.setStartDate(timestampFormat.parse("2014-01-02 00:00:00.000"));
-        t.setForeseenEndDate(timestampFormat.parse("2014-01-10 23:59:59.000"));
-        t.setEndDate(timestampFormat.parse("2014-01-09 23:59:59.000"));
+        t.setForeseenEndDate(timestampFormat.parse("2014-01-10 23:59:59.999"));
+        t.setEndDate(timestampFormat.parse("2014-01-09 23:59:59.999"));
 
         t.setSource("Sup.Producao");
         t.setApplication(new Application("OLM"));
 
         t.setOwners(Arrays.asList(new TaskOwner("john"), new TaskOwner("mary")));
 
-        List<Post> posts = new ArrayList<>();
+        Post p1 = new Post("john", "Scope changed. No re-scheduling will be necessary",
+                timestampFormat.parse("2014-01-03 09:15:30.700"));
+        t.addPost(p1);
 
-        Post p1 = new Post();
-        p1.setTimestamp(timestampFormat.parse("2014-01-03 09:15:30.700"));
-        p1.setUser("john");
-        p1.setText("Scope changed. No re-scheduling will be necessary");
-        posts.add(p1);
-
-        Post p2 = new Post();
-        p2.setTimestamp(timestampFormat.parse("2014-01-08 18:20:49.150"));
-        p2.setUser("john");
-        p2.setText("Doing #overtime to finish it sooner");
-        posts.add(p2);
-
-        t.setPosts(posts);
+        Post p2 = new Post("john", "Doing #overtime to finish it sooner",
+                timestampFormat.parse("2014-01-08 18:20:49.150"));
+        t.addPost(p2);
 
         return t;
     }

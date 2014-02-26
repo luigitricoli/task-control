@@ -1,5 +1,6 @@
 package br.com.egs.task.control.core.service;
 
+import br.com.egs.task.control.core.entities.Post;
 import br.com.egs.task.control.core.entities.Task;
 import br.com.egs.task.control.core.exception.ValidationException;
 import br.com.egs.task.control.core.repository.TaskSearchCriteria;
@@ -34,14 +35,7 @@ public class TasksService {
     @Path("{id}")
     @Produces(MediaType.APPLICATION_JSON)
     public String findById(@PathParam("id") String id) {
-        if (!id.matches("[0-9a-fA-F]{24}")) {
-            WebserviceUtils.throwWebApplicationException(Response.Status.NOT_FOUND, "Invalid Task ID");
-        }
-
-        Task result = repository.get(id);
-        if (result == null) {
-            WebserviceUtils.throwWebApplicationException(Response.Status.NOT_FOUND, "Task not found");
-        }
+        Task result = retrieveTask(id);
 
         return result.toJson();
     }
@@ -90,6 +84,29 @@ public class TasksService {
         }
 
         task = repository.add(task);
+        return task.toJson();
+    }
+
+    @POST
+    @Path("{id}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public String addPost(@PathParam("id") String id, String body) {
+        Post post = null;
+        try {
+            post = Post.fromJson(body);
+        } catch (JsonParseException jpe) {
+            if (jpe.getCause() instanceof ParseException) {
+                // Error generated when parsing a specific field
+                WebserviceUtils.throwWebApplicationException(Response.Status.BAD_REQUEST, jpe.getMessage());
+            } else {
+                // General JSON parse error
+            }   WebserviceUtils.throwWebApplicationException(Response.Status.BAD_REQUEST, "Invalid JSON body");
+        }
+
+        Task task = retrieveTask(id);
+        task.addPost(post);
+        repository.update(task);
+
         return task.toJson();
     }
 
@@ -147,4 +164,15 @@ public class TasksService {
         return criteria;
     }
 
+    private Task retrieveTask(String id) {
+        if (!id.matches("[0-9a-fA-F]{24}")) {
+            WebserviceUtils.throwWebApplicationException(Response.Status.NOT_FOUND, "Invalid Task ID");
+        }
+
+        Task task = repository.get(id);
+        if (task == null) {
+            WebserviceUtils.throwWebApplicationException(Response.Status.NOT_FOUND, "Task not found");
+        }
+        return task;
+    }
 }
