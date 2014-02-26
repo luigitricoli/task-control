@@ -9,6 +9,7 @@ import br.com.egs.task.control.core.repository.Tasks;
 import org.json.JSONException;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.skyscreamer.jsonassert.JSONAssert;
 
@@ -28,6 +29,8 @@ import static org.junit.Assert.fail;
  * Unit tests for the Tasks Service implementation.
  */
 public class TasksServiceTest {
+
+    DateFormat timestampFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 
     private Tasks taskRepository;
     private TasksService service;
@@ -240,9 +243,41 @@ public class TasksServiceTest {
         Mockito.verify(taskRepository).searchTasks(generatedCriteria);
     }
 
-    private Task createTestTask() throws ParseException {
-        DateFormat timestampFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+    @Test
+    public void modifyTask_finish() throws Exception {
+        Task storedTask = createTestTask();
+        storedTask.setEndDate(null);
 
+        Mockito.when(taskRepository.get("111122223333aaaabbbbcccc")).thenReturn(storedTask);
+
+        service.modifyTask("111122223333aaaabbbbcccc", "{endDate: '2014-01-08 23:59:59'}");
+
+        // Ensure that the Task was saved, with the new endDate
+        ArgumentCaptor<Task> argument = ArgumentCaptor.forClass(Task.class);
+        Mockito.verify(taskRepository).update(argument.capture());
+        assertEquals(timestampFormat.parse("2014-01-08 23:59:59.999"), argument.getValue().getEndDate());
+    }
+
+    @Test
+    public void modifyTask_emptyRequest() throws Exception {
+        Mockito.when(taskRepository.get("111122223333aaaabbbbcccc")).thenReturn(createTestTask());
+
+        try {
+            service.modifyTask("111122223333aaaabbbbcccc", "{}");
+            fail("Exception was expected");
+        } catch (WebApplicationException e) {
+            assertEquals(400, e.getResponse().getStatus());
+        }
+    }
+
+    public void modifyTask_finishLateTaskError() throws Exception {
+        Task storedTask = createTestTask();
+        storedTask.setEndDate(null);
+
+
+    }
+
+    private Task createTestTask() throws ParseException {
         Task t = new Task();
         t.setId("111122223333aaaabbbbcccc");
         t.setDescription("Test the Task Implementation");

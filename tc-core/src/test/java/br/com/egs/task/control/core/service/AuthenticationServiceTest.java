@@ -3,6 +3,7 @@ package br.com.egs.task.control.core.service;
 import br.com.egs.task.control.core.entities.Application;
 import br.com.egs.task.control.core.entities.User;
 import br.com.egs.task.control.core.repository.Users;
+import br.com.egs.task.control.core.utils.HttpResponseUtils;
 import org.json.JSONException;
 import org.junit.Before;
 import org.junit.Test;
@@ -81,7 +82,7 @@ public class AuthenticationServiceTest {
             fail("Exception was expected");
 
         } catch (WebApplicationException e) {
-            assertEquals(420, e.getResponse().getStatus());
+            assertEquals(HttpResponseUtils.RECOVERABLE_BUSINESS_EXCEPTION_STATUS_CODE, e.getResponse().getStatus());
             Mockito.verify(userRepository, Mockito.only()).get("wrong");
         }
     }
@@ -95,7 +96,7 @@ public class AuthenticationServiceTest {
             fail("Exception was expected");
 
         } catch (WebApplicationException e) {
-            assertEquals(420, e.getResponse().getStatus());
+            assertEquals(HttpResponseUtils.RECOVERABLE_BUSINESS_EXCEPTION_STATUS_CODE, e.getResponse().getStatus());
             Mockito.verify(userRepository, Mockito.only()).get("mylogin");
         }
     }
