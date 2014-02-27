@@ -18,6 +18,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -108,7 +109,9 @@ public class TaskRestTest {
 
         assertEquals(200, response.getCode());
 
-        assertTrue(content.matches("\\{\"id\" ?: ?\"[0-9a-fA-F]{24}\".+"));
+        String idAttributePattern = "\"id\" ?: ?\"[0-9a-fA-F]{24}\"";
+
+        assertTrue(Pattern.compile(idAttributePattern).matcher(content).find());
     }
 
 

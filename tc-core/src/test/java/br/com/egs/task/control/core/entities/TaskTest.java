@@ -27,7 +27,7 @@ public class TaskTest {
 
     @Test
     public void toJson() throws Exception {
-        Task t = createTestTask();
+        Task t = createTestTask(false, false, false);
 
         String json = t.toJson();
 
@@ -58,8 +58,7 @@ public class TaskTest {
 
     @Test
     public void toJson_noPosts() throws Exception {
-        Task t = createTestTask();
-        t.setPosts(null);
+        Task t = createTestTask(false, false, true);
 
         String json = t.toJson();
 
@@ -138,29 +137,29 @@ public class TaskTest {
 
     @Test
     public void fromTaskToDbObject_id() throws Exception {
-        Task t = createTestTask();
+        Task t = createTestTask(false, false, false);
         BasicDBObject dbTask = t.toDbObject();
         assertEquals(new ObjectId("111122223333aaaabbbbcccc"), dbTask.get("_id"));
     }
 
     @Test
     public void fromTaskToDbObject_nullId() throws Exception {
-        Task t = createTestTask();
-        t.setId(null); // Simulate a new record.
+        Task t = createTestTask(true, false, false);
+
         BasicDBObject dbTask = t.toDbObject();
         assertFalse(dbTask.containsKey((Object)"_id"));
     }
 
     @Test
     public void fromTaskToDbObject_description() throws Exception {
-        Task t = createTestTask();
+        Task t = createTestTask(false, false, false);
         BasicDBObject dbTask = t.toDbObject();
         assertEquals("Test the Task Implementation", dbTask.get("description"));
     }
 
     @Test
     public void fromTaskToDbObject_startDate() throws Exception {
-        Task t = createTestTask();
+        Task t = createTestTask(false, false, false);
         BasicDBObject dbTask = t.toDbObject();
 
         assertEquals(timestampFormat.parse("2014-01-02 00:00:00.000"), dbTask.get("startDate"));
@@ -168,7 +167,7 @@ public class TaskTest {
 
     @Test
     public void fromTaskToDbObject_foreseenEndDate() throws Exception {
-        Task t = createTestTask();
+        Task t = createTestTask(false, false, false);
         BasicDBObject dbTask = t.toDbObject();
 
         assertEquals(timestampFormat.parse("2014-01-10 23:59:59.999"), dbTask.get("foreseenEndDate"));
@@ -176,15 +175,14 @@ public class TaskTest {
 
     @Test
     public void fromTaskToDbObject_endDate() throws Exception {
-        Task t = createTestTask();
+        Task t = createTestTask(false, false, false);
         BasicDBObject dbTask = t.toDbObject();
 
         assertEquals(timestampFormat.parse("2014-01-09 23:59:59.999"), dbTask.get("endDate"));
     }
     @Test
     public void fromTaskToDbObject_nullEndDate() throws Exception {
-        Task t = createTestTask();
-        t.setEndDate(null); // Unfinished task
+        Task t = createTestTask(false, true, false); // Null End Date = Unfinished task
         BasicDBObject dbTask = t.toDbObject();
 
         assertFalse(dbTask.containsKey((Object) "endDate"));
@@ -192,7 +190,7 @@ public class TaskTest {
 
     @Test
     public void fromTaskToDbObject_source() throws Exception {
-        Task t = createTestTask();
+        Task t = createTestTask(false, false, false);
         BasicDBObject dbTask = t.toDbObject();
 
         assertEquals("Sup.Producao", dbTask.get("source"));
@@ -200,7 +198,7 @@ public class TaskTest {
 
     @Test
     public void fromTaskToDbObject_application() throws Exception {
-        Task t = createTestTask();
+        Task t = createTestTask(false, false, false);
         BasicDBObject dbTask = t.toDbObject();
 
         assertEquals("OLM", ((BasicDBObject)dbTask.get("application")).get("name"));
@@ -208,7 +206,7 @@ public class TaskTest {
 
     @Test
     public void fromTaskToDbObject_owners() throws Exception {
-        Task t = createTestTask();
+        Task t = createTestTask(false, false, false);
         BasicDBObject dbTask = t.toDbObject();
 
         List<BasicDBObject> owners = (List<BasicDBObject>) dbTask.get("owners");
@@ -220,7 +218,7 @@ public class TaskTest {
 
     @Test
     public void fromTaskToDbObject_posts() throws Exception {
-        Task t = createTestTask();
+        Task t = createTestTask(false, false, false);
         BasicDBObject dbTask = t.toDbObject();
 
         List<BasicDBObject> posts = (List<BasicDBObject>) dbTask.get("posts");
@@ -239,8 +237,8 @@ public class TaskTest {
 
     @Test
     public void fromTaskToDbObject_noPosts() throws Exception {
-        Task t = createTestTask();
-        t.setPosts(null);
+        Task t = createTestTask(false, false, true);
+
         BasicDBObject dbTask = t.toDbObject();
 
         List<BasicDBObject> posts = (List<BasicDBObject>) dbTask.get("posts");
@@ -334,8 +332,7 @@ public class TaskTest {
 
     @Test
     public void finishTask_ontime() throws Exception {
-        Task t = createTestTask();
-        t.setEndDate(null);
+        Task t = createTestTask(false, true, false);
 
         Date endDate = timestampFormat.parse("2014-01-10 14:47:48.555");
         t.finish(endDate);
@@ -345,7 +342,7 @@ public class TaskTest {
 
     @Test(expected = ValidationException.class)
     public void finishTask_alreadyFinished() throws Exception {
-        Task t = createTestTask();
+        Task t = createTestTask(false, false, false);
 
         Date endDate = timestampFormat.parse("2014-01-10 14:47:48.555");
         t.finish(endDate);
@@ -353,8 +350,7 @@ public class TaskTest {
 
     @Test(expected = LateTaskException.class)
     public void finishTask_lateWithNoAtrasoPost() throws Exception {
-        Task t = createTestTask();
-        t.setEndDate(null);
+        Task t = createTestTask(false, true, false);
 
         Date endDate = timestampFormat.parse("2014-01-20 14:47:48.555");
         t.finish(endDate);
@@ -362,8 +358,7 @@ public class TaskTest {
 
     @Test
     public void finishTask_lateWithAtrasoPost() throws Exception {
-        Task t = createTestTask();
-        t.setEndDate(null);
+        Task t = createTestTask(false, true, false);
         t.addPost(new Post("testusr", "Some #atraso has occured", new Date()));
 
         Date endDate = timestampFormat.parse("2014-01-20 14:47:48.555");
@@ -372,30 +367,56 @@ public class TaskTest {
         assertEquals(timestampFormat.parse("2014-01-20 23:59:59.999"), t.getEndDate());
     }
 
+    @Test
+    public void changeStartDate() throws Exception {
 
-    private Task createTestTask() throws ParseException {
+        // The current date is before the task start.
+        Task.setFixedCurrentDate(timestampFormat.parse("2014-01-01 12:00:00.000"));
+
+        Task t = createTestTask(false, true, false);
+
+        Date startDate = timestampFormat.parse("2014-01-05 14:47:48.555");
+        t.changeStartDate(startDate);
+
+        assertEquals(timestampFormat.parse("2014-01-05 00:00:00.000"), t.getStartDate());
+    }
+
+    @Test(expected = ValidationException.class)
+    public void changeStartDate_errorAlreadyStarted() throws Exception {
+        // Current date AFTER the task start.
+        Task.setFixedCurrentDate(timestampFormat.parse("2014-01-06 12:00:00.000"));
+        Task t = createTestTask(false, true, false);
+
+        Date startDate = timestampFormat.parse("2014-01-05 14:47:48.555");
+
+        t.changeStartDate(startDate);  // ValidationException expected
+    }
+
+    private Task createTestTask(boolean nullId, boolean nullEndDate, boolean nullPosts) throws ParseException {
         DateFormat timestampFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 
-        Task t = new Task();
-        t.setId("111122223333aaaabbbbcccc");
-        t.setDescription("Test the Task Implementation");
+        Task t = new Task(
+                nullId ? null : "111122223333aaaabbbbcccc",
+                "Test the Task Implementation",
 
-        t.setStartDate(timestampFormat.parse("2014-01-02 00:00:00.000"));
-        t.setForeseenEndDate(timestampFormat.parse("2014-01-10 23:59:59.999"));
-        t.setEndDate(timestampFormat.parse("2014-01-09 23:59:59.999"));
+                timestampFormat.parse("2014-01-02 00:00:00.000"),
+                timestampFormat.parse("2014-01-10 23:59:59.999"),
+                nullEndDate ? null : timestampFormat.parse("2014-01-09 23:59:59.999"),
 
-        t.setSource("Sup.Producao");
-        t.setApplication(new Application("OLM"));
+                "Sup.Producao",
+                new Application("OLM"),
 
-        t.setOwners(Arrays.asList(new TaskOwner("john"), new TaskOwner("mary")));
+                Arrays.asList(new TaskOwner("john"), new TaskOwner("mary")));
 
-        Post p1 = new Post("john", "Scope changed. No re-scheduling will be necessary",
-                timestampFormat.parse("2014-01-03 09:15:30.700"));
-        t.addPost(p1);
+        if (!nullPosts) {
+            Post p1 = new Post("john", "Scope changed. No re-scheduling will be necessary",
+                    timestampFormat.parse("2014-01-03 09:15:30.700"));
+            t.addPost(p1);
 
-        Post p2 = new Post("john", "Doing #overtime to finish it sooner",
-                timestampFormat.parse("2014-01-08 18:20:49.150"));
-        t.addPost(p2);
+            Post p2 = new Post("john", "Doing #overtime to finish it sooner",
+                    timestampFormat.parse("2014-01-08 18:20:49.150"));
+            t.addPost(p2);
+        }
 
         return t;
     }

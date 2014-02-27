@@ -138,7 +138,17 @@ public class TasksRepositoryImpl implements Tasks {
         List<BasicDBObject> filters = new ArrayList<>();
 
         if (statusSet.contains(TaskSearchCriteria.Status.DOING)) {
-            filters.add(new BasicDBObject("endDate", new BasicDBObject("$exists", false)));
+            Calendar endOfCurrentDate = Calendar.getInstance();
+            endOfCurrentDate.setTime(getDate());
+            endOfCurrentDate.set(Calendar.HOUR_OF_DAY, 23);
+            endOfCurrentDate.set(Calendar.MINUTE, 59);
+            endOfCurrentDate.set(Calendar.SECOND, 59);
+            endOfCurrentDate.set(Calendar.MILLISECOND, 999);
+
+            filters.add(new BasicDBObject("$and", Arrays.asList(
+                    new BasicDBObject("endDate", new BasicDBObject("$exists", false)),
+                    new BasicDBObject("startDate", new BasicDBObject("$lte", endOfCurrentDate.getTime()))
+            )));
         }
 
         if (statusSet.contains(TaskSearchCriteria.Status.FINISHED)) {

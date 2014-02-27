@@ -31,7 +31,7 @@ public class TasksRepositoryTest {
 
     private final DateFormat timestampFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 
-    private final String TODAY = "2014-01-11 15:15:15.000";
+    private static final String TODAY = "2014-01-11 15:15:15.000";
 
 	private Tasks repository;
 	private MongoDbConnection conn;
@@ -170,15 +170,15 @@ public class TasksRepositoryTest {
         DBCollection collection = conn.getCollection("tasks");
         assertEquals(4, collection.count());
 
-        Task t = new Task();
-        t.setId(null);
-        t.setDescription("Testing insert");
-        t.setStartDate(new Date());
-        t.setForeseenEndDate(new Date());
-        t.setEndDate(null);
-        t.setSource("CCC");
-        t.setApplication(new Application("OLM"));
-        t.setOwners(Arrays.asList(new TaskOwner("joe")));
+        Task t = new Task(
+                null,
+                "Testing insert",
+                new Date(),
+                new Date(),
+                null,
+                "CCC",
+                new Application("OLM"),
+                Arrays.asList(new TaskOwner("joe")));
 
         t = repository.add(t);
 
@@ -193,11 +193,24 @@ public class TasksRepositoryTest {
         // Assume that the object returned by createTestTask() was persisted during test SetUp
         Task task = Task.fromDbObject(createTestTask());
 
-        task.setDescription("Modified task");
-        Post p = new Post("bob", "Posting into a modified task", new Date());
-        task.addPost(p);
+        // Creating a clone, with some changes
+        Task modified = new Task(
+                task.getId(),
+                "Modified task",
+                task.getStartDate(),
+                task.getForeseenEndDate(),
+                task.getEndDate(),
+                task.getSource(),
+                task.getApplication(),
+                task.getOwners()
+        );
+        for (Post p : task.getPosts()) {
+            modified.addPost(p);
+        }
+        modified.addPost(new Post("bob", "Posting into a modified task", new Date()));
 
-        repository.update(task);
+        /////////////////////////////
+        repository.update(modified);
 
         /////////////////////////////////////////////
         assertEquals(4, collection.count());

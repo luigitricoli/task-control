@@ -2,6 +2,7 @@ package br.com.egs.task.control.core.service;
 
 import br.com.egs.task.control.core.entities.Post;
 import br.com.egs.task.control.core.entities.Task;
+import br.com.egs.task.control.core.exception.LateTaskException;
 import br.com.egs.task.control.core.exception.ValidationException;
 import br.com.egs.task.control.core.repository.TaskSearchCriteria;
 import br.com.egs.task.control.core.repository.Tasks;
@@ -54,7 +55,9 @@ public class TasksService {
 
         List<Task> result = repository.searchTasks(criteria);
         return new GsonBuilder().registerTypeAdapter(Task.class, new Task.TaskSerializer())
-                   .create().toJson(result);
+                .setPrettyPrinting()
+                .create()
+                .toJson(result);
 	}
 
     @POST
@@ -111,9 +114,18 @@ public class TasksService {
         if (changedAttributes.getEndDate() != null) {
             try {
                 task.finish(changedAttributes.getEndDate());
+            } catch (LateTaskException lte) {
+                HttpResponseUtils.throwRecoverableBusinessException(lte.getMessage());
             } catch (ValidationException e) {
-                throw new RuntimeException(e);   //TODO Handle this
+                HttpResponseUtils.throwUnrecoverableBusinessException(e.getMessage());
             }
+
+        } else if (changedAttributes.getStartDate() != null) {
+           // try {
+                //task.setStartDate(changedAttributes.getStartDate());
+            //} catch (ValidationException e) {
+             //   HttpResponseUtils.throwUnrecoverableBusinessException(e.getMessage());
+            //}
 
         } else {
             HttpResponseUtils.throwBadRequestException(
