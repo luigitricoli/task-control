@@ -361,6 +361,19 @@ public class Task {
             Task t = new Task();
 
             JsonObject obj = jsonElement.getAsJsonObject();
+
+            // The attributes can optionally be encapsulated under a 'task' parent
+            // object. If this is the case, we "go into" this parent object
+            // before looking for the attributes.
+            //
+            //      { task: { 'attribute1': 'value1', 'attribute2': 'value2' } }
+            //                 is equivalent to
+            //      { 'attribute1': 'value1', 'attribute2': 'value2' }
+            //
+            if (obj.has("task")) {
+                obj = obj.get("task").getAsJsonObject();
+            }
+
             t.id = (obj.get("id") == null ? null : obj.get("id").getAsString());
             t.description = (obj.get("description") == null ? null : obj.get("description").getAsString());
             t.startDate = (obj.get("startDate") == null ? null : parseDate(obj.get("startDate").getAsString(), false));

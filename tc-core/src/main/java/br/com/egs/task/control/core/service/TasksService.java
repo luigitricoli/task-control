@@ -83,8 +83,9 @@ public class TasksService {
         try {
             post = Post.fromJson(body);
         } catch (JsonParseException jpe) {
-            if (jpe.getCause() instanceof ParseException) {
-                // Error generated when parsing a specific field
+            if (jpe.getCause() instanceof ParseException
+                    || jpe.getCause() instanceof IllegalArgumentException) {
+                // Error generated when parsing a specific field or creating the User object
                 HttpResponseUtils.throwBadRequestException(jpe.getMessage());
             } else {
                 // General JSON parse error

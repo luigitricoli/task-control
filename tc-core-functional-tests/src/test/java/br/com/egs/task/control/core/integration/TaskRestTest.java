@@ -87,7 +87,7 @@ public class TaskRestTest {
 
     @Test
     public void createTask_ok() throws Exception {
-        String jsonString = "{" +
+        String jsonString = "{task: {" +
                 "description: 'Test the Task Implementation'," +
                 "startDate: '2014-01-02'," +
                 "foreseenEndDate: '2014-01-10'," +
@@ -97,7 +97,7 @@ public class TaskRestTest {
                 "           {login: 'john'}," +
                 "           {login: 'mary'}" +
                 "]" +
-        "}";
+        "}}";
 
         RestClient restfulie = Restfulie.custom();
         Response response = restfulie.at("http://localhost:8090/v1/tasks")
@@ -121,10 +121,10 @@ public class TaskRestTest {
         BasicDBObject dbFilter = new BasicDBObject("_id", new ObjectId("111122223333aaaabbbbccf1"));
         assertEquals(2, ((List)collection.findOne(dbFilter).get("posts")).size());
 
-        String jsonString = "{" +
+        String jsonString = "{post: {" +
                 "user: 'mary'," +
                 "text: 'Using the service to add a post'," +
-                "timestamp: '2014-01-08 15:20:30' }";
+                "timestamp: '2014-01-08 15:20:30' }}";
 
         RestClient restfulie = Restfulie.custom();
         Response response = restfulie.at("http://localhost:8090/v1/tasks/111122223333aaaabbbbccf1")

@@ -81,7 +81,7 @@ public class TaskTest {
 
     @Test
     public void jsonToTask_allAttributesSet() throws Exception {
-        String jsonString = "{" +
+        String jsonString = "{task: {" +
                 "id: '111122223333aaaabbbbcccc'," +
                 "description: 'Test the Task Implementation'," +
                 "startDate: '2014-01-02'," +
@@ -93,7 +93,7 @@ public class TaskTest {
                 "           {login: 'john'}," +
                 "           {login: 'mary'}" +
                 "]" +
-        "}";
+        "}}";
 
         Task t = Task.fromJson(jsonString);
         assertEquals("111122223333aaaabbbbcccc", t.getId());
@@ -110,7 +110,7 @@ public class TaskTest {
 
     @Test
     public void jsonToTask_nullAttributes() throws Exception {
-        String jsonString = "{}";
+        String jsonString = "{task:{}}";
 
         Task t = Task.fromJson(jsonString);
         assertNull(t.getId());
@@ -125,7 +125,7 @@ public class TaskTest {
 
     @Test
     public void jsonToTask_invalidDate() throws Exception {
-        String jsonString = "{startDate: 'WRONG'}";
+        String jsonString = "{task:{startDate: 'WRONG'}}";
 
         try {
             Task.fromJson(jsonString);
