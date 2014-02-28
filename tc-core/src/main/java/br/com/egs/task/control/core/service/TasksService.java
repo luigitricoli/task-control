@@ -122,11 +122,19 @@ public class TasksService {
             }
 
         } else if (changedAttributes.getStartDate() != null) {
-           // try {
-                //task.setStartDate(changedAttributes.getStartDate());
-            //} catch (ValidationException e) {
-             //   HttpResponseUtils.throwUnrecoverableBusinessException(e.getMessage());
-            //}
+            try {
+                task.changeStartDate(changedAttributes.getStartDate());
+            } catch (ValidationException e) {
+                HttpResponseUtils.throwUnrecoverableBusinessException(e.getMessage());
+            }
+
+        } else if (changedAttributes.getForeseenEndDate() != null) {
+            try {
+                task.changeForeseenEndDate(changedAttributes.getForeseenEndDate());
+            } catch (ValidationException e) {
+                HttpResponseUtils.throwUnrecoverableBusinessException(e.getMessage());
+            }
+
 
         } else {
             HttpResponseUtils.throwBadRequestException(

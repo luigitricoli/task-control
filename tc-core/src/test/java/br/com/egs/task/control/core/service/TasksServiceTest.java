@@ -298,7 +298,10 @@ public class TasksServiceTest {
     }
 
     @Test
-    public void modifyTask_changeStartDate_ok() throws Exception {
+    public void modifyTask_changeStartDate() throws Exception {
+
+        Task.setFixedCurrentDate(timestampFormat.parse("2014-01-02 00:00:00.000"));
+
         Task storedTask = createTestTask(null, true);
 
         Mockito.when(taskRepository.get("111122223333aaaabbbbcccc")).thenReturn(storedTask);
@@ -306,9 +309,24 @@ public class TasksServiceTest {
         service.modifyTask("111122223333aaaabbbbcccc", "{startDate: '2014-01-05'}");
 
         // Ensure that the Task was saved, with the new date
-        //ArgumentCaptor<Task> argument = ArgumentCaptor.forClass(Task.class);
-        //Mockito.verify(taskRepository).update(argument.capture());
-        //assertEquals(timestampFormat.parse("2014-01-05 00:00:00.000"), argument.getValue().getStartDate());
+        ArgumentCaptor<Task> argument = ArgumentCaptor.forClass(Task.class);
+        Mockito.verify(taskRepository).update(argument.capture());
+        assertEquals(timestampFormat.parse("2014-01-05 00:00:00.000"), argument.getValue().getStartDate());
+    }
+
+
+    @Test
+    public void modifyTask_changeForeseenEndDate() throws Exception {
+        Task storedTask = createTestTask(null, true);
+
+        Mockito.when(taskRepository.get("111122223333aaaabbbbcccc")).thenReturn(storedTask);
+
+        service.modifyTask("111122223333aaaabbbbcccc", "{foreseenEndDate: '2014-01-12'}");
+
+        // Ensure that the Task was saved, with the new date
+        ArgumentCaptor<Task> argument = ArgumentCaptor.forClass(Task.class);
+        Mockito.verify(taskRepository).update(argument.capture());
+        assertEquals(timestampFormat.parse("2014-01-12 23:59:59.999"), argument.getValue().getForeseenEndDate());
     }
 
     private Task createTestTask(String customId, boolean nullEndDate) throws ParseException {

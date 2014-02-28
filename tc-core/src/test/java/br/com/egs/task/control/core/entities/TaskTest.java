@@ -392,6 +392,16 @@ public class TaskTest {
         t.changeStartDate(startDate);  // ValidationException expected
     }
 
+     @Test
+    public void changeForeseenEndDate() throws Exception {
+        Task t = createTestTask(false, true, false);
+
+        Date foreseen = timestampFormat.parse("2014-01-17 16:28:49.179");
+        t.changeForeseenEndDate(foreseen);
+
+        assertEquals(timestampFormat.parse("2014-01-17 23:59:59.999"), t.getForeseenEndDate());
+    }
+
     private Task createTestTask(boolean nullId, boolean nullEndDate, boolean nullPosts) throws ParseException {
         DateFormat timestampFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 

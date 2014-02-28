@@ -232,12 +232,31 @@ public class Task {
     /**
      *
      * @param startDate
+     * @throws ValidationException
      */
     public void changeStartDate(Date startDate) throws ValidationException {
         if (startDate.before(getCurrentDate())) {
             throw new ValidationException("Cannot change the start date. The task is already started");
         }
+
+        if (this.endDate != null) {
+            throw new ValidationException("Task already finished");
+        }
+
         this.startDate = toZeroHourDate(startDate);
+    }
+
+    /**
+     *
+     * @param foreseen
+     * @throws ValidationException
+     */
+    public void changeForeseenEndDate(Date foreseen) throws ValidationException {
+        if (this.endDate != null) {
+            throw new ValidationException("Task already finished");
+        }
+
+        this.foreseenEndDate = toMaxHourDate(foreseen);
     }
 
     public String getId() {
