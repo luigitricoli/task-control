@@ -8,7 +8,7 @@ import java.util.Arrays;
 public class TaskSearchCriteria {
     private int year;
     private int month;
-    private String application;
+    private String[] applications;
     private Status[] status;
     private String[] sources;
     private String ownerLogin;
@@ -27,8 +27,8 @@ public class TaskSearchCriteria {
         return this;
     }
 
-    public TaskSearchCriteria application(String app) {
-        this.application = app;
+    public TaskSearchCriteria applications(String ... apps) {
+        this.applications = apps;
         return this;
     }
 
@@ -60,8 +60,8 @@ public class TaskSearchCriteria {
         return month;
     }
 
-    public String getApplication() {
-        return application;
+    public String[] getApplications() {
+        return applications;
     }
 
     public Status[] getStatus() {
@@ -90,7 +90,7 @@ public class TaskSearchCriteria {
         if (excludePosts != that.excludePosts) return false;
         if (month != that.month) return false;
         if (year != that.year) return false;
-        if (application != null ? !application.equals(that.application) : that.application != null) return false;
+        if (!Arrays.equals(applications, that.applications)) return false;
         if (ownerLogin != null ? !ownerLogin.equals(that.ownerLogin) : that.ownerLogin != null) return false;
         if (!Arrays.equals(sources, that.sources)) return false;
         if (!Arrays.equals(status, that.status)) return false;
@@ -102,7 +102,7 @@ public class TaskSearchCriteria {
     public int hashCode() {
         int result = year;
         result = 31 * result + month;
-        result = 31 * result + (application != null ? application.hashCode() : 0);
+        result = 31 * result + (applications != null ? Arrays.hashCode(applications) : 0);
         result = 31 * result + (status != null ? Arrays.hashCode(status) : 0);
         result = 31 * result + (sources != null ? Arrays.hashCode(sources) : 0);
         result = 31 * result + (ownerLogin != null ? ownerLogin.hashCode() : 0);
@@ -115,7 +115,7 @@ public class TaskSearchCriteria {
         return "TaskSearchCriteria{" +
                 "year=" + year +
                 ", month=" + month +
-                ", application='" + application + '\'' +
+                ", applications=" + (applications == null ? null : Arrays.asList(applications)) +
                 ", status=" + (status == null ? null : Arrays.asList(status)) +
                 ", sources=" + (sources == null ? null : Arrays.asList(sources)) +
                 ", ownerLogin='" + ownerLogin + '\'' +

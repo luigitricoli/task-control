@@ -133,7 +133,7 @@ public class TasksRepositoryTest {
     @Test
     public void searchByApplication() throws Exception {
         TaskSearchCriteria criteria = new TaskSearchCriteria()
-                .application("TaskControl");
+                .applications("TaskControl");
         List<Task> result = repository.searchTasks(criteria);
 
         assertEquals(1, result.size());
@@ -220,6 +220,18 @@ public class TasksRepositoryTest {
 
         assertEquals("Modified task", dbObject.get("description"));
         assertEquals(3, ((List)dbObject.get("posts")).size());
+    }
+
+    @Test
+    public void removeTask() {
+        Task t = new Task("111122223333aaaabbbbccc1", null, null, null, null, null, null, null);
+
+        // Precondition
+        assertNotNull(conn.getCollection("tasks").findOne(new BasicDBObject("_id", new ObjectId(t.getId()))));
+
+        repository.remove(t);
+
+        assertNull(conn.getCollection("tasks").findOne(new BasicDBObject("_id", new ObjectId(t.getId()))));
     }
 
 	private void populateDatabase() throws Exception {
