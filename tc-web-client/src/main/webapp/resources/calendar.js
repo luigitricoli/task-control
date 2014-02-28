@@ -167,15 +167,14 @@ function addPost(task, url){
 }
 
 $(document).ready(function(){
-    $(".filter-group label").click(function(){
-            toogleFilterTasks($(this));
-        }
-    );
-//TODO error duplicated click
-//    $(".filter-group input:checkbox").click(function(event){
+//    $(".filter-group label").click(function(){
 //            toogleFilterTasks($(this));
 //        }
 //    );
+    $(".filter-group input:checkbox").click(function(event){
+            toogleFilterTasks($(this));
+        }
+    );
 	$("#next-month").click(function() {
 		nextMonth();
 	});

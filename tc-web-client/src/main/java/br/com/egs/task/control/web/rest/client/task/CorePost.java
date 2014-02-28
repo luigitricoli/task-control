@@ -4,8 +4,8 @@ import java.lang.reflect.Type;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.GregorianCalendar;
 
+import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
@@ -30,8 +30,9 @@ class CorePost {
 	public String toJson() {
 		GsonBuilder gson = new GsonBuilder();
 		gson.registerTypeAdapter(timestamp.getClass(), new JsonCalendarMarshaller());
-
-		return gson.create().toJson(this);
+		Gson marshal = gson.create();
+		
+		return String.format("{\"post\":%s}", marshal.toJson(this));
 	}
 
 	private class JsonCalendarMarshaller implements JsonSerializer<Calendar> {

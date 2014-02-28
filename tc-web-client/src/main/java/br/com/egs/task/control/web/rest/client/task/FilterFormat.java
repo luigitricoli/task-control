@@ -29,8 +29,9 @@ class FilterFormat {
 		filters.put("late", "status");
 		filters.put("waiting", "status");
 		
-		filters.put("CCC", "source");
-		filters.put("internal", "source");
+		filters.put("CCC", "sources");
+		filters.put("internal", "sources");
+		filters.put("sup-prod", "sources");
 	}
 	
 	public Map<String, String> formatParams(List<String> selected){
@@ -52,3 +53,4 @@ class FilterFormat {
 	}
 	
 }
+

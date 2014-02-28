@@ -3,6 +3,8 @@ package br.com.egs.task.control.web.rest.client.restfulie;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import javax.inject.Inject;
+
 import br.com.caelum.restfulie.RestClient;
 import br.com.caelum.restfulie.Restfulie;
 import br.com.caelum.vraptor.ioc.Component;
@@ -27,6 +29,7 @@ public class RestfulieCoreClient implements JsonClient {
 	private String resource;
 	private Map<String, String> params;
 
+	@Inject
 	public RestfulieCoreClient() {
 		this(DEFAULT_VERSION);
 	}

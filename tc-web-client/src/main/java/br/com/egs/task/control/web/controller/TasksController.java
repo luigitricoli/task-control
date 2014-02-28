@@ -1,5 +1,6 @@
 package br.com.egs.task.control.web.controller;
 
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 
@@ -29,11 +30,11 @@ public class TasksController {
 	}
 
 	@Get("/tarefas/mes/{month}")
-	public void tasksBy(Integer month, List<String> filters) {
+	public void tasksBy(Integer month, String filters) {	
 		if(filters == null){
 			result.include("weeks", tasks.weeksBy(month));	
 		} else {
-			result.include("weeks", tasks.weeksBy(month, filters));
+			result.include("weeks", tasks.weeksBy(month, Arrays.asList(filters.split(","))));
 		}
 		
 	}
