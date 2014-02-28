@@ -77,6 +77,11 @@ public class Post {
 
             JsonObject obj = jsonElement.getAsJsonObject();
 
+            if (!obj.has("post")) {
+                throw new JsonParseException("'post' root element not found");
+            }
+            obj = obj.get("post").getAsJsonObject();
+
             String user = obj.get("user") != null ? obj.get("user").getAsString() : null;
             String text = obj.get("text") != null ? obj.get("text").getAsString() : null;
             Date timestamp = null;
@@ -88,7 +93,12 @@ public class Post {
                         + obj.get("timestamp").getAsString() + "]", e);
             }
 
-            Post p = new Post(user, text, timestamp);
+            Post p = null;
+            try {
+                p = new Post(user, text, timestamp);
+            } catch (IllegalArgumentException e) {
+                throw new JsonParseException("Error creating user: " + e.getMessage(), e);
+            }
             return p;
         }
 

@@ -36,11 +36,40 @@ public class Task {
     private List<Post> posts;
 
     /**
+     * This must be changed only in testing code, when a precise control over the variables is required.
+     */
+    private static Date fixedCurrentDate = null;
+
+    public Task(String id,
+                String description,
+                Date startDate,
+                Date foreseenEndDate,
+                Date endDate,
+                String source,
+                Application application,
+                List<TaskOwner> owners) {
+
+        this.id = id;
+        this.description = description;
+        this.startDate = startDate;
+        this.foreseenEndDate = foreseenEndDate;
+        this.endDate = endDate;
+        this.source = source;
+        this.application = application;
+        this.owners = owners;
+    }
+
+    private Task() {
+
+    }
+
+    /**
      * Serialize this object to the presentation JSON format.
      * @return
      */
     public String toJson() {
         return new GsonBuilder().registerTypeAdapter(Task.class, new TaskSerializer())
+                .setPrettyPrinting()
                 .create()
                 .toJson(this);
     }
@@ -101,22 +130,22 @@ public class Task {
     public static Task fromDbObject(BasicDBObject dbTask) {
         Task task = new Task();
 
-        task.setId(dbTask.getObjectId("_id").toString());
-        task.setDescription(dbTask.getString("description"));
+        task.id = (dbTask.getObjectId("_id").toString());
+        task.description = (dbTask.getString("description"));
 
-        task.setStartDate(dbTask.getDate("startDate"));
-        task.setForeseenEndDate(dbTask.getDate("foreseenEndDate"));
-        task.setEndDate(dbTask.getDate("endDate"));
+        task.startDate = (dbTask.getDate("startDate"));
+        task.foreseenEndDate = (dbTask.getDate("foreseenEndDate"));
+        task.endDate = (dbTask.getDate("endDate"));
 
-        task.setSource(dbTask.getString("source"));
-        task.setApplication(new Application(((BasicDBObject) dbTask.get("application")).getString("name")));
+        task.source = (dbTask.getString("source"));
+        task.application = (new Application(((BasicDBObject) dbTask.get("application")).getString("name")));
 
         List<TaskOwner> owners = new ArrayList<>();
         List<BasicDBObject> dbOwners = (List<BasicDBObject>) dbTask.get("owners");
         for (BasicDBObject dbOwner : dbOwners) {
             owners.add(new TaskOwner(dbOwner.getString("login")));
         }
-        task.setOwners(owners);
+        task.owners = (owners);
 
         List<BasicDBObject> dbPosts = (List<BasicDBObject>) dbTask.get("posts");
         if (dbPosts != null) {
@@ -128,11 +157,6 @@ public class Task {
                 );
                 task.addPost(p);
             }
-
-        } else {
-            // The Posts were excluded using a query option, the result object will also
-            // contain null.
-            task.setPosts(null);
         }
 
         return task;
@@ -205,68 +229,66 @@ public class Task {
         this.endDate = date;
     }
 
-    public String getId() {
-        return id;
+    /**
+     *
+     * @param startDate
+     * @throws ValidationException
+     */
+    public void changeStartDate(Date startDate) throws ValidationException {
+        if (startDate.before(getCurrentDate())) {
+            throw new ValidationException("Cannot change the start date. The task is already started");
+        }
+
+        if (this.endDate != null) {
+            throw new ValidationException("Task already finished");
+        }
+
+        this.startDate = toZeroHourDate(startDate);
     }
 
-    public void setId(String id) {
-        this.id = id;
+    /**
+     *
+     * @param foreseen
+     * @throws ValidationException
+     */
+    public void changeForeseenEndDate(Date foreseen) throws ValidationException {
+        if (this.endDate != null) {
+            throw new ValidationException("Task already finished");
+        }
+
+        this.foreseenEndDate = toMaxHourDate(foreseen);
+    }
+
+    public String getId() {
+        return id;
     }
 
     public String getDescription() {
         return description;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
     public Date getStartDate() {
         return startDate;
-    }
-
-    public void setStartDate(Date startDate) {
-        this.startDate = startDate;
     }
 
     public Date getForeseenEndDate() {
         return foreseenEndDate;
     }
 
-    public void setForeseenEndDate(Date foreseenEndDate) {
-        this.foreseenEndDate = foreseenEndDate;
-    }
-
     public Date getEndDate() {
         return endDate;
-    }
-
-    public void setEndDate(Date endDate) {
-        this.endDate = endDate;
     }
 
     public Application getApplication() {
         return application;
     }
 
-    public void setApplication(Application application) {
-        this.application = application;
-    }
-
     public List<TaskOwner> getOwners() {
         return owners;
     }
 
-    public void setOwners(List<TaskOwner> owners) {
-        this.owners = owners;
-    }
-
     public List<Post> getPosts() {
         return posts;
-    }
-
-    public void setPosts(List<Post> posts) {
-        this.posts = posts;
     }
 
     public void addPost(Post p) {
@@ -278,10 +300,6 @@ public class Task {
 
     public String getSource() {
         return source;
-    }
-
-    public void setSource(String source) {
-        this.source = source;
     }
 
     private Date toZeroHourDate(Date dt) {
@@ -362,13 +380,26 @@ public class Task {
             Task t = new Task();
 
             JsonObject obj = jsonElement.getAsJsonObject();
-            t.setId(obj.get("id") == null ? null : obj.get("id").getAsString());
-            t.setDescription(obj.get("description") == null ? null : obj.get("description").getAsString());
-            t.setStartDate(obj.get("startDate") == null ? null : parseDate(obj.get("startDate").getAsString(), false));
-            t.setForeseenEndDate(obj.get("foreseenEndDate") == null ? null : parseDate(obj.get("foreseenEndDate").getAsString(), true));
-            t.setEndDate(obj.get("endDate") == null ? null : parseDate(obj.get("endDate").getAsString(), true));
-            t.setSource(obj.get("source") == null ? null : obj.get("source").getAsString());
-            t.setApplication(obj.get("application") == null ? null : new Application(obj.get("application").getAsString()));
+
+            // The attributes can optionally be encapsulated under a 'task' parent
+            // object. If this is the case, we "go into" this parent object
+            // before looking for the attributes.
+            //
+            //      { task: { 'attribute1': 'value1', 'attribute2': 'value2' } }
+            //                 is equivalent to
+            //      { 'attribute1': 'value1', 'attribute2': 'value2' }
+            //
+            if (obj.has("task")) {
+                obj = obj.get("task").getAsJsonObject();
+            }
+
+            t.id = (obj.get("id") == null ? null : obj.get("id").getAsString());
+            t.description = (obj.get("description") == null ? null : obj.get("description").getAsString());
+            t.startDate = (obj.get("startDate") == null ? null : parseDate(obj.get("startDate").getAsString(), false));
+            t.foreseenEndDate = (obj.get("foreseenEndDate") == null ? null : parseDate(obj.get("foreseenEndDate").getAsString(), true));
+            t.endDate = (obj.get("endDate") == null ? null : parseDate(obj.get("endDate").getAsString(), true));
+            t.source = (obj.get("source") == null ? null : obj.get("source").getAsString());
+            t.application = (obj.get("application") == null ? null : new Application(obj.get("application").getAsString()));
 
             if (obj.get("owners") != null) {
                 List<TaskOwner> owners = new ArrayList<>();
@@ -378,7 +409,7 @@ public class Task {
                     TaskOwner o = new TaskOwner(jsonOwnerObject.get("login").getAsString());
                     owners.add(o);
                 }
-                t.setOwners(owners);
+                t.owners = owners;
             }
 
             return t;
@@ -411,5 +442,25 @@ public class Task {
             }
             return cal.getTime();
         }
+    }
+
+    /**
+     *
+     * @return
+     */
+    private Date getCurrentDate() {
+         if (fixedCurrentDate != null) {
+             // This conditions applies only to unit test environments!
+             return fixedCurrentDate;
+         } else {
+             return new Date();
+         }
+    }
+
+    /**
+     * This must be changed only in testing code, when a precise control over the variables is required.
+     */
+    public static void setFixedCurrentDate(Date dt) {
+        fixedCurrentDate = dt;
     }
 }

@@ -2,6 +2,7 @@ package br.com.egs.task.control.core.repository.impl;
 
 import br.com.egs.task.control.core.repository.TaskSearchCriteria;
 import com.mongodb.BasicDBObject;
+import com.mongodb.util.JSON;
 import org.junit.Before;
 import org.junit.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
@@ -110,9 +111,12 @@ public class TasksRepositoryImplTest {
 
         BasicDBObject filter = repository.createFilterObject(criteria);
 
-        String expectedFilter = "{endDate: { $exists: false }}";
+        BasicDBObject expectedFilter = new BasicDBObject("$and", Arrays.asList(
+                new BasicDBObject("endDate", new BasicDBObject("$exists", false)),
+                new BasicDBObject("startDate", new BasicDBObject("$lte", timestampFormat.parse("2014-02-20 23:59:59.999")))
+        ));
 
-        JSONAssert.assertEquals(expectedFilter, filter.toString(), true);
+        JSONAssert.assertEquals(expectedFilter.toString(), filter.toString(), true);
     }
 
     @Test
@@ -175,16 +179,19 @@ public class TasksRepositoryImplTest {
     @Test
     public void filterByStatus_combined() throws Exception {
         TaskSearchCriteria criteria = new TaskSearchCriteria()
-                .status(TaskSearchCriteria.Status.DOING, TaskSearchCriteria.Status.FINISHED);
+                .status(TaskSearchCriteria.Status.WAITING, TaskSearchCriteria.Status.FINISHED);
 
-        BasicDBObject filter = repository.createFilterObject(criteria);
+        BasicDBObject expectedWaitingFilter = new BasicDBObject("$and", Arrays.asList(
+                new BasicDBObject("endDate", new BasicDBObject("$exists", false)),
+                new BasicDBObject("startDate", new BasicDBObject("$gt", timestampFormat.parse("2014-02-20 23:59:59.999")))
+        ));
+        Object expectedFinishedFilter = JSON.parse("{endDate: { $exists: true }}");
+        BasicDBObject expectedFilter = new BasicDBObject("$or", Arrays.asList(expectedFinishedFilter, expectedWaitingFilter));
 
-        String expectedFilter = "{ $or: [" +
-                "{endDate: { $exists: false }}," +
-                "{endDate: { $exists: true }}" +
-        "]}";
 
-        JSONAssert.assertEquals(expectedFilter, filter.toString(), true);
+        BasicDBObject resultingFilter = repository.createFilterObject(criteria);
+
+        JSONAssert.assertEquals(expectedFilter.toString(), resultingFilter.toString(), true);
     }
 
     @Test

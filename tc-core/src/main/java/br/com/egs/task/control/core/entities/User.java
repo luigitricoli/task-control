@@ -85,6 +85,7 @@ public class User {
     public String toJson() {
         return new GsonBuilder()
                 .registerTypeAdapter(this.getClass(), new UserSerializer(true))
+                .setPrettyPrinting()
                 .create()
                 .toJson(this);
     }

@@ -17,9 +17,11 @@ public class PostTest {
 
     @Test
     public void fromJson() throws ParseException {
-        String json = "{user: 'testusr', " +
+        String json = "{post: " +
+                "{user: 'testusr', " +
                 "text: 'An history event', " +
-                "timestamp: '2013-03-15 09:30:15'}";
+                "timestamp: '2013-03-15 09:30:15'}" +
+                "}";
 
         Post p = Post.fromJson(json);
 

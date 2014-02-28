@@ -2,10 +2,11 @@ package br.com.egs.task.control.core.service;
 
 import br.com.egs.task.control.core.entities.Post;
 import br.com.egs.task.control.core.entities.Task;
+import br.com.egs.task.control.core.exception.LateTaskException;
 import br.com.egs.task.control.core.exception.ValidationException;
 import br.com.egs.task.control.core.repository.TaskSearchCriteria;
 import br.com.egs.task.control.core.repository.Tasks;
-import br.com.egs.task.control.core.utils.WebserviceUtils;
+import br.com.egs.task.control.core.utils.HttpResponseUtils;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonParseException;
 import org.apache.commons.lang.StringUtils;
@@ -15,7 +16,6 @@ import org.slf4j.LoggerFactory;
 import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 import java.text.ParseException;
 import java.util.List;
 
@@ -55,32 +55,20 @@ public class TasksService {
 
         List<Task> result = repository.searchTasks(criteria);
         return new GsonBuilder().registerTypeAdapter(Task.class, new Task.TaskSerializer())
-                   .create().toJson(result);
+                .setPrettyPrinting()
+                .create()
+                .toJson(result);
 	}
 
     @POST
     @Produces(MediaType.APPLICATION_JSON)
     public String create(String body) {
-        if (StringUtils.isBlank(body)) {
-            WebserviceUtils.throwWebApplicationException(Response.Status.BAD_REQUEST, "Request body cannot by null");
-        }
-
-        Task task = null;
-        try {
-            task = Task.fromJson(body);
-        } catch (JsonParseException jpe) {
-            if (jpe.getCause() instanceof ParseException) {
-                // Error generated when parsing a specific field
-                WebserviceUtils.throwWebApplicationException(Response.Status.BAD_REQUEST, jpe.getMessage());
-            } else {
-                // General JSON parse error
-            }   WebserviceUtils.throwWebApplicationException(Response.Status.BAD_REQUEST, "Invalid JSON body");
-        }
+        Task task = jsonToTask(body);
 
         try {
             task.validateForInsert();
         } catch (ValidationException ve) {
-            WebserviceUtils.throwWebApplicationException(Response.Status.BAD_REQUEST, "Error validating task: " + ve.getMessage());
+            HttpResponseUtils.throwBadRequestException("Error validating task: " + ve.getMessage());
         }
 
         task = repository.add(task);
@@ -95,12 +83,13 @@ public class TasksService {
         try {
             post = Post.fromJson(body);
         } catch (JsonParseException jpe) {
-            if (jpe.getCause() instanceof ParseException) {
-                // Error generated when parsing a specific field
-                WebserviceUtils.throwWebApplicationException(Response.Status.BAD_REQUEST, jpe.getMessage());
+            if (jpe.getCause() instanceof ParseException
+                    || jpe.getCause() instanceof IllegalArgumentException) {
+                // Error generated when parsing a specific field or creating the User object
+                HttpResponseUtils.throwBadRequestException(jpe.getMessage());
             } else {
                 // General JSON parse error
-            }   WebserviceUtils.throwWebApplicationException(Response.Status.BAD_REQUEST, "Invalid JSON body");
+            }   HttpResponseUtils.throwBadRequestException("Invalid JSON body");
         }
 
         Task task = retrieveTask(id);
@@ -110,19 +99,66 @@ public class TasksService {
         return task.toJson();
     }
 
+    /**
+     * Used to finish or reschedule a task.
+     * @param id
+     * @param body
+     * @return
+     */
+    @PUT
+    @Path("{id}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public String modifyTask(@PathParam("id") String id, String body) {
+        Task changedAttributes = jsonToTask(body);
+        Task task = retrieveTask(id);
+
+        if (changedAttributes.getEndDate() != null) {
+            try {
+                task.finish(changedAttributes.getEndDate());
+            } catch (LateTaskException lte) {
+                HttpResponseUtils.throwRecoverableBusinessException(lte.getMessage());
+            } catch (ValidationException e) {
+                HttpResponseUtils.throwUnrecoverableBusinessException(e.getMessage());
+            }
+
+        } else if (changedAttributes.getStartDate() != null) {
+            try {
+                task.changeStartDate(changedAttributes.getStartDate());
+            } catch (ValidationException e) {
+                HttpResponseUtils.throwUnrecoverableBusinessException(e.getMessage());
+            }
+
+        } else if (changedAttributes.getForeseenEndDate() != null) {
+            try {
+                task.changeForeseenEndDate(changedAttributes.getForeseenEndDate());
+            } catch (ValidationException e) {
+                HttpResponseUtils.throwUnrecoverableBusinessException(e.getMessage());
+            }
+
+
+        } else {
+            HttpResponseUtils.throwBadRequestException(
+                    "No valid operation was present in the message body");
+        }
+
+        repository.update(task);
+
+        return task.toJson();
+    }
+
     private TaskSearchCriteria buildSearchCriteria(String year, String month, String owner, String application, String sources, String status, String excludePosts) {
         TaskSearchCriteria criteria = new TaskSearchCriteria();
 
         if (StringUtils.isBlank(year) || StringUtils.isBlank(month)) {
-            WebserviceUtils.throwWebApplicationException(Response.Status.BAD_REQUEST, "Year and Month parameters are required");
+            HttpResponseUtils.throwBadRequestException("Year and Month parameters are required");
         }
 
         try {
             criteria.month(Integer.parseInt(year, 10), Integer.parseInt(month, 10));
         } catch (NumberFormatException e) {
-            WebserviceUtils.throwWebApplicationException(Response.Status.BAD_REQUEST, "Invalid year/month value");
+            HttpResponseUtils.throwBadRequestException("Invalid year/month value");
         } catch (IllegalArgumentException iae) {
-            WebserviceUtils.throwWebApplicationException(Response.Status.BAD_REQUEST, iae.getMessage());
+            HttpResponseUtils.throwBadRequestException(iae.getMessage());
         }
 
         if (StringUtils.isNotBlank(owner)) {
@@ -151,7 +187,7 @@ public class TasksService {
                     for (TaskSearchCriteria.Status statusOption : TaskSearchCriteria.Status.values()) {
                         message = message + " " + statusOption.name();
                     }
-                    WebserviceUtils.throwWebApplicationException(Response.Status.BAD_REQUEST, message);
+                    HttpResponseUtils.throwBadRequestException(message);
                 }
             }
 
@@ -166,12 +202,31 @@ public class TasksService {
 
     private Task retrieveTask(String id) {
         if (!id.matches("[0-9a-fA-F]{24}")) {
-            WebserviceUtils.throwWebApplicationException(Response.Status.NOT_FOUND, "Invalid Task ID");
+            HttpResponseUtils.throwNotFoundException("Invalid Task ID");
         }
 
         Task task = repository.get(id);
         if (task == null) {
-            WebserviceUtils.throwWebApplicationException(Response.Status.NOT_FOUND, "Task not found");
+            HttpResponseUtils.throwNotFoundException("Task not found");
+        }
+        return task;
+    }
+
+    private Task jsonToTask(String json) {
+        if (StringUtils.isBlank(json)) {
+            HttpResponseUtils.throwBadRequestException("Request body cannot by null");
+        }
+
+        Task task = null;
+        try {
+            task = Task.fromJson(json);
+        } catch (JsonParseException jpe) {
+            if (jpe.getCause() instanceof ParseException) {
+                // Error generated when parsing a specific field
+                HttpResponseUtils.throwBadRequestException(jpe.getMessage());
+            } else {
+                // General JSON parse error
+            }   HttpResponseUtils.throwBadRequestException("Invalid JSON body");
         }
         return task;
     }
