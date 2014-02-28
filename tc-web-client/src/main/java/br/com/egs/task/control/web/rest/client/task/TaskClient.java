@@ -1,10 +1,17 @@
 package br.com.egs.task.control.web.rest.client.task;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import br.com.caelum.vraptor.ioc.Component;
+import br.com.caelum.vraptor.ioc.RequestScoped;
 import br.com.egs.task.control.web.model.OneWeekTask;
 import br.com.egs.task.control.web.model.Post;
 import br.com.egs.task.control.web.model.Week;
@@ -13,39 +20,59 @@ import br.com.egs.task.control.web.model.stage.Stage;
 import br.com.egs.task.control.web.rest.client.JsonClient;
 
 @Component
+@RequestScoped
 public class TaskClient implements TaskRepository {
 
+	private Logger log = LoggerFactory.getLogger(TaskCalendar.class);
 	private JsonClient jsonClient;
 	private TaskCalendar today;
+	private FilterFormat fomatter;
 
-	public TaskClient(JsonClient jsonClient) {
-		this(jsonClient, Calendar.getInstance());
+	public TaskClient(FilterFormat fomatter, JsonClient jsonClient) {
+		this(fomatter, jsonClient, Calendar.getInstance());
 	}
 
-	public TaskClient(JsonClient jsonClient, Calendar today) {
+	public TaskClient(FilterFormat fomatter, JsonClient jsonClient, Calendar today) {
+		this.fomatter = fomatter;
 		this.jsonClient = jsonClient;
 		this.today = new TaskCalendar(today);
 	}
 
 	@Override
-	public List<Week> weeksByMonth(Integer month) {
-		String response = jsonClient.at("tasks").addUrlParam("year", "2014").addUrlParam("month", month.toString()).getAsJson();
+	public List<Week> weeksBy(Integer month) {
+		return weeksBy(month, new ArrayList<String>());
+	}
+	
+	@Override
+	public List<Week> weeksBy(Integer month, List<String> filters) {
+		jsonClient.at("tasks").addUrlParam("year", "2014").addUrlParam("month", month.toString());
+		Map<String, String> filterParam = fomatter.formatParams(filters);
+		for(Entry<String, String> filter : filterParam.entrySet()){
+			jsonClient.addUrlParam(filter.getKey(), filter.getValue());
+		}
 
-		List<CoreTask> tasks = CoreTask.JsonList.parse(response);
-
+		List<CoreTask> tasks = CoreTask.unmarshalList(jsonClient.getAsJson());
 		List<Week> weeks = loadWeeks();
 
 		for (CoreTask coreTask : tasks) {
+			boolean keepInNextWeek = true;
+
 			for (int weekIndex = coreTask.startDate.getWeekOfYear(); weekIndex <= coreTask.foreseenEndDate.getWeekOfYear(); weekIndex++) {
 
 				OneWeekTask.Builder task = new OneWeekTask.Builder(coreTask.id, coreTask.description);
 
-				if (isFirstWeek(coreTask, weekIndex)) {
-					task.starDay(coreTask.startDate.getDayOfWeek());
-				}
+				// TODO improve it
+				try {
+					if (isFirstWeek(coreTask, weekIndex)) {
+						task.starDay(coreTask.startDate.getDayOfWeek());
+					}
 
-				if (isLastWeek(coreTask, weekIndex)) {
-					task.foreseenEnd(coreTask.foreseenEndDate.getDayOfWeek());
+					if (isLastWeek(coreTask, weekIndex)) {
+						task.foreseenEndDay(coreTask.foreseenEndDate.getDayOfWeek());
+					}
+				} catch (Exception e) {
+					log.error(e.getMessage(), e);
+					continue;
 				}
 
 				if (isFinished(coreTask)) {
@@ -53,20 +80,28 @@ public class TaskClient implements TaskRepository {
 
 					if (isInSameWeek(coreTask.endDate, weekIndex)) {
 						task.runUntil(coreTask.endDate.getDayOfWeek());
+						keepInNextWeek = false;
+					} else if (keepInNextWeek) {
+						task.runAtTheEnd();
 					}
-				} else {
-					if (isBeyondTheForeseen(coreTask)) {
-						task.as(Stage.LATE);
-					} else if (isStarted(coreTask)) {
-						task.as(Stage.DOING);
-					}
+				} else if (isBeyondTheForeseen(coreTask)) {
+					task.as(Stage.LATE);
 
 					if (isInSameWeek(today, weekIndex)) {
 						task.runUntil(today.getDayOfWeek());
+					} else {
+						task.runAtTheEnd();
 					}
-	
+				} else if (isStarted(coreTask)) {
+					task.as(Stage.DOING);
+
+					if (isInSameWeek(today, weekIndex)) {
+						task.runUntil(today.getDayOfWeek());
+					} else {
+						task.runAtTheEnd();
+					}
 				}
-				
+
 				weeks.get(weekIndex).add(task.build());
 			}
 		}
@@ -106,26 +141,29 @@ public class TaskClient implements TaskRepository {
 	}
 
 	@Override
-	public List<Post> postBy(String id) {
+	public List<Post> postsBy(String taskId) {
+		String response = jsonClient.at(String.format("tasks/%s", taskId)).getAsJson();
+		CoreTask task = CoreTask.unmarshal(response);
+
 		List<Post> posts = new LinkedList<>();
-
-		Calendar c1 = Calendar.getInstance();
-		c1.add(Calendar.DAY_OF_MONTH, -5);
-		posts.add(new Post(c1, "Luigi", "Beef ribs chicken tail boudin pork chop filet mignon #hashtag kevin chuck."));
-
-		Calendar c2 = Calendar.getInstance();
-		c2.add(Calendar.DAY_OF_MONTH, -4);
-		posts.add(new Post(c2, "Luigi", "Beef ribs chicken #horaextra tail boudin pork chop filet #hashtag mignon kevin chuck."));
-
-		Calendar c3 = Calendar.getInstance();
-		c3.add(Calendar.DAY_OF_MONTH, -3);
-		posts.add(new Post(c3, "Luigi", "Beef ribs chicken #hashtag tail boudin pork chop filet mignon kevin chuck."));
-
-		Calendar c4 = Calendar.getInstance();
-		c4.add(Calendar.DAY_OF_MONTH, -2);
-		posts.add(new Post(c4, "Luigi", "Beef ribs chicken tail boudin pork chop filet mignon kevin chuck. #atraso #hashtag"));
+		for (CorePost post : task.posts) {
+			posts.add(new Post(post.timestamp, post.user, post.text));
+		}
 
 		return posts;
+	}
+	
+	@Override
+	public boolean add(Post p, String taskId){
+		CorePost post = new CorePost(p.getTime(), p.getUser(), p.getText());
+		
+		String response = jsonClient.at(String.format("tasks/%s", taskId)).postAsJson(post.toJson());
+		if(response != ""){
+			return false;
+		}
+		
+		return true;
+		
 	}
 
 }

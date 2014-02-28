@@ -12,10 +12,23 @@ function ajustMonthLines(){
     var tasks = $(".hashtags");
     tasks.each(function(){
         var task = $(this).parent();
-        ajustMonthLine(task);
+        ajustHashtagLineHeight(task);
     });
+    
+    $(".week").each(function(){
+    	var tasksCount = $(this).children(".task").length;
+    	var extraTasks = tasksCount-3;
+    	if(extraTasks>0){
+    	    var weekCalendarId = "#"+$(this).attr("id").replace("task", "calendar");
+    	    var weekCalendarColumn = $(weekCalendarId+" td");
+    	    
+    	    var extraHeight = extraTasks*19.35;
+    	    weekCalendarColumn.height($(weekCalendarId).height()+extraHeight);
+    	    $(this).height($(this).height()+extraHeight);
+    	}
+    });    
 }
-function ajustMonthLine(task){
+function ajustHashtagLineHeight(task){
 	if(task.data("added-hashtags") === undefined){
 		task.css("margin-bottom", 15);
 	    
@@ -29,8 +42,6 @@ function ajustMonthLine(task){
 	    task.data("added-hashtags", true);
 	}
 }
-
-
 function populateCalendar(days){
 	$(".subline.days").children().each(function(index){
 		var value = days[index];
@@ -117,13 +128,17 @@ function populateTimeline(task){
         $("#task-history").show();
 
         var html = $($.parseHTML(data));
-        html.find("form").attr("action", url);
         $("#task-history").append(html);
-        $("#task-description").text(task.find(".task-description").text())
+        $("#iteraction-form").data("task-id", task.attr("id"));
+        $("#task-description").text(task.find(".task-description").text());
 
         $( ".post:contains('#atraso')" ).addClass("late");
         $( ".post:contains('#horaextra')" ).addClass("overtime");
-
+        
+    	$("#add_comentary").click(function() {
+    		addPost(task, url);
+    	});	
+        
         $("#btn-task-history")[0].click();
     });
 }
@@ -141,8 +156,14 @@ function toogleFilterTasks(filter){
         activeFilters = activeFilters.replace(name+",", "");
         activeFilters = activeFilters.replace(name, "");
     }
-    console.log(activeFilters);
     loadMonth();
+}
+
+function addPost(task, url){
+	$.post(url, { "text": $("#iteraction-form").find("#comentary").val() }, function(data){
+		populateTimeline(task);
+	});
+
 }
 
 $(document).ready(function(){
@@ -150,10 +171,11 @@ $(document).ready(function(){
             toogleFilterTasks($(this));
         }
     );
-    $(".filter-group input:checkbox").click(function(event){
-            toogleFilterTasks($(this));
-        }
-    );
+//TODO error duplicated click
+//    $(".filter-group input:checkbox").click(function(event){
+//            toogleFilterTasks($(this));
+//        }
+//    );
 	$("#next-month").click(function() {
 		nextMonth();
 	});

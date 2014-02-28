@@ -7,8 +7,12 @@ import br.com.egs.task.control.web.model.Week;
 
 public interface TaskRepository {
 
-	List<Week> weeksByMonth(Integer month);
+	public List<Week> weeksBy(Integer month);
+	
+	public List<Week> weeksBy(Integer month, List<String> filters);
 
-    List<Post> postBy(String id);
+    public List<Post> postsBy(String taskId);
+    
+    public boolean add(Post p, String taskId);
 
 }

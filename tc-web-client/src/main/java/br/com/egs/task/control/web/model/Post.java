@@ -8,22 +8,28 @@ import java.util.regex.Pattern;
 
 public class Post {
 
-    public static final String OPEN_TAG = "<span>";
+    private static final String EMPTY = "";
+	public static final String OPEN_TAG = "<span>";
     public static final String CLOSE_TAG = "</span>";
     private Calendar time;
     private String user;
     private String text;
-    private Set<String> hashtags;
-    private String html;
+    private transient Set<String> hashtags;
+    private transient String html;
 
     public Post(Calendar time, String user, String text) {
         this.time = time;
         this.user = user;
-        this.text = text;
         this.hashtags = new HashSet<>();
 
-        extractHashtags(text);
-        extractHtml(text);
+        if(text != null){
+            this.text = text;
+            extractHashtags(text);
+            extractHtml(text);
+        } else {
+        	this.text = EMPTY;
+        	this.html = EMPTY;
+        }
     }
 
     private void extractHashtags(String text) {

@@ -2,7 +2,7 @@ package br.com.egs.task.control.web.rest.client.task;
 
 import java.util.List;
 
-import br.com.egs.task.control.web.rest.client.gson.StringListDeserializer;
+import br.com.egs.task.control.web.rest.client.gson.OwnersUnmarshaller;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -18,22 +18,24 @@ class CoreTask {
 	public String source;
 	public String application;
 	public List<String> owners;
+	public List<CorePost> posts;
 
-	public static class JsonList {
+	private static Gson parser() {
+		GsonBuilder gson = new GsonBuilder();
+		gson.registerTypeAdapter(TaskCalendar.class, new TaskCalendar.JsonUnmarshaller());
+		gson.registerTypeAdapter(new TypeToken<List<String>>() {
+		}.getType(), new OwnersUnmarshaller());
+		gson.registerTypeAdapter(CorePost.class, new CorePost.JsonUnmarshaller());
+		return gson.create();
+	}
 
-		private static Gson parser() {
-			GsonBuilder gson = new GsonBuilder();
-			gson.registerTypeAdapter(TaskCalendar.class, new TaskCalendar.JsonUnmarshaller());
-			gson.registerTypeAdapter(new TypeToken<List<String>>() {
-			}.getType(), new StringListDeserializer());
-			return gson.create();
-		}
+	public static CoreTask unmarshal(String json) {
+		return parser().fromJson(json, CoreTask.class);
+	}
 
-		public static List<CoreTask> parse(String json) {
-			return parser().fromJson(json, new TypeToken<List<CoreTask>>() {
-			}.getType());
-		}
-
+	public static List<CoreTask> unmarshalList(String json) {
+		return parser().fromJson(json, new TypeToken<List<CoreTask>>() {
+		}.getType());
 	}
 
 }

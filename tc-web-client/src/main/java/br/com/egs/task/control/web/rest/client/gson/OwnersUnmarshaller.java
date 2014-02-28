@@ -10,7 +10,7 @@ import java.lang.reflect.Type;
 import java.util.LinkedList;
 import java.util.List;
 
-public class StringListDeserializer implements JsonDeserializer<List<String>> {
+public class OwnersUnmarshaller implements JsonDeserializer<List<String>> {
 
     @Override
     public List<String> deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {

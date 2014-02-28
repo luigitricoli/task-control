@@ -70,8 +70,8 @@
             <div class="filter-group">
                 <h4>Tipo da Demanda</h4>
                 <div class="constraint">
-                    <input type="checkbox" data-filter="ccc" id="chb-ccc">
-                    <label for="chb-ccc" data-filter="ccc">CCC</label>
+                    <input type="checkbox" data-filter="CCC" id="chb-CCC">
+                    <label for="chb-CCC" data-filter="CCC">CCC</label>
                 </div>
                 <div class="constraint">
                     <input type="checkbox" data-filter="internal" id="chb-internal">

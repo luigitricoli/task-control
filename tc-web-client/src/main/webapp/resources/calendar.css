@@ -79,6 +79,9 @@
 .late .foreseen{
     background: #ed4230;
 }
+.interval-day-0{
+    width: 0px;
+}
 .interval-day-1{
     width: 122px;
 }

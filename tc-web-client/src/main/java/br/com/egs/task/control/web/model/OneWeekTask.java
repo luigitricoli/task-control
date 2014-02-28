@@ -1,11 +1,11 @@
 package br.com.egs.task.control.web.model;
 
-import br.com.egs.task.control.web.model.stage.AbstractStage;
-import br.com.egs.task.control.web.model.stage.Stage;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+
+import br.com.egs.task.control.web.model.stage.AbstractStage;
+import br.com.egs.task.control.web.model.stage.Stage;
 
 public class OneWeekTask {
 
@@ -104,9 +104,10 @@ public class OneWeekTask {
 
     public static class Builder {
 
-        private String id;
+        private static final int LAST_UTIL_DAY_OF_WEEK = 6;
+		private String id;
         private Integer sday;
-        private Integer fday;
+        private Integer iday;
         private Stage st;
         private String desc;
         private Map<Integer, Hashtags> htsByDay;
@@ -115,7 +116,7 @@ public class OneWeekTask {
         public Builder(String id, String description) {
             this.id = id;
             this.sday = 2;
-            this.fday = 5;
+            this.iday = 5;
             this.runUntil = 0;
             this.desc = description;
             this.htsByDay = new HashMap<>();
@@ -123,17 +124,53 @@ public class OneWeekTask {
             as(Stage.WAITING);
         }
 
-        public Builder starDay(Integer startDayOfWeek){
+        public Builder starDay(Integer startDayOfWeek) throws Exception{
             sday = startDayOfWeek;
-            foreseenEnd(++fday);
+            recalculateForeseenInterval();
+            recalculateRunInterval();
             return this;
+        }
+        
+        public void recalculateForeseenInterval() throws Exception{
+        	iday += 2;
+            iday = (iday - sday);
+            
+            //TODO create an specific exception
+            if(iday<runUntil){
+            	throw new Exception("The new foreseen interval is less than the run interval");
+            }
         }
 
-        public Builder foreseenEnd(Integer dayOfWeek){
-            fday = (dayOfWeek - sday);
-            fday++;
+        public Builder foreseenEndDay(Integer dayOfWeek) throws Exception{
+            iday = dayOfWeek - 1;
+
+            try {
+				recalculateForeseenInterval();
+			} catch (Exception e) {
+	            //TODO create an specific exception
+				throw new Exception(String.format("The day of week [%s] sended as foreseen end day is less than the run end day [%s]", iday+1, runUntil+1));
+			}
             return this;
         }
+        
+        public Builder runUntil(Integer dayOfWeek) {
+        	runUntil = dayOfWeek - 1;
+        	recalculateRunInterval();
+            return this;
+        }
+        
+        private void recalculateRunInterval(){
+        	runUntil += 2;
+        	runUntil = (runUntil - sday);
+        	
+        	if(runUntil < 0){
+        		runUntil = 0;
+        	}
+        }
+        
+        public Builder runAtTheEnd(){
+            return runUntil(LAST_UTIL_DAY_OF_WEEK);
+        }        
 
         public Builder addHashtag(Integer day, Hashtag ht) {
             Hashtags hts = htsByDay.get(day);
@@ -148,25 +185,11 @@ public class OneWeekTask {
 
         public Builder as(Stage st) {
             this.st = st;
-            if(!Stage.WAITING.equals(st)){
-            	runAtEnd();            	
-            }
             return this;
-        }
-
-        public Builder runUntil(Integer dayOfWeek) {
-            dayOfWeek = dayOfWeek + 1;
-            this.runUntil = dayOfWeek-sday;
-            return this;
-        }
-        
-        public Builder runAtEnd(){
-            this.runUntil = 7-sday;
-            return this;        	
         }
 
         public OneWeekTask build() {
-            AbstractStage stage = st.getInstance(fday, runUntil);
+            AbstractStage stage = st.getInstance(iday, runUntil);
             return new OneWeekTask(id, sday, stage.calculateDaysInterval(), stage.calculateDaysRun(), st, desc, htsByDay);
         }
 
