@@ -71,11 +71,23 @@ public class TasksRepositoryImplTest {
     @Test
     public void filterByApplication() throws Exception {
         TaskSearchCriteria criteria = new TaskSearchCriteria()
-                .application("TaskControl");
+                .applications("TaskControl");
 
         BasicDBObject filter = repository.createFilterObject(criteria);
 
         String expectedFilter = "{'application.name': 'TaskControl'}";
+
+        JSONAssert.assertEquals(expectedFilter, filter.toString(), true);
+    }
+
+    @Test
+    public void filterByApplication_multiple() throws Exception {
+        TaskSearchCriteria criteria = new TaskSearchCriteria()
+                .applications("TaskControl", "EMA");
+
+        BasicDBObject filter = repository.createFilterObject(criteria);
+
+        String expectedFilter = "{'application.name': { $in: ['TaskControl', 'EMA'] } }";
 
         JSONAssert.assertEquals(expectedFilter, filter.toString(), true);
     }
@@ -209,7 +221,7 @@ public class TasksRepositoryImplTest {
     @Test
     public void combinedFilters() throws Exception {
         TaskSearchCriteria criteria = new TaskSearchCriteria()
-                .application("EMM")
+                .applications("EMM")
                 .sources("CCC")
                 .ownerLogin("mr.dev");
 

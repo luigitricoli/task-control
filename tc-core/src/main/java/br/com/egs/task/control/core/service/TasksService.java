@@ -101,9 +101,9 @@ public class TasksService {
 
     /**
      * Used to finish or reschedule a task.
-     * @param id
-     * @param body
-     * @return
+     * @param id Task ID
+     * @param body The JSON request body
+     * @return  Task JSON representation
      */
     @PUT
     @Path("{id}")
@@ -146,6 +146,13 @@ public class TasksService {
         return task.toJson();
     }
 
+    @DELETE
+    @Path("{id}")
+    public void cancelTask(@PathParam("id") String id) {
+        Task task = retrieveTask(id);
+        repository.remove(task);
+    }
+
     private TaskSearchCriteria buildSearchCriteria(String year, String month, String owner, String application, String sources, String status, String excludePosts) {
         TaskSearchCriteria criteria = new TaskSearchCriteria();
 
@@ -166,7 +173,8 @@ public class TasksService {
         }
 
         if (StringUtils.isNotBlank(application)) {
-            criteria.application(application);
+            String[] applicationTokens = application.split(",");
+            criteria.applications(applicationTokens);
         }
 
         if (StringUtils.isNotBlank(sources)) {

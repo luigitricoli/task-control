@@ -146,7 +146,7 @@ public class TasksServiceTest {
     public void searchTasks_byApplication() throws Exception {
         TaskSearchCriteria generatedCriteria = new TaskSearchCriteria()
                 .month(2014, 1)
-                .application("OLM");
+                .applications("OLM");
 
         Task t1 = createTestTask(null, false);
 
@@ -154,6 +154,24 @@ public class TasksServiceTest {
         Mockito.when(taskRepository.searchTasks(generatedCriteria)).thenReturn(taskList);
 
         String result = service.searchTasks("2014", "1", null, "OLM", null, null, null);
+
+        // Other tests check the resulting data. Here we only ensure that the repository
+        // was called with the appropriate Criteria object.
+        Mockito.verify(taskRepository).searchTasks(generatedCriteria);
+    }
+
+    @Test
+    public void searchTasks_byApplication_multiple() throws Exception {
+        TaskSearchCriteria generatedCriteria = new TaskSearchCriteria()
+                .month(2014, 1)
+                .applications("OLM", "EMM");
+
+        Task t1 = createTestTask(null, false);
+
+        List<Task> taskList = Arrays.asList(t1);
+        Mockito.when(taskRepository.searchTasks(generatedCriteria)).thenReturn(taskList);
+
+        String result = service.searchTasks("2014", "1", null, "OLM,EMM", null, null, null);
 
         // Other tests check the resulting data. Here we only ensure that the repository
         // was called with the appropriate Criteria object.

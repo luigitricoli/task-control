@@ -4,7 +4,10 @@ import br.com.egs.task.control.core.database.MongoDbConnection;
 import br.com.egs.task.control.core.entities.Task;
 import br.com.egs.task.control.core.repository.TaskSearchCriteria;
 import br.com.egs.task.control.core.repository.Tasks;
-import com.mongodb.*;
+import com.mongodb.BasicDBObject;
+import com.mongodb.DBCollection;
+import com.mongodb.DBCursor;
+import com.mongodb.DBObject;
 import org.apache.commons.lang.StringUtils;
 import org.bson.types.ObjectId;
 
@@ -88,6 +91,12 @@ public class TasksRepositoryImpl implements Tasks {
         connection.getCollection("tasks").update(filter, newTask);
     }
 
+    @Override
+    public void remove(Task t) {
+        BasicDBObject key = new BasicDBObject("_id", new ObjectId(t.getId()));
+        connection.getCollection("tasks").remove(key);
+    }
+
     private DBObject createKeysObject(TaskSearchCriteria criteria) {
         if (criteria.isExcludePosts()) {
             return new BasicDBObject("posts", 0);
@@ -103,8 +112,8 @@ public class TasksRepositoryImpl implements Tasks {
             filters.add(createYearMonthFilter(criteria.getYear(), criteria.getMonth()));
         }
 
-        if (StringUtils.isNotBlank(criteria.getApplication())) {
-            filters.add(createApplicationFilter(criteria.getApplication()));
+        if (criteria.getApplications() != null && criteria.getApplications().length > 0) {
+            filters.add(createApplicationFilter(criteria.getApplications()));
         }
 
         if (criteria.getSources() != null && criteria.getSources().length > 0) {
@@ -212,8 +221,14 @@ public class TasksRepositoryImpl implements Tasks {
         return filter;
     }
 
-    private BasicDBObject createApplicationFilter(String application) {
-        return new BasicDBObject("application.name", application);
+    private BasicDBObject createApplicationFilter(String[] applications) {
+        if (applications.length == 1) {
+            return new BasicDBObject("application.name", applications[0]);
+        } else {
+            return new BasicDBObject("application.name",
+                    new BasicDBObject("$in", applications)
+            );
+        }
     }
 
     private BasicDBObject createYearMonthFilter(int year, int month) {

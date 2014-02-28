@@ -32,4 +32,10 @@ public interface Tasks {
      * @param task
      */
     public void update(Task task);
+
+    /**
+     *
+     * @param t
+     */
+    void remove(Task t);
 }
