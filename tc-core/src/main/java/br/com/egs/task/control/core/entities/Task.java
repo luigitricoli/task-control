@@ -194,6 +194,14 @@ public class Task {
         if (owners == null || owners.isEmpty()) {
             throw new ValidationException("At least one owner is required");
         }
+
+        if (posts != null) {
+            throw new ValidationException("Posts are not allowed for a new Task");
+        }
+
+        if (foreseenEndDate.before(startDate)) {
+            throw new ValidationException("Start Date cannot be greater than Foreseen End Date");
+        }
     }
 
     /**
