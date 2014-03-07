@@ -10,19 +10,19 @@ import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
 
-class TaskCalendar implements Comparable<TaskCalendar> {
+public class TaskDate implements Comparable<TaskDate> {
 	
 	private Calendar date;
 	
-	public TaskCalendar(Calendar date) {
-		this.date = (Calendar) date.clone();
+	public TaskDate() {
+		this.date = Calendar.getInstance();
 	}
 	
-	public TaskCalendar(String date) throws ParseException {
+	public TaskDate(String date) throws ParseException {
 		this(date, new SimpleDateFormat("yyyy-MM-dd"));
 	}
 	
-	public TaskCalendar(String date, SimpleDateFormat format) throws ParseException {
+	public TaskDate(String date, SimpleDateFormat format) throws ParseException {
         this.date = Calendar.getInstance();
         this.date.setTime(format.parse(date));
 	}
@@ -52,8 +52,8 @@ class TaskCalendar implements Comparable<TaskCalendar> {
 		if (this == obj){			
 			return true;
 		}
-		if(obj instanceof TaskCalendar){			
-			TaskCalendar other = (TaskCalendar) obj;
+		if(obj instanceof TaskDate){
+			TaskDate other = (TaskDate) obj;
 			if (!date.equals(other.date)){				
 				return false;
 			} 
@@ -63,7 +63,7 @@ class TaskCalendar implements Comparable<TaskCalendar> {
 	}
 
 	@Override
-	public int compareTo(TaskCalendar o) {
+	public int compareTo(TaskDate o) {
 		return date.compareTo(o.date);
 	}
 	
@@ -72,12 +72,12 @@ class TaskCalendar implements Comparable<TaskCalendar> {
 		return date.toString();
 	}
 	
-	public static class JsonUnmarshaller implements JsonDeserializer<TaskCalendar> {
+	public static class JsonUnmarshaller implements JsonDeserializer<TaskDate> {
 
 		@Override
-		public TaskCalendar deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+		public TaskDate deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
 			try {
-				return new TaskCalendar(jsonElement.getAsString());
+				return new TaskDate(jsonElement.getAsString());
 			} catch (ParseException e) {
 				throw new JsonParseException(e);
 			}

@@ -8,21 +8,59 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 
-class CoreTask {
+public class CoreTask {
 
-	public String id;
-	public String description;
-	public TaskCalendar startDate;
-	public TaskCalendar foreseenEndDate;
-	public TaskCalendar endDate;
-	public String source;
-	public String application;
-	public List<String> owners;
-	public List<CorePost> posts;
+	private String id;
+    private String description;
+    private TaskDate startDate;
+    private TaskDate foreseenEndDate;
+    private TaskDate endDate;
+    private String source;
+    private String application;
+    private List<String> owners;
+    private List<CorePost> posts;
 
-	private static Gson parser() {
+    private CoreTask(){}
+
+    public String getId() {
+        return id;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public TaskDate getStartDate() {
+        return startDate;
+    }
+
+    public TaskDate getForeseenEndDate() {
+        return foreseenEndDate;
+    }
+
+    public TaskDate getEndDate() {
+        return endDate;
+    }
+
+    public String getSource() {
+        return source;
+    }
+
+    public String getApplication() {
+        return application;
+    }
+
+    public List<String> getOwners() {
+        return owners;
+    }
+
+    public List<CorePost> getPosts() {
+        return posts;
+    }
+
+    private static Gson parser() {
 		GsonBuilder gson = new GsonBuilder();
-		gson.registerTypeAdapter(TaskCalendar.class, new TaskCalendar.JsonUnmarshaller());
+		gson.registerTypeAdapter(TaskDate.class, new TaskDate.JsonUnmarshaller());
 		gson.registerTypeAdapter(new TypeToken<List<String>>() {
 		}.getType(), new OwnersUnmarshaller());
 		gson.registerTypeAdapter(CorePost.class, new CorePost.JsonUnmarshaller());
@@ -35,7 +73,7 @@ class CoreTask {
 
 	public static List<CoreTask> unmarshalList(String json) {
 		return parser().fromJson(json, new TypeToken<List<CoreTask>>() {
-		}.getType());
+        }.getType());
 	}
 
 }

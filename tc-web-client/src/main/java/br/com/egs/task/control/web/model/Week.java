@@ -1,6 +1,9 @@
 package br.com.egs.task.control.web.model;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 
 
 public class Week implements Collection<OneWeekTask>{
@@ -47,7 +50,10 @@ public class Week implements Collection<OneWeekTask>{
 
     @Override
 	public boolean add(OneWeekTask e) {
-		return tasks.add(e);
+        if(e != null){
+            return tasks.add(e);
+        }
+		return false;
 	}
 
     @Override

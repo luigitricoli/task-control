@@ -35,9 +35,9 @@ public class TaskInsert {
 		Long time = System.currentTimeMillis();
 		t.append("description", "SR".concat(time.toString()));
 
-		t.append("startDate", timestampFormat.parse("2014-01-10 00:00:00.000"));
-		t.append("foreseenEndDate", timestampFormat.parse("2014-01-20 23:59:59.999"));
-		t.append("endDate", timestampFormat.parse("2014-02-18 23:59:59.999"));
+		t.append("startDate", timestampFormat.parse("2014-02-19 00:00:00.000"));
+		t.append("foreseenEndDate", timestampFormat.parse("2014-02-20 23:59:59.999"));
+		t.append("endDate", timestampFormat.parse("2014-02-25 23:59:59.999"));
 
 		t.append("source", "internal");
 		t.append("application", new BasicDBObject("name", "OLM"));
