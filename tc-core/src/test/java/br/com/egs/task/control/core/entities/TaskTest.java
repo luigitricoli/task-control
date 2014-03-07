@@ -2,6 +2,7 @@ package br.com.egs.task.control.core.entities;
 
 import br.com.egs.task.control.core.exception.LateTaskException;
 import br.com.egs.task.control.core.exception.ValidationException;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.text.DateFormat;
@@ -18,6 +19,11 @@ import static org.junit.Assert.assertEquals;
 public class TaskTest {
 
     private final DateFormat timestampFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+
+    @Before
+    public void setUp() throws Exception {
+        Task.setFixedCurrentDate(timestampFormat.parse("2014-01-01 23:59:59.999"));
+    }
 
     @Test
     public void validateForInsert_ok() throws Exception {
@@ -57,6 +63,14 @@ public class TaskTest {
                 new Application("OLM"),
                 Arrays.asList(new TaskOwner("bob")));
 
+        t.validateForInsert();
+    }
+
+    @Test(expected = ValidationException.class)
+    public void validateForInsert_startBeforeCurrentDate() throws Exception {
+        Task.setFixedCurrentDate(timestampFormat.parse("2014-01-15 23:59:59.999"));
+
+        Task t = createTestTask(true, true, true);
         t.validateForInsert();
     }
 
