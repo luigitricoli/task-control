@@ -105,34 +105,23 @@ public class TasksRepositoryImplTest {
                      start date     foreseen end date                 |
                         (task unfinished)   |                         |
 
-             The task belongs to the previous month but it is not finished, so it spawns to
-                     the next month.
-             In this case, a special condition to handle this case is added to the basic search filter:
-
-             -------> The startDate is before the search month
-                      AND
-                      The task has no endDate
+             An additional condition handles the tasks that did not end
+             (endDate does not exist)
          */
-        BasicDBObject expectedFilter = new BasicDBObject("$or", new BasicDBObject[]{
-                new BasicDBObject("$and", new BasicDBObject[]{
-                    new BasicDBObject("startDate", new BasicDBObject(
-                            "$lte", timestampFormat.parse("2014-02-28 23:59:59.999")))
-                    ,
-                    new BasicDBObject("$or", new BasicDBObject[]{
-                            new BasicDBObject("foreseenEndDate", new BasicDBObject(
-                                    "$gte", timestampFormat.parse("2014-02-01 00:00:00.000"))
-                            ),
-                            new BasicDBObject("endDate", new BasicDBObject(
-                                    "$gte", timestampFormat.parse("2014-02-01 00:00:00.000"))
-                            )
-                    })
-                })
+        BasicDBObject expectedFilter = new BasicDBObject("$and", new BasicDBObject[]{
+                new BasicDBObject("startDate", new BasicDBObject(
+                        "$lte", timestampFormat.parse("2014-02-28 23:59:59.999")))
                 ,
-                new BasicDBObject("$and", new BasicDBObject[]{
-                    new BasicDBObject("startDate", new BasicDBObject(
-                            "$lt", timestampFormat.parse("2014-02-01 00:00:00.000")))
-                    ,
-                    new BasicDBObject("endDate", new BasicDBObject("$exists", Boolean.FALSE))
+                new BasicDBObject("$or", new BasicDBObject[]{
+                        new BasicDBObject("foreseenEndDate", new BasicDBObject(
+                                "$gte", timestampFormat.parse("2014-02-01 00:00:00.000"))
+                        ),
+                        new BasicDBObject("endDate", new BasicDBObject(
+                                "$gte", timestampFormat.parse("2014-02-01 00:00:00.000"))
+                        ),
+                        new BasicDBObject("endDate", new BasicDBObject(
+                                "$exists", Boolean.FALSE)
+                        )
                 })
         });
 
