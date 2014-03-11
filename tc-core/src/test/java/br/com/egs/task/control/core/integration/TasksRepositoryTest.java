@@ -64,7 +64,7 @@ public class TasksRepositoryTest {
 
     @Test (expected = IllegalArgumentException.class)
     public void getById_invalid() {
-        Task task = repository.get("ZZZ");
+        repository.get("ZZZ");
     }
 
     @Test
@@ -240,7 +240,8 @@ public class TasksRepositoryTest {
 
         t = createTestTask()
             .append("_id", new ObjectId("111122223333aaaabbbbccc2"))
-            .append("startDate", timestampFormat.parse("2014-01-05 00:00:00.000"))
+            .append("startDate", timestampFormat.parse("2013-12-05 00:00:00.000"))
+            .append("foreseenEndDate", timestampFormat.parse("2013-12-25 00:00:00.000"))
             .append("application", new BasicDBObject("name", "TaskControl"))
         ;
         t.remove("endDate");
@@ -305,7 +306,7 @@ public class TasksRepositoryTest {
 
     /**
      * Validates each field of this Task against the first inserted record.
-     * @param task
+     * @param task Task to validate
      * @throws ParseException
      */
     private void compareWithFirstTestRecord(Task task) throws ParseException {

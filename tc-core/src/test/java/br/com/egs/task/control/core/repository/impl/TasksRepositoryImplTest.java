@@ -49,6 +49,18 @@ public class TasksRepositoryImplTest {
 
         BasicDBObject filter = repository.createFilterObject(criteria);
 
+        /*
+        A Task is related to a month if:
+
+            - startDate belongs to this month
+              OR
+            - foreseenEndDate belongs to this month
+              OR
+            - endDate belongs to this month
+              OR
+            - startDate was before this month AND the task is not finished (endDate does not exist)
+
+         */
         BasicDBObject expectedFilter = new BasicDBObject()
             .append("$or", new BasicDBObject[]{
                     new BasicDBObject("startDate", new BasicDBObject()
@@ -62,6 +74,12 @@ public class TasksRepositoryImplTest {
                     new BasicDBObject("endDate", new BasicDBObject()
                             .append("$gte", timestampFormat.parse("2014-02-01 00:00:00.000"))
                             .append("$lte", timestampFormat.parse("2014-02-28 23:59:59.999")))
+                    ,
+                    new BasicDBObject("$and", new BasicDBObject[]{
+                            new BasicDBObject("startDate", new BasicDBObject(
+                                    "$lte", timestampFormat.parse("2014-02-01 00:00:00.000"))),
+                            new BasicDBObject("endDate", new BasicDBObject("$exists", Boolean.FALSE))
+                    })
             })
         ;
 

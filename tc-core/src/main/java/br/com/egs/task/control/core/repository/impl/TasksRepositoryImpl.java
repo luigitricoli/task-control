@@ -246,6 +246,11 @@ public class TasksRepositoryImpl implements Tasks {
                 new BasicDBObject("endDate", new BasicDBObject()
                         .append("$gte", interval[0])
                         .append("$lte", interval[1]))
+                ,
+                new BasicDBObject("$and", new BasicDBObject[]{
+                        new BasicDBObject("startDate", new BasicDBObject("$lte", interval[0])),
+                        new BasicDBObject("endDate", new BasicDBObject("$exists", Boolean.FALSE)),
+                })
         });
     }
 

@@ -89,8 +89,8 @@ public class TaskRestTest {
     public void createTask_ok() throws Exception {
         String jsonString = "{task: {" +
                 "description: 'Test the Task Implementation'," +
-                "startDate: '2014-01-02'," +
-                "foreseenEndDate: '2014-01-10'," +
+                "startDate: '2017-01-02'," +
+                "foreseenEndDate: '2017-01-10'," +
                 "source: 'Sup.Producao'," +
                 "application: 'OLM'," +
                 "owners: [" +
