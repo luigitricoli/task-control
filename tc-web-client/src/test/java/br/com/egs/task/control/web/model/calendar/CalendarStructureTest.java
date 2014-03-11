@@ -24,7 +24,7 @@ public class CalendarStructureTest {
         assertEquals(expected, month.getDaysAsJson());
     }
 
-    @Test
+    //@Test
     public void marchJson() {
         MonthStructure month = new MonthStructure(Month.Mar, 2014);
 

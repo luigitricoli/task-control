@@ -12,7 +12,7 @@ import br.com.caelum.vraptor.ioc.Component;
 
 @Component
 @ApplicationScoped
-class FilterFormat {
+public class FilterFormat {
 
 	private Logger log = LoggerFactory.getLogger(FilterFormat.class);
 	Map<String, String> filters;

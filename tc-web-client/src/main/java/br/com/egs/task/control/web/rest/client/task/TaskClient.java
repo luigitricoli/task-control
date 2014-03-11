@@ -1,41 +1,33 @@
 package br.com.egs.task.control.web.rest.client.task;
 
+import br.com.caelum.vraptor.ioc.Component;
+import br.com.caelum.vraptor.ioc.RequestScoped;
+import br.com.egs.task.control.web.model.Post;
+import br.com.egs.task.control.web.model.Week;
+import br.com.egs.task.control.web.model.repository.TaskRepository;
+import br.com.egs.task.control.web.rest.client.JsonClient;
+import br.com.egs.task.control.web.rest.client.task.split.TaskSpliter;
+import br.com.egs.task.control.web.rest.client.task.split.TaskSpliterFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import br.com.caelum.vraptor.ioc.Component;
-import br.com.caelum.vraptor.ioc.RequestScoped;
-import br.com.egs.task.control.web.model.OneWeekTask;
-import br.com.egs.task.control.web.model.Post;
-import br.com.egs.task.control.web.model.Week;
-import br.com.egs.task.control.web.model.repository.TaskRepository;
-import br.com.egs.task.control.web.model.stage.Stage;
-import br.com.egs.task.control.web.rest.client.JsonClient;
-
 @Component
 @RequestScoped
 public class TaskClient implements TaskRepository {
 
-	private Logger log = LoggerFactory.getLogger(TaskCalendar.class);
+	private Logger log = LoggerFactory.getLogger(TaskDate.class);
 	private JsonClient jsonClient;
-	private TaskCalendar today;
 	private FilterFormat fomatter;
 
-	public TaskClient(FilterFormat fomatter, JsonClient jsonClient) {
-		this(fomatter, jsonClient, Calendar.getInstance());
-	}
-
-	public TaskClient(FilterFormat fomatter, JsonClient jsonClient, Calendar today) {
-		this.fomatter = fomatter;
-		this.jsonClient = jsonClient;
-		this.today = new TaskCalendar(today);
+	public TaskClient(final FilterFormat fomatter, JsonClient jsonClient) {
+        this.fomatter = fomatter;
+        this.jsonClient = jsonClient;
 	}
 
 	@Override
@@ -55,81 +47,16 @@ public class TaskClient implements TaskRepository {
 		List<Week> weeks = loadWeeks();
 
 		for (CoreTask coreTask : tasks) {
-			boolean keepInNextWeek = true;
-
-			for (int weekIndex = coreTask.startDate.getWeekOfYear(); weekIndex <= coreTask.foreseenEndDate.getWeekOfYear(); weekIndex++) {
-
-				OneWeekTask.Builder task = new OneWeekTask.Builder(coreTask.id, coreTask.description);
-
-				// TODO improve it
-				try {
-					if (isFirstWeek(coreTask, weekIndex)) {
-						task.starDay(coreTask.startDate.getDayOfWeek());
-					}
-
-					if (isLastWeek(coreTask, weekIndex)) {
-						task.foreseenEndDay(coreTask.foreseenEndDate.getDayOfWeek());
-					}
-				} catch (Exception e) {
-					log.error(e.getMessage(), e);
-					continue;
-				}
-
-				if (isFinished(coreTask)) {
-					task.as(Stage.FINISHED);
-
-					if (isInSameWeek(coreTask.endDate, weekIndex)) {
-						task.runUntil(coreTask.endDate.getDayOfWeek());
-						keepInNextWeek = false;
-					} else if (keepInNextWeek) {
-						task.runAtTheEnd();
-					}
-				} else if (isBeyondTheForeseen(coreTask)) {
-					task.as(Stage.LATE);
-
-					if (isInSameWeek(today, weekIndex)) {
-						task.runUntil(today.getDayOfWeek());
-					} else {
-						task.runAtTheEnd();
-					}
-				} else if (isStarted(coreTask)) {
-					task.as(Stage.DOING);
-
-					if (isInSameWeek(today, weekIndex)) {
-						task.runUntil(today.getDayOfWeek());
-					} else {
-						task.runAtTheEnd();
-					}
-				}
-
-				weeks.get(weekIndex).add(task.build());
-			}
+            TaskSpliter spliter = TaskSpliterFactory.getInstance(coreTask);
+            spliter.split(coreTask);
+            weeks.get(0).add(spliter.firstWeek());
+            weeks.get(1).add(spliter.secondWeek());
+            weeks.get(2).add(spliter.thirdWeek());
+            weeks.get(3).add(spliter.fourthWeek());
+            weeks.get(4).add(spliter.fifthWeek());
+            weeks.get(5).add(spliter.sixthWeek());
 		}
 		return weeks;
-	}
-
-	private boolean isStarted(CoreTask coreTask) {
-		return today.compareTo(coreTask.startDate) >= 0;
-	}
-
-	private boolean isBeyondTheForeseen(CoreTask coreTask) {
-		return today.compareTo(coreTask.foreseenEndDate) > 0;
-	}
-
-	private boolean isFinished(CoreTask coreTask) {
-		return coreTask.endDate != null;
-	}
-
-	private boolean isFirstWeek(CoreTask coreTask, int weekIndex) {
-		return weekIndex == coreTask.startDate.getWeekOfYear();
-	}
-
-	private boolean isLastWeek(CoreTask coreTask, int weekIndex) {
-		return weekIndex == coreTask.foreseenEndDate.getWeekOfYear();
-	}
-
-	private boolean isInSameWeek(TaskCalendar today, int weekIndex) {
-		return today.getWeekOfYear().equals(weekIndex);
 	}
 
 	private List<Week> loadWeeks() {
@@ -146,7 +73,7 @@ public class TaskClient implements TaskRepository {
 		CoreTask task = CoreTask.unmarshal(response);
 
 		List<Post> posts = new LinkedList<>();
-		for (CorePost post : task.posts) {
+		for (CorePost post : task.getPosts()) {
 			posts.add(new Post(post.timestamp, post.user, post.text));
 		}
 

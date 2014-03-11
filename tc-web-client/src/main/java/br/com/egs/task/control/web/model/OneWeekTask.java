@@ -4,9 +4,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import br.com.egs.task.control.web.model.stage.AbstractStage;
-import br.com.egs.task.control.web.model.stage.Stage;
-
 public class OneWeekTask {
 
     private String id;
@@ -104,72 +101,58 @@ public class OneWeekTask {
 
     public static class Builder {
 
-        private static final int LAST_UTIL_DAY_OF_WEEK = 6;
+        public static final int LAST_UTIL_DAY_OF_WEEK = 6;
 		private String id;
-        private Integer sday;
-        private Integer iday;
+        private Integer sDay;
+        private Integer foreseenEndDay;
         private Stage st;
         private String desc;
         private Map<Integer, Hashtags> htsByDay;
-        private Integer runUntil;
+        private Integer rDay;
 
         public Builder(String id, String description) {
             this.id = id;
-            this.sday = 2;
-            this.iday = 5;
-            this.runUntil = 0;
+            this.sDay = 2;
+            this.foreseenEndDay = 6;
+            this.rDay = 0;
             this.desc = description;
             this.htsByDay = new HashMap<>();
 
             as(Stage.WAITING);
         }
 
-        public Builder starDay(Integer startDayOfWeek) throws Exception{
-            sday = startDayOfWeek;
-            recalculateForeseenInterval();
-            recalculateRunInterval();
-            return this;
-        }
-        
-        public void recalculateForeseenInterval() throws Exception{
-        	iday += 2;
-            iday = (iday - sday);
-            
-            //TODO create an specific exception
-            if(iday<runUntil){
-            	throw new Exception("The new foreseen interval is less than the run interval");
+        public Builder starDay(Integer dayOfWeek) throws Exception{
+            if(dayOfWeek>foreseenEndDay){
+                throw new Exception("The new start day is greater than the foreseen end day");
             }
+            sDay = dayOfWeek;
+            return this;
         }
 
         public Builder foreseenEndDay(Integer dayOfWeek) throws Exception{
-            iday = dayOfWeek - 1;
+            if(dayOfWeek< sDay){
+                throw new Exception("The new foreseen end day is less than the start day");
+            }
+            foreseenEndDay = dayOfWeek;
+            return this;
+        }
+        
+        public Builder runUntil(Integer dayOfWeek) throws Exception {
+//            if(dayOfWeek>foreseenEndDay){
+//                throw new Exception("The new run day is greater than the foreseen end day");
+//            }
+            if(dayOfWeek< sDay){
+                throw new Exception("The new run day is less than the start day");
+            }
+            rDay = dayOfWeek;
+            return this;
+        }
+        
+        public Builder runAtTheEnd() throws Exception {
+            runUntil(LAST_UTIL_DAY_OF_WEEK);
+            foreseenEndDay(LAST_UTIL_DAY_OF_WEEK);
 
-            try {
-				recalculateForeseenInterval();
-			} catch (Exception e) {
-	            //TODO create an specific exception
-				throw new Exception(String.format("The day of week [%s] sended as foreseen end day is less than the run end day [%s]", iday+1, runUntil+1));
-			}
             return this;
-        }
-        
-        public Builder runUntil(Integer dayOfWeek) {
-        	runUntil = dayOfWeek - 1;
-        	recalculateRunInterval();
-            return this;
-        }
-        
-        private void recalculateRunInterval(){
-        	runUntil += 2;
-        	runUntil = (runUntil - sday);
-        	
-        	if(runUntil < 0){
-        		runUntil = 0;
-        	}
-        }
-        
-        public Builder runAtTheEnd(){
-            return runUntil(LAST_UTIL_DAY_OF_WEEK);
         }        
 
         public Builder addHashtag(Integer day, Hashtag ht) {
@@ -189,8 +172,21 @@ public class OneWeekTask {
         }
 
         public OneWeekTask build() {
-            AbstractStage stage = st.getInstance(iday, runUntil);
-            return new OneWeekTask(id, sday, stage.calculateDaysInterval(), stage.calculateDaysRun(), st, desc, htsByDay);
+            return new OneWeekTask(id, sDay, calculateForeseenInterval(), calculateRunInterval(), st, desc, htsByDay);
+        }
+
+        public Integer calculateForeseenInterval(){
+            return (foreseenEndDay + 1) - sDay;
+        }
+
+        private Integer calculateRunInterval(){
+            Integer tmp = (rDay + 1) - sDay;
+
+            if(tmp < 0){
+                return 0;
+            } else {
+                return tmp;
+            }
         }
 
     }
