@@ -13,8 +13,10 @@ public class OneWeekTask {
     private Stage stage;
     private String description;
     private Map<Integer, Hashtags> hashtagsByDay;
+    private Boolean continueNextWeek;
+    private Boolean continuationPreviousWeek;
 
-    public OneWeekTask(String id, Integer startDay, Integer daysInterval, Integer daysRun, Stage stage, String description, Map<Integer, Hashtags> hashtagsByDay) {
+    public OneWeekTask(String id, Integer startDay, Integer daysInterval, Integer daysRun, Stage stage, String description, Map<Integer, Hashtags> hashtagsByDay, Boolean continueNextWeek, Boolean continuationPreviousWeek) {
         this.id = id;
         this.startDay = startDay;
         this.daysInterval = daysInterval;
@@ -22,6 +24,8 @@ public class OneWeekTask {
         this.description = description;
         this.hashtagsByDay = hashtagsByDay;
         this.daysRun = daysRun;
+        this.continueNextWeek = continueNextWeek;
+        this.continuationPreviousWeek = continuationPreviousWeek;
     }
 
     public String getId() {
@@ -56,6 +60,14 @@ public class OneWeekTask {
         return hashtagsByDay.get(day);
     }
 
+    public boolean isContinueNextWeek() {
+        return continueNextWeek;
+    }
+
+    public boolean isContinuationPreviousWeek() {
+        return continuationPreviousWeek;
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;
@@ -70,6 +82,7 @@ public class OneWeekTask {
         if (!id.equals(task.id)) return false;
         if (stage != task.stage) return false;
         if (!startDay.equals(task.startDay)) return false;
+        if (!continueNextWeek.equals(task.continueNextWeek)) return false;
 
         return true;
     }
@@ -83,6 +96,7 @@ public class OneWeekTask {
         result = 31 * result + description.hashCode();
         result = 31 * result + hashtagsByDay.hashCode();
         result = 31 * result + (daysRun != null ? daysRun.hashCode() : 0);
+        result = 31 * result + continueNextWeek.hashCode();
         return result;
     }
 
@@ -92,10 +106,11 @@ public class OneWeekTask {
                 "id='" + id + '\'' +
                 ", startDay=" + startDay +
                 ", daysInterval=" + daysInterval +
+                ", daysRun=" + daysRun +
+                ", continueNextWeek=" + continueNextWeek +
                 ", stage=" + stage +
                 ", description='" + description + '\'' +
                 ", hashtagsByDay=" + hashtagsByDay +
-                ", daysRun=" + daysRun +
                 '}';
     }
 
@@ -109,14 +124,18 @@ public class OneWeekTask {
         private String desc;
         private Map<Integer, Hashtags> htsByDay;
         private Integer rDay;
+        private boolean cNextWeek;
+        private boolean cPreviousWeek;
 
         public Builder(String id, String description) {
             this.id = id;
             this.sDay = 2;
-            this.foreseenEndDay = 6;
+            this.foreseenEndDay = LAST_UTIL_DAY_OF_WEEK;
             this.rDay = 0;
             this.desc = description;
             this.htsByDay = new HashMap<>();
+            this.cNextWeek = false;
+            this.cPreviousWeek = false;
 
             as(Stage.WAITING);
         }
@@ -138,22 +157,12 @@ public class OneWeekTask {
         }
         
         public Builder runUntil(Integer dayOfWeek) throws Exception {
-//            if(dayOfWeek>foreseenEndDay){
-//                throw new Exception("The new run day is greater than the foreseen end day");
-//            }
             if(dayOfWeek< sDay){
                 throw new Exception("The new run day is less than the start day");
             }
             rDay = dayOfWeek;
             return this;
         }
-        
-        public Builder runAtTheEnd() throws Exception {
-            runUntil(LAST_UTIL_DAY_OF_WEEK);
-            foreseenEndDay(LAST_UTIL_DAY_OF_WEEK);
-
-            return this;
-        }        
 
         public Builder addHashtag(Integer day, Hashtag ht) {
             Hashtags hts = htsByDay.get(day);
@@ -171,8 +180,18 @@ public class OneWeekTask {
             return this;
         }
 
+        public Builder continueNextWeek(){
+            cNextWeek = true;
+            return this;
+        }
+
+        public Builder continuationPreviousWeek(){
+            cPreviousWeek = true;
+            return this;
+        }
+
         public OneWeekTask build() {
-            return new OneWeekTask(id, sDay, calculateForeseenInterval(), calculateRunInterval(), st, desc, htsByDay);
+            return new OneWeekTask(id, sDay, calculateForeseenInterval(), calculateRunInterval(), st, desc, htsByDay, cNextWeek, cPreviousWeek);
         }
 
         public Integer calculateForeseenInterval(){

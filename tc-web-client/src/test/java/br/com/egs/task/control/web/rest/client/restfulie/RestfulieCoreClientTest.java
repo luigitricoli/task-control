@@ -1,10 +1,8 @@
 package br.com.egs.task.control.web.rest.client.restfulie;
 
-import junit.framework.Assert;
-
-import org.junit.Test;
-
 import br.com.egs.task.control.web.rest.client.JsonClient;
+import junit.framework.Assert;
+import org.junit.Test;
 
 public class RestfulieCoreClientTest {
 

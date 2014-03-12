@@ -1,23 +1,28 @@
 package br.com.egs.task.control.web.rest.client.task;
 
+import com.google.gson.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.lang.reflect.Type;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParseException;
-
 public class TaskDate implements Comparable<TaskDate> {
-	
+
+    private static final Logger log = LoggerFactory.getLogger(TaskDate.class);
+
 	private Calendar date;
 	
 	public TaskDate() {
 		this.date = Calendar.getInstance();
 	}
-	
+
+    public TaskDate(Calendar date) {
+        this.date = (Calendar) date.clone();
+    }
+
 	public TaskDate(String date) throws ParseException {
 		this(date, new SimpleDateFormat("yyyy-MM-dd"));
 	}
@@ -27,7 +32,7 @@ public class TaskDate implements Comparable<TaskDate> {
         this.date.setTime(format.parse(date));
 	}
 	
-	public Integer getWeekOfYear(){
+	public Integer getWeekOfMonth(){
 		return date.get(Calendar.WEEK_OF_MONTH) - 1;
 	}
 	
@@ -74,14 +79,23 @@ public class TaskDate implements Comparable<TaskDate> {
 	
 	public static class JsonUnmarshaller implements JsonDeserializer<TaskDate> {
 
-		@Override
-		public TaskDate deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
-			try {
-				return new TaskDate(jsonElement.getAsString());
-			} catch (ParseException e) {
-				throw new JsonParseException(e);
-			}
-		}
-	}
+        @Override
+        public TaskDate deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+            try {
+                return new TaskDate(jsonElement.getAsString());
+            } catch (ParseException e) {
+                throw new JsonParseException(e);
+            }
+        }
+    }
+
+    public static class JsonMarshaller implements JsonSerializer<TaskDate> {
+
+        @Override
+        public JsonElement serialize(TaskDate src, Type typeOfSrc, JsonSerializationContext context) {
+            String value = String.format("%s-%s-%s", src.date.get(Calendar.YEAR), src.date.get(Calendar.MONTH) + 1, src.date.get(Calendar.DAY_OF_MONTH));
+            return new JsonPrimitive(value);
+        }
+    }
 
 }

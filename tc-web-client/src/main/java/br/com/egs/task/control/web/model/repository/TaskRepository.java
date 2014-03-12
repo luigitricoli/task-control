@@ -1,9 +1,10 @@
 package br.com.egs.task.control.web.model.repository;
 
-import java.util.List;
-
 import br.com.egs.task.control.web.model.Post;
 import br.com.egs.task.control.web.model.Week;
+import br.com.egs.task.control.web.rest.client.task.TaskDate;
+
+import java.util.List;
 
 public interface TaskRepository {
 
@@ -15,4 +16,5 @@ public interface TaskRepository {
     
     public boolean add(Post p, String taskId);
 
+    boolean finish(String taskId, TaskDate date);
 }

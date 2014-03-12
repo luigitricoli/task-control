@@ -1,12 +1,12 @@
 package br.com.egs.task.control.web.rest.client.task;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import org.junit.Test;
 
 import java.text.ParseException;
 
-import org.junit.Test;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
 
 public class CoreTaskTest {
 
@@ -27,5 +27,13 @@ public class CoreTaskTest {
 		assertThat(task.getOwners().size(), is(2));
 		assertThat(task.getPosts().size(), is(2));
 	}
+
+    @Test
+    public void marshal() throws ParseException{
+        TaskDate date = new TaskDate("2014-02-20");
+
+        CoreTask task = new CoreTask("530e76ef7cf056f2dad8fd32", date);
+        assertThat(task.toJson(), is("{\"task\":{\"id\":\"530e76ef7cf056f2dad8fd32\",\"endDate\":\"2014-2-20\"}}"));
+    }
 	
 }

@@ -9,7 +9,8 @@ class DoingSpliter extends TaskSpliter {
 
     private TaskDate current;
 
-    DoingSpliter(TaskDate current) {
+    DoingSpliter(TaskDate referenceMonth,TaskDate current) {
+        super(referenceMonth);
         this.current = current;
     }
 
@@ -21,7 +22,9 @@ class DoingSpliter extends TaskSpliter {
             task.runUntil(current.getDayOfWeek());
             setKeepInNextWeek(false);
         } else if (keepInNextWeek()) {
-            task.runAtTheEnd();
+            task.runUntil(task.LAST_UTIL_DAY_OF_WEEK);
+            task.foreseenEndDay(task.LAST_UTIL_DAY_OF_WEEK);
         }
     }
+
 }

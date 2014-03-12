@@ -4,6 +4,17 @@
                     <c:forEach var="week" items="${weeks}" varStatus="status">
 	                    <div id="task-week-${status.count}" class="week">
 	  						<c:forEach var="_task" items="${week}">
+                                    <c:set var="cRight" value="" scope="request"/>
+                                    <c:set var="cLeft" value="" scope="request"/>
+                                    <c:choose>
+                                        <c:when test="${_task.continueNextWeek}">
+                                            <c:set var="cRight" value="continue-right" scope="request"/>
+                                        </c:when>
+                                        <c:when test="${_task.continuationPreviousWeek}">
+                                            <c:set var="cLeft" value="continue-left" scope="request"/>
+                                        </c:when>
+                                    </c:choose>
+
                                     <c:set var="task" value="${_task}" scope="request"/>
                                     <c:choose>
                                         <c:when test="${task.stage eq 'LATE'}">

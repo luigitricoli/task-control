@@ -1,18 +1,20 @@
 package br.com.egs.task.control.web.controller;
 
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.List;
-
-import br.com.caelum.vraptor.Get;
-import br.com.caelum.vraptor.Post;
-import br.com.caelum.vraptor.Resource;
-import br.com.caelum.vraptor.Result;
+import br.com.caelum.vraptor.*;
 import br.com.caelum.vraptor.view.Results;
 import br.com.egs.task.control.web.model.repository.TaskRepository;
+import br.com.egs.task.control.web.rest.client.task.TaskDate;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.text.ParseException;
+import java.util.Arrays;
+import java.util.Calendar;
 
 @Resource
 public class TasksController {
+
+    private static final Logger log = LoggerFactory.getLogger(TasksController.class);
 
 	private Result result;
 	private TaskRepository tasks;
@@ -38,6 +40,22 @@ public class TasksController {
 		}
 		
 	}
+
+    @Put(value="/tarefas/{task}/finalizacao")
+    public void finish(String task, String date) {
+        log.debug("Value task param: {}", task);
+        log.debug("Value date param: {}", date);
+
+        try {
+            if (tasks.finish(task, new TaskDate(date))) {
+                result.use(Results.http()).body("success");
+            } else {
+                result.use(Results.http()).body("fail");
+            }
+        } catch (ParseException e) {
+            log.error(String.format("The value [%s] of date argument is invalid for the format [yyyy-MM-dd]"), date);
+        }
+    }
 
 	@Get("/tarefas/{task}/historico")
 	public void postsBy(String task) {

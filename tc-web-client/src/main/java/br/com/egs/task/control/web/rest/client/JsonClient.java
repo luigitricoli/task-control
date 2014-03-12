@@ -14,4 +14,6 @@ public interface JsonClient {
 
     public String postAsJson(String body);
 
+    public String putAsJson(String body);
+
 }

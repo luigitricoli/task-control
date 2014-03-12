@@ -1,12 +1,11 @@
 package br.com.egs.task.control.web.rest.client.task;
 
-import java.util.List;
-
 import br.com.egs.task.control.web.rest.client.gson.OwnersUnmarshaller;
-
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
+
+import java.util.List;
 
 public class CoreTask {
 
@@ -21,6 +20,11 @@ public class CoreTask {
     private List<CorePost> posts;
 
     private CoreTask(){}
+
+    public CoreTask(String id, TaskDate endDate){
+        this.id = id;
+        this.endDate = endDate;
+    }
 
     public String getId() {
         return id;
@@ -58,7 +62,7 @@ public class CoreTask {
         return posts;
     }
 
-    private static Gson parser() {
+    private static Gson unmarshaller() {
 		GsonBuilder gson = new GsonBuilder();
 		gson.registerTypeAdapter(TaskDate.class, new TaskDate.JsonUnmarshaller());
 		gson.registerTypeAdapter(new TypeToken<List<String>>() {
@@ -68,12 +72,20 @@ public class CoreTask {
 	}
 
 	public static CoreTask unmarshal(String json) {
-		return parser().fromJson(json, CoreTask.class);
+		return unmarshaller().fromJson(json, CoreTask.class);
 	}
 
 	public static List<CoreTask> unmarshalList(String json) {
-		return parser().fromJson(json, new TypeToken<List<CoreTask>>() {
+		return unmarshaller().fromJson(json, new TypeToken<List<CoreTask>>() {
         }.getType());
 	}
+
+    public String toJson() {
+        GsonBuilder gson = new GsonBuilder();
+        gson.registerTypeAdapter(TaskDate.class, new TaskDate.JsonMarshaller());
+        Gson marhaller = gson.create();
+
+        return String.format("{\"task\":%s}", marhaller.toJson(this));
+    }
 
 }

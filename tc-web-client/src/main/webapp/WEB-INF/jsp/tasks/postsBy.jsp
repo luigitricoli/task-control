@@ -3,10 +3,10 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <h3>Hist&oacute;rico de Itera&ccedil;&otilde;es</h3>
 <p id="task-description"></p>
-<div id="iteraction-menu" style="display:none">
-    <a href="" id="finish" class="btn green"><span class="icon add">V</span>Encerrar</a>
-    <a href="" id="replan" class="btn green"><span class="icon add">R</span>Replanejar</a>
-    <a href="" id="cancel" class="btn red"><span class="icon add">X</span>Cancelar</a>
+<div id="iteraction-menu">
+    <a href="#" id="finish" class="btn green"><span class="icon add">V</span>Encerrar</a>
+    <a href="#" id="replan" class="btn green"><span class="icon add">R</span>Replanejar</a>
+    <a href="#" id="cancel" class="btn red"><span class="icon add">X</span>Cancelar</a>
 </div>
 <div id="iteraction-form">
     <form>

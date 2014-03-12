@@ -1,14 +1,13 @@
 package br.com.egs.task.control.web.rest.client.task;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import br.com.caelum.vraptor.ioc.ApplicationScoped;
+import br.com.caelum.vraptor.ioc.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import br.com.caelum.vraptor.ioc.ApplicationScoped;
-import br.com.caelum.vraptor.ioc.Component;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Component
 @ApplicationScoped

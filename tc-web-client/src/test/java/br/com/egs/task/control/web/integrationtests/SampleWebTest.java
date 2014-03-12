@@ -1,13 +1,13 @@
 package br.com.egs.task.control.web.integrationtests;
 
-import static org.junit.Assert.assertEquals;
-
 import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.htmlunit.HtmlUnitDriver;
+
+import static org.junit.Assert.assertEquals;
 
 public class SampleWebTest {
 

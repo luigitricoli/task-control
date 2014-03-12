@@ -8,14 +8,21 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 public abstract class TaskSpliter {
 
-    private List<OneWeekTask> tasks;
     private Logger log = LoggerFactory.getLogger(TaskSpliter.class);
+
+    private List<OneWeekTask> tasks;
     private int weekIndex;
     private boolean keepInNextWeek;
+    private TaskDate referenceDateMonth;
+
+    protected TaskSpliter(TaskDate referenceDateMonth){
+        this.referenceDateMonth = referenceDateMonth;
+    }
 
     public boolean keepInNextWeek() {
         return keepInNextWeek;
@@ -29,8 +36,7 @@ public abstract class TaskSpliter {
         loadTasks();
         setKeepInNextWeek(true);
 
-        Integer weekIndexEnd = wasFinishedLate(coreTask) ? coreTask.getEndDate().getWeekOfYear() : coreTask.getForeseenEndDate().getWeekOfYear() ;
-        for (weekIndex = coreTask.getStartDate().getWeekOfYear(); weekIndex <= weekIndexEnd; weekIndex++) {
+        for (weekIndex = firstWeekIndex(coreTask); weekIndex <= lastWeekIndex(coreTask); weekIndex++) {
 
             OneWeekTask.Builder builder = new OneWeekTask.Builder(coreTask.getId(), coreTask.getDescription());
 
@@ -38,10 +44,14 @@ public abstract class TaskSpliter {
             try {
                 if (isFirstWeek(coreTask)) {
                     builder.starDay(coreTask.getStartDate().getDayOfWeek());
+                } else {
+                    builder.continuationPreviousWeek();
                 }
 
                 if (isLastWeek(coreTask)) {
                     builder.foreseenEndDay(coreTask.getForeseenEndDate().getDayOfWeek());
+                } else {
+                    builder.continueNextWeek();
                 }
 
                 run(coreTask, builder);
@@ -49,6 +59,8 @@ public abstract class TaskSpliter {
                 log.error(e.getMessage(), e);
                 continue;
             }
+
+
 
             tasks.add(weekIndex, builder.build());
         }
@@ -66,17 +78,37 @@ public abstract class TaskSpliter {
     }
 
     private boolean isFirstWeek(CoreTask coreTask) {
-        return weekIndex == coreTask.getStartDate().getWeekOfYear();
+        Integer previousWeeks = referenceDateMonth.toCalendar().get(Calendar.WEEK_OF_YEAR) - coreTask.getStartDate().toCalendar().get(Calendar.WEEK_OF_YEAR);
+
+        if(weekIndex == 0 && previousWeeks <= 1){
+            return true;
+        } else {
+            return weekIndex == coreTask.getStartDate().getWeekOfMonth();
+        }
     }
 
     private boolean isLastWeek(CoreTask coreTask) {
-        return weekIndex == coreTask.getForeseenEndDate().getWeekOfYear();
+        return weekIndex == lastWeekIndex(coreTask);
+    }
+
+    protected Integer firstWeekIndex(CoreTask coreTask) {
+        if(referenceDateMonth.toCalendar().get(Calendar.MONTH) > coreTask.getStartDate().toCalendar().get(Calendar.MONTH)){
+            return 0;
+        }
+        return coreTask.getStartDate().getWeekOfMonth();
+    }
+
+    protected Integer lastWeekIndex(CoreTask coreTask){
+        if(referenceDateMonth.toCalendar().get(Calendar.MONTH) < coreTask.getForeseenEndDate().toCalendar().get(Calendar.MONTH)){
+            return 6;
+        }
+        return coreTask.getForeseenEndDate().getWeekOfMonth();
     }
 
     protected abstract void run(CoreTask coreTask, OneWeekTask.Builder task) throws Exception;
 
     protected boolean isInSameWeek(TaskDate date) {
-        return date.getWeekOfYear().equals(weekIndex);
+        return date.getWeekOfMonth().equals(weekIndex);
     }
 
     public final OneWeekTask firstWeek() {

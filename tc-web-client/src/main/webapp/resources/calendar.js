@@ -88,6 +88,7 @@ function loadMonth(){
 		setMonthCookie(month);
 	}
 	getMonth(month);
+	cleanTimeline();
 	getTasks(month);
 }
 
@@ -121,23 +122,39 @@ function addClickActionToTasks(){
     });
 }
 
+function cleanTimeline(){
+    $("#task-history").empty();
+    $("#task-history").hide();
+}
+
 function populateTimeline(task){
+    cleanTimeline();
+
     var url = DOMAIN + "tarefas/" + task.data("id") + "/historico";
     $.get(url,function(data){
-        $("#task-history").empty();
         $("#task-history").show();
 
         var html = $($.parseHTML(data));
         $("#task-history").append(html);
-        $("#iteraction-form").data("task-id", task.attr("id"));
-        $("#task-description").text(task.find(".task-description").text());
-
         $( ".post:contains('#atraso')" ).addClass("late");
         $( ".post:contains('#horaextra')" ).addClass("overtime");
-        
-    	$("#add_comentary").click(function() {
-    		addPost(task, url);
-    	});	
+
+        $("#task-description").text(task.find(".task-description").text());
+
+        if(task.find(".stage").hasClass("doing")){
+            $("#iteraction-form").show();
+
+            $("#iteraction-form").data("task-id", task.attr("id"));
+
+            $("#add_comentary").click(function() {
+                addPost(task, url);
+            });
+
+            $("#finish").show();
+            $("#finish").click(function() {
+                finish(task);
+            });
+        }
         
         $("#btn-task-history")[0].click();
     });
@@ -157,6 +174,24 @@ function toogleFilterTasks(filter){
         activeFilters = activeFilters.replace(name, "");
     }
     loadMonth();
+}
+
+function finish(task){
+    var url = DOMAIN + "tarefas/" + task.data("id") + "/finalizacao";
+
+    var today = new Date();
+    var month = today.getMonth() + 1;
+    var dateValue = today.getFullYear() + "-" + month + "-" + today.getDate();
+
+    $.ajax({
+        "url": url,
+        "type": "PUT",
+        "data": { "date" : dateValue },
+        "success": function(data) {
+                    loadMonth();
+        }
+    });
+
 }
 
 function addPost(task, url){

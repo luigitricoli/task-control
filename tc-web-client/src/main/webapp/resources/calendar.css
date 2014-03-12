@@ -167,3 +167,9 @@
 .task-day-7{
     left: 807px;
 }
+#finish, #replan, #cancel{
+    display: none;
+}
+#iteraction-form{
+    display: none;
+}

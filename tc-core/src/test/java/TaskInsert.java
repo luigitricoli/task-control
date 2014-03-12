@@ -33,14 +33,14 @@ public class TaskInsert {
 		BasicDBObject t = new BasicDBObject();
 
 		Long time = System.currentTimeMillis();
-		t.append("description", "SR".concat(time.toString()));
+		t.append("description", "SR".concat(time.toString()).concat(" - Month"));
 
-		t.append("startDate", timestampFormat.parse("2014-02-19 00:00:00.000"));
-		t.append("foreseenEndDate", timestampFormat.parse("2014-02-20 23:59:59.999"));
-		t.append("endDate", timestampFormat.parse("2014-02-25 23:59:59.999"));
+		t.append("startDate", timestampFormat.parse("2014-03-19 00:00:00.000"));
+		t.append("foreseenEndDate", timestampFormat.parse("2014-03-25 23:59:59.999"));
+//		t.append("endDate", timestampFormat.parse("2014-03-11 23:59:59.999"));
 
 		t.append("source", "internal");
-		t.append("application", new BasicDBObject("name", "OLM"));
+		t.append("application", new BasicDBObject("name", "EMA"));
 
 		List<BasicDBObject> owners = new ArrayList<>();
 		owners.add(new BasicDBObject("login", "john"));

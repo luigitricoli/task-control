@@ -9,7 +9,8 @@ class DoingLatedSpliter extends TaskSpliter {
 
     private TaskDate current;
 
-    DoingLatedSpliter(TaskDate current) {
+    DoingLatedSpliter(TaskDate referenceMonth, TaskDate current) {
+        super(referenceMonth);
         this.current = current;
     }
 
@@ -17,14 +18,23 @@ class DoingLatedSpliter extends TaskSpliter {
     protected void run(CoreTask coreTask, OneWeekTask.Builder task) throws Exception {
         task.as(Stage.LATE);
 
-        if (isInSameWeek(current)) {
-            task.foreseenEndDay(current.getDayOfWeek());
+        if (isInSameWeek(coreTask.getForeseenEndDate())){
             task.runUntil(coreTask.getForeseenEndDate().getDayOfWeek());
-        } else {
-            task.runAtTheEnd();
+            setKeepInNextWeek(false);
+        } else if (keepInNextWeek()) {
+            task.runUntil(task.LAST_UTIL_DAY_OF_WEEK);
         }
 
+        if (isInSameWeek(current)) {
+            task.foreseenEndDay(current.getDayOfWeek());
+            setKeepInNextWeek(false);
+        } else {
+            task.foreseenEndDay(task.LAST_UTIL_DAY_OF_WEEK);
+        }
+    }
 
-
+    @Override
+    protected Integer lastWeekIndex(CoreTask coreTask) {
+        return current.getWeekOfMonth();
     }
 }

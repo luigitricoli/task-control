@@ -11,17 +11,15 @@ import br.com.egs.task.control.web.rest.client.task.split.TaskSpliterFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
 
 @Component
 @RequestScoped
 public class TaskClient implements TaskRepository {
 
-	private Logger log = LoggerFactory.getLogger(TaskDate.class);
+    private static final Logger log = LoggerFactory.getLogger(TaskClient.class);
+
 	private JsonClient jsonClient;
 	private FilterFormat fomatter;
 
@@ -46,8 +44,12 @@ public class TaskClient implements TaskRepository {
 		List<CoreTask> tasks = CoreTask.unmarshalList(jsonClient.getAsJson());
 		List<Week> weeks = loadWeeks();
 
+        Calendar referenceMonth = Calendar.getInstance();
+        referenceMonth.set(Calendar.YEAR, 2014);
+        referenceMonth.set(Calendar.MONTH, month-1);
+
 		for (CoreTask coreTask : tasks) {
-            TaskSpliter spliter = TaskSpliterFactory.getInstance(coreTask);
+            TaskSpliter spliter = TaskSpliterFactory.getInstance(coreTask, referenceMonth);
             spliter.split(coreTask);
             weeks.get(0).add(spliter.firstWeek());
             weeks.get(1).add(spliter.secondWeek());
@@ -90,7 +92,17 @@ public class TaskClient implements TaskRepository {
 		}
 		
 		return true;
-		
 	}
 
+    @Override
+    public boolean finish(String taskId, TaskDate date){
+        CoreTask task = new CoreTask(taskId, date);
+
+        String response = jsonClient.at(String.format("tasks/%s", taskId)).putAsJson(task.toJson());
+        if(response != ""){
+            return false;
+        }
+
+        return true;
+    }
 }

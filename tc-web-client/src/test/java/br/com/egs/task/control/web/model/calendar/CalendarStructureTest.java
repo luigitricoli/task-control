@@ -1,12 +1,12 @@
 package br.com.egs.task.control.web.model.calendar;
 
-import static junit.framework.Assert.assertEquals;
-import static org.hamcrest.CoreMatchers.containsString;
-import static org.junit.Assert.assertThat;
+import org.junit.Test;
 
 import java.util.Calendar;
 
-import org.junit.Test;
+import static junit.framework.Assert.assertEquals;
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.junit.Assert.assertThat;
 
 public class CalendarStructureTest {
 
