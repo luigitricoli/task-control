@@ -234,19 +234,31 @@ public class TasksRepositoryImpl implements Tasks {
     private BasicDBObject createYearMonthFilter(int year, int month) {
         Date[] interval = createDateIntervalForMonth(year, month);
 
-        return new BasicDBObject("$or", new BasicDBObject[]{
-                new BasicDBObject("startDate", new BasicDBObject()
-                        .append("$gte", interval[0])
-                        .append("$lte", interval[1]))
-                ,
-                new BasicDBObject("foreseenEndDate", new BasicDBObject()
-                        .append("$gte", interval[0])
-                        .append("$lte", interval[1]))
-                ,
-                new BasicDBObject("endDate", new BasicDBObject()
-                        .append("$gte", interval[0])
-                        .append("$lte", interval[1]))
-        });
+        boolean searchingFutureMonth = getDate().compareTo(interval[0]) < 0;
+
+        BasicDBObject monthFilter;
+        if (searchingFutureMonth) {
+            monthFilter = new BasicDBObject("$and", new BasicDBObject[]{
+                    new BasicDBObject("startDate", new BasicDBObject("$lte", interval[1]))
+                    ,
+                    new BasicDBObject("$or", new BasicDBObject[]{
+                            new BasicDBObject("foreseenEndDate", new BasicDBObject("$gte", interval[0])),
+                            new BasicDBObject("endDate", new BasicDBObject("$gte", interval[0]))
+                    })
+            });
+        } else {
+            monthFilter = new BasicDBObject("$and", new BasicDBObject[]{
+                    new BasicDBObject("startDate", new BasicDBObject("$lte", interval[1]))
+                    ,
+                    new BasicDBObject("$or", new BasicDBObject[]{
+                            new BasicDBObject("foreseenEndDate", new BasicDBObject("$gte", interval[0])),
+                            new BasicDBObject("endDate", new BasicDBObject("$gte", interval[0])),
+                            new BasicDBObject("endDate", new BasicDBObject("$exists", Boolean.FALSE))
+                    })
+            });
+        }
+
+        return monthFilter;
     }
 
     /**

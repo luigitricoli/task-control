@@ -194,6 +194,25 @@ public class Task {
         if (owners == null || owners.isEmpty()) {
             throw new ValidationException("At least one owner is required");
         }
+
+        if (posts != null) {
+            throw new ValidationException("Posts are not allowed for a new Task");
+        }
+
+        if (foreseenEndDate.before(startDate)) {
+            throw new ValidationException("Start Date cannot be greater than Foreseen End Date");
+        }
+
+        Calendar beginOfCurrentDate = Calendar.getInstance();
+        beginOfCurrentDate.setTime(getCurrentDate());
+        beginOfCurrentDate.set(Calendar.HOUR_OF_DAY, 0);
+        beginOfCurrentDate.set(Calendar.MINUTE, 0);
+        beginOfCurrentDate.set(Calendar.SECOND, 0);
+        beginOfCurrentDate.set(Calendar.MILLISECOND, 0);
+
+        if (beginOfCurrentDate.getTime().after(startDate)) {
+            throw new ValidationException("Start Date cannot be less than the current date");
+        }
     }
 
     /**

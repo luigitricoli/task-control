@@ -43,27 +43,87 @@ public class TasksRepositoryImplTest {
     }
 
     @Test
-    public void filterByMonth() throws Exception {
+    public void filterByMonth_futureTasks() throws Exception {
+        TaskSearchCriteria criteria = new TaskSearchCriteria()
+                .month(2015, 2);
+
+        BasicDBObject filter = repository.createFilterObject(criteria);
+
+        /*
+            When searching future tasks, the basic search filter is applied.
+
+                     search month begin          search month end
+            .................|:::::::::::::::::::::::::|....................
+             task 1          |  ++++++++++++++         |
+             task 2      ++++|+++++++++                |
+             task 3          |                 ++++++++|+++++++
+             task 4       +++|+++++++++++++++++++++++++|++++++++++
+             task 5   +++++  |                         |
+             task 6          |                         | ++++++++++++
+
+             Tasks 1-4 are in different ways related to the search month, and
+             must be returned by this search. Tasks 5-6 must be filtered out.
+
+             All of this conditions can be summarized in a simple filter:
+             -----> A task is related to the search month if :
+                    The startDate is less than the end of the search month.
+                            AND
+                    The endDate(or foreseenEndDate) is greater than the begin of the search month.
+         */
+
+        BasicDBObject expectedFilter = new BasicDBObject("$and", new BasicDBObject[]{
+                new BasicDBObject("startDate", new BasicDBObject(
+                        "$lte", timestampFormat.parse("2015-02-28 23:59:59.999")))
+                ,
+                new BasicDBObject("$or", new BasicDBObject[]{
+                        new BasicDBObject("foreseenEndDate", new BasicDBObject(
+                                "$gte", timestampFormat.parse("2015-02-01 00:00:00.000"))
+                        ),
+                        new BasicDBObject("endDate", new BasicDBObject(
+                                "$gte", timestampFormat.parse("2015-02-01 00:00:00.000"))
+                        )
+                })
+        });
+
+        JSONAssert.assertEquals(expectedFilter.toString(), filter.toString(), true);
+    }
+
+
+    @Test
+    public void filterByMonth_pastAndCurrentTasks() throws Exception {
         TaskSearchCriteria criteria = new TaskSearchCriteria()
                 .month(2014, 2);
 
         BasicDBObject filter = repository.createFilterObject(criteria);
 
-        BasicDBObject expectedFilter = new BasicDBObject()
-            .append("$or", new BasicDBObject[]{
-                    new BasicDBObject("startDate", new BasicDBObject()
-                            .append("$gte", timestampFormat.parse("2014-02-01 00:00:00.000"))
-                            .append("$lte", timestampFormat.parse("2014-02-28 23:59:59.999")))
-                    ,
-                    new BasicDBObject("foreseenEndDate", new BasicDBObject()
-                            .append("$gte", timestampFormat.parse("2014-02-01 00:00:00.000"))
-                            .append("$lte", timestampFormat.parse("2014-02-28 23:59:59.999")))
-                    ,
-                    new BasicDBObject("endDate", new BasicDBObject()
-                            .append("$gte", timestampFormat.parse("2014-02-01 00:00:00.000"))
-                            .append("$lte", timestampFormat.parse("2014-02-28 23:59:59.999")))
-            })
-        ;
+        /*
+        When searching past (or current month) tasks, there is an additional match case:
+
+                                     search month begin          search month end
+            ................................|:::::::::::::::::::::::::|....................
+             task 1       +-------------+   |                         |
+                     start date     foreseen end date                 |
+                        (task unfinished)   |                         |
+
+             An additional condition handles the tasks that did not end
+             (endDate does not exist)
+         */
+        BasicDBObject expectedFilter = new BasicDBObject("$and", new BasicDBObject[]{
+                new BasicDBObject("startDate", new BasicDBObject(
+                        "$lte", timestampFormat.parse("2014-02-28 23:59:59.999")))
+                ,
+                new BasicDBObject("$or", new BasicDBObject[]{
+                        new BasicDBObject("foreseenEndDate", new BasicDBObject(
+                                "$gte", timestampFormat.parse("2014-02-01 00:00:00.000"))
+                        ),
+                        new BasicDBObject("endDate", new BasicDBObject(
+                                "$gte", timestampFormat.parse("2014-02-01 00:00:00.000"))
+                        ),
+                        new BasicDBObject("endDate", new BasicDBObject(
+                                "$exists", Boolean.FALSE)
+                        )
+                })
+        });
 
         JSONAssert.assertEquals(expectedFilter.toString(), filter.toString(), true);
     }
