@@ -10,10 +10,10 @@ public interface JsonClient {
 
     public String getUrl();
 
-    public String getAsJson();
+    public Response getAsJson();
 
-    public String postAsJson(String body);
+    public Response postAsJson(String body);
 
-    public String putAsJson(String body);
+    public Response putAsJson(String body);
 
 }

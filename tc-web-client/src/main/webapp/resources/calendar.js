@@ -58,6 +58,7 @@ function populateCalendar(days){
 function getMonth(month){
 	var url = DOMAIN + "calendario/mes/" + month;
 	$.getJSON(url,function(data){
+	    $("#calendar-month-label").text(data.label);
 		populateCalendar(data.days);
 	});
 }
@@ -198,7 +199,20 @@ function addPost(task, url){
 	$.post(url, { "text": $("#iteraction-form").find("#comentary").val() }, function(data){
 		populateTimeline(task);
 	});
+}
 
+function addTask(){
+    var url = DOMAIN + "tarefas";
+	$.post(url, $("#add-task-form").serialize(), function(data){
+		loadMonth();
+		closeFloatWindow();
+		 $("#cancel-register-btn")[0].click();
+	});
+}
+
+function closeFloatWindow(){
+    $("#block-screen").hide();
+    $("#add-task-container").hide();
 }
 
 $(document).ready(function(){
@@ -216,5 +230,16 @@ $(document).ready(function(){
 	$("#previous-month").click(function() {
 		prevMonth();
 	});
+	$("#btn_new").click(function(event){
+	    $("#block-screen").show();
+	    $("#add-task-container").show();
+	    event.preventDefault();
+	});
+	$("#cancel-register-btn").click(function(event){
+        closeFloatWindow();
+	});
+	$("#salve-register-btn").click(function(event){
+        addTask();
+    });
 	loadMonth();
 });

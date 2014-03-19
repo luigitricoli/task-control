@@ -1,12 +1,25 @@
 package br.com.egs.task.control.web.model.calendar;
 
 public enum Month {
-	Jan(0), Fev(1), Mar(2), Abr(3), Mai(4), Jun(5), Jul(6), Ago(7), Set(8), Out(9), Nov(10), Dez(11);
+	Jan(0, "Janeiro"),
+    Fev(1, "Fevereiro"),
+    Mar(2, "Março"),
+    Abr(3, "Abril"),
+    Mai(4, "Maio"),
+    Jun(5, "Junho"),
+    Jul(6, "Julho"),
+    Ago(7, "Agosto"),
+    Set(8, "Setembro"),
+    Out(9, "Outubro"),
+    Nov(10, "Novembro"),
+    Dez(11, "Dezembro");
 
 	private int id;
+    private String fullName;
 
-	Month(int id) {
+	Month(int id, String fullName) {
 		this.id = id;
+        this.fullName = fullName;
 	}
 
 	public static Month getByNumber(int number) {
@@ -26,4 +39,7 @@ public enum Month {
 		return id;
 	}
 
+    public String getFullName() {
+        return fullName;
+    }
 }

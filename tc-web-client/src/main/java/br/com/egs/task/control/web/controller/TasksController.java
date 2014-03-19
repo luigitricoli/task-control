@@ -2,6 +2,7 @@ package br.com.egs.task.control.web.controller;
 
 import br.com.caelum.vraptor.*;
 import br.com.caelum.vraptor.view.Results;
+import br.com.egs.task.control.web.interceptor.AuthRequired;
 import br.com.egs.task.control.web.model.repository.TaskRepository;
 import br.com.egs.task.control.web.rest.client.task.TaskDate;
 import org.slf4j.Logger;
@@ -10,8 +11,10 @@ import org.slf4j.LoggerFactory;
 import java.text.ParseException;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.List;
 
 @Resource
+@AuthRequired
 public class TasksController {
 
     private static final Logger log = LoggerFactory.getLogger(TasksController.class);
@@ -40,6 +43,15 @@ public class TasksController {
 		}
 		
 	}
+
+    @Post("/tarefas")
+    public void addTask(String start, String foreseen, String type, String system, String description, List<String> owners) {
+        if (tasks.add(start, foreseen, type, system, description, owners)) {
+            result.use(Results.http()).body("success");
+        } else {
+            result.use(Results.http()).body("fail");
+        }
+    }
 
     @Put(value="/tarefas/{task}/finalizacao")
     public void finish(String task, String date) {

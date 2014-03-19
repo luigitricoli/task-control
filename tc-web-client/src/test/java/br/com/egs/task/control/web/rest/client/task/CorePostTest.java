@@ -29,9 +29,9 @@ public class CorePostTest {
 			throw new JsonParseException(e);
 		}		
 		
-		assertThat(post.timestamp, is(timestamp));
-		assertThat(post.user, is("john"));
-		assertThat(post.text, is("Doing #overtime to finish it sooner"));
+		assertThat(post.getTimestamp(), is(timestamp));
+		assertThat(post.getUser(), is("john"));
+		assertThat(post.getText(), is("Doing #overtime to finish it sooner"));
 	}
 	
 	@Test

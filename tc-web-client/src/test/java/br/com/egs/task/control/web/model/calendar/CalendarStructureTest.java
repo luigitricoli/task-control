@@ -14,7 +14,7 @@ public class CalendarStructureTest {
     public void februaryJson() {
         MonthStructure month = new MonthStructure(Month.Fev, 2013);
 
-        String expected = "{\"days\":[\"27\",\"28\",\"29\",\"30\",\"31\",\"Fev 1\","
+        String expected = "{\"label\":\"Fevereiro\", \"days\":[\"27\",\"28\",\"29\",\"30\",\"31\",\"Fev 1\","
                 + "\"2\",\"3\",\"4\",\"5\",\"6\",\"7\",\"8\","
                 + "\"9\",\"10\",\"11\",\"12\",\"13\",\"14\",\"15\","
                 + "\"16\",\"17\",\"18\",\"19\",\"20\",\"21\",\"22\","
@@ -28,7 +28,7 @@ public class CalendarStructureTest {
     public void marchJson() {
         MonthStructure month = new MonthStructure(Month.Mar, 2014);
 
-        String expected = "{\"days\":[\"23\",\"24\",\"25\",\"26\",\"27\",\"28\",\"Mar 1\","
+        String expected = "{\"label\":\"Março\", \"days\":[\"23\",\"24\",\"25\",\"26\",\"27\",\"28\",\"Mar 1\","
                 + "\"2\",\"3\",\"4\",\"5\",\"6\",\"7\",\"8\","
                 + "\"9\",\"10\",\"11\",\"12\",\"13\",\"14\",\"15\","
                 + "\"16\",\"17\",\"18\",\"19\",\"20\",\"21\",\"22\"," +

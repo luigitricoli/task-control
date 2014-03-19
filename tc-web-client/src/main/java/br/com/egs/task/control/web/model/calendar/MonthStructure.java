@@ -40,12 +40,12 @@ public class MonthStructure {
 
     public String getDaysAsJson() {
         StringBuilder json = new StringBuilder();
-        json.append("{\"days\":[");
+        json.append("{\"label\":\"");
+        json.append(month.getFullName());
 
+        json.append("\", \"days\":[");
         json.append(previousMonthDays());
-
         json.append(referenceMonthDays());
-
         json.append(nextMonthDays());
 
         json.deleteCharAt(json.lastIndexOf(","));

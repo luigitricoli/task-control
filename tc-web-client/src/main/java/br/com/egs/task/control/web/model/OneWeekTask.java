@@ -190,6 +190,10 @@ public class OneWeekTask {
             return this;
         }
 
+        public Integer getDaysRun(){
+            return calculateRunInterval();
+        }
+
         public OneWeekTask build() {
             return new OneWeekTask(id, sDay, calculateForeseenInterval(), calculateRunInterval(), st, desc, htsByDay, cNextWeek, cPreviousWeek);
         }
