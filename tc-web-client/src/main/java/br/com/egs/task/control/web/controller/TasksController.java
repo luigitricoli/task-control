@@ -46,7 +46,9 @@ public class TasksController {
 
     @Post("/tarefas")
     public void addTask(String start, String foreseen, String type, String system, String description, List<String> owners) {
-        if (tasks.add(start, foreseen, type, system, description, owners)) {
+        if(start == null || foreseen == null || type == null || system == null || description == null || owners == null){
+            result.use(Results.http()).body("fail");
+        } else if (tasks.add(start, foreseen, type, system, description, owners)) {
             result.use(Results.http()).body("success");
         } else {
             result.use(Results.http()).body("fail");

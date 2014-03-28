@@ -32,7 +32,11 @@ public enum Month {
 	}
 
 	public Month getNext() {
-		return Month.values()[id + 1];
+        int next = id + 1;
+        if(next > 11){
+            next = 0;
+        }
+		return Month.values()[next];
 	}
 
 	public int getId() {

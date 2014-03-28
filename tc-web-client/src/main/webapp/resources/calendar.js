@@ -204,15 +204,31 @@ function addPost(task, url){
 function addTask(){
     var url = DOMAIN + "tarefas";
 	$.post(url, $("#add-task-form").serialize(), function(data){
-		loadMonth();
-		closeFloatWindow();
-		 $("#cancel-register-btn")[0].click();
+	    if("success" === data) {
+            loadMonth();
+            $("#cancel-register-btn")[0].click();
+	    } else {
+            showAddAlert();
+	    }
 	});
+}
+
+function showAddAlert(){
+        $("#add-task-container").height("355px");
+        $("#add-task-form .alert").show();
+        $("#add-task-form .alert").switchClass( "begin", "end", 1500 );
+}
+
+function closeAddAlert(){
+        $("#add-task-container").height("320px");
+        $("#add-task-form .alert").hide();
+        $("#add-task-form .alert").switchClass( "end", "begin", 0 );
 }
 
 function closeFloatWindow(){
     $("#block-screen").hide();
     $("#add-task-container").hide();
+    closeAddAlert();
 }
 
 $(document).ready(function(){
@@ -241,5 +257,9 @@ $(document).ready(function(){
 	$("#salve-register-btn").click(function(event){
         addTask();
     });
+
+    $("#startDay").mask('00/00/00');
+    $("#foreseenDay").mask('00/00/00');
+
 	loadMonth();
 });

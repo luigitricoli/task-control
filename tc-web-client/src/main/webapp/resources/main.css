@@ -379,3 +379,19 @@ h1{
     padding: 11px 15px 11px 15px;
     right: -5px;
 }
+#add-task-form .alert.begin{
+    background: #ffe5e5;
+}
+#add-task-form .alert.end{
+    background: #fff;
+}
+.alert{
+    display: none;
+    padding: 5px 0px;
+    border-radius: 5px;
+    margin-bottom: 10px;
+}
+.alert p{
+    color: red;
+    font-size: 12px;
+}

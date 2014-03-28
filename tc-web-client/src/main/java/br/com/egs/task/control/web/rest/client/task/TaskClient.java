@@ -3,7 +3,7 @@ package br.com.egs.task.control.web.rest.client.task;
 import br.com.caelum.vraptor.ioc.Component;
 import br.com.caelum.vraptor.ioc.RequestScoped;
 import br.com.egs.task.control.web.model.Post;
-import br.com.egs.task.control.web.model.User;
+import br.com.egs.task.control.web.model.SessionUser;
 import br.com.egs.task.control.web.model.Week;
 import br.com.egs.task.control.web.model.repository.TaskRepository;
 import br.com.egs.task.control.web.rest.client.JsonClient;
@@ -18,19 +18,19 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.Map.Entry;
-import java.util.logging.SimpleFormatter;
 
 @Component
 @RequestScoped
 public class TaskClient implements TaskRepository {
 
     private static final Logger log = LoggerFactory.getLogger(TaskClient.class);
+    public static final int SUCCESS_CODE = 200;
 
-	private JsonClient jsonClient;
+    private JsonClient jsonClient;
 	private FilterFormat fomatter;
-    private User user;
+    private SessionUser user;
 
-	public TaskClient(final FilterFormat fomatter, JsonClient jsonClient, User user) {
+	public TaskClient(final FilterFormat fomatter, JsonClient jsonClient, SessionUser user) {
         this.fomatter = fomatter;
         this.jsonClient = jsonClient;
         this.user = user;
@@ -106,7 +106,7 @@ public class TaskClient implements TaskRepository {
         }
 
         Response response = jsonClient.at("tasks").postAsJson(task.toJson());
-        if(response.getCode().equals(201)){
+        if(response.getCode().equals(SUCCESS_CODE)){
             return true;
         }
         return false;
@@ -117,7 +117,7 @@ public class TaskClient implements TaskRepository {
 		CorePost post = new CorePost(p.getTime(), p.getUser(), p.getText());
 
         Response response = jsonClient.at(String.format("tasks/%s", taskId)).postAsJson(post.toJson());
-        if(response.getCode().equals(201)){
+        if(response.getCode().equals(SUCCESS_CODE)){
             return true;
         }
         return false;
@@ -128,7 +128,7 @@ public class TaskClient implements TaskRepository {
         CoreTask task = new CoreTask(taskId, date);
 
         Response response = jsonClient.at(String.format("tasks/%s", taskId)).putAsJson(task.toJson());
-        if(response.getCode().equals(201)){
+        if(response.getCode().equals(SUCCESS_CODE)){
             return true;
         }
         return false;

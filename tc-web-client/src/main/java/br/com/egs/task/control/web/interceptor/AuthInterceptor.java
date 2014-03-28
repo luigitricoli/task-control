@@ -7,15 +7,15 @@ import br.com.caelum.vraptor.core.InterceptorStack;
 import br.com.caelum.vraptor.interceptor.Interceptor;
 import br.com.caelum.vraptor.resource.ResourceMethod;
 import br.com.egs.task.control.web.controller.AuthController;
-import br.com.egs.task.control.web.model.User;
+import br.com.egs.task.control.web.model.SessionUser;
 
 @Intercepts
 public class AuthInterceptor implements Interceptor {
 
-    private User user;
+    private SessionUser user;
     private Result result;
 
-    public AuthInterceptor(User user, Result result) {
+    public AuthInterceptor(SessionUser user, Result result) {
         this.user = user;
         this.result = result;
     }

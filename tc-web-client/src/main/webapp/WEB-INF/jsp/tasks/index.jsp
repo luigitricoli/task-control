@@ -4,8 +4,9 @@
 <head>
     <script src="<c:url value="/resources/jquery-1.10.2.min.js"/>"></script>
     <script src="<c:url value="/resources/jquery.cookie.js"/>"></script>
-    <script src="<c:url value="/resources/jquery-ui.js"/>"></script>
+    <script src="<c:url value="/resources/jquery-ui-1.10.4.custom.min.js"/>"></script>
     <script src="<c:url value="/resources/jquery.easydropdown.min.js"/>"></script>
+    <script src="<c:url value="/resources/jquery.mask.min.js"/>"></script>
     <script src="<c:url value="/resources/user.js"/>"></script>
     <script src="<c:url value="/resources/calendar.js"/>"></script>
     <script type="text/javascript">
@@ -121,14 +122,17 @@
             <div id="add-task-container" class="float-window">
                 <form id="add-task-form">
                     <h4>Nova Tarefa</h4>
+                    <div class="alert begin">
+                        <p>Campos preenchidos incorretametne.</p>
+                    </div>
                     <div class="field half-left">
                         <label>In&iacute;cio</label>
-                        <input type="text" name="start">
+                        <input type="text" name="start" id="startDay" required>
                         <span class="format">dd/mm/aa</span>
                     </div>
                     <div class="field half-right">
                         <label>Fim</label>
-                        <input type="text" name="foreseen">
+                        <input type="text" name="foreseen" id="foreseenDay" required>
                         <span class="format">dd/mm/aa</span>
                     </div>
                     <div class="field half-left">
@@ -149,11 +153,11 @@
                     </div>
                     <div class="field">
                         <label>Descri&ccedil;&atilde;o</label>
-                        <textarea name="description"></textarea>
+                        <textarea name="description" required></textarea>
                     </div>
                     <div class="field" style="display:none">
                         <label>Respons&aacute;vel</label>
-                        <input type="text">
+                        <input type="text" required>
                         <button id="add_comentary" type="button" class="btn green"><span class="icon add">+</span></button>
                     </div>
                     <div id="users" class="field">

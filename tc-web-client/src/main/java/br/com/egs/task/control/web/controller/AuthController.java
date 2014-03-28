@@ -4,17 +4,20 @@ import br.com.caelum.vraptor.Get;
 import br.com.caelum.vraptor.Post;
 import br.com.caelum.vraptor.Resource;
 import br.com.caelum.vraptor.Result;
-import br.com.egs.task.control.web.model.User;
+import br.com.egs.task.control.web.model.SessionUser;
+import br.com.egs.task.control.web.model.repository.UserRepository;
 
 @Resource
 public class AuthController {
 
     private Result result;
-    private User user;
+    private UserRepository user;
+    private SessionUser sessionUser;
 
-    public AuthController(Result result, User user) {
+    public AuthController(Result result, UserRepository user, SessionUser sessionUser) {
         this.result = result;
         this.user = user;
+        this.sessionUser = sessionUser;
     }
 
     @Get("/login")
@@ -23,13 +26,16 @@ public class AuthController {
 
     @Post("/login")
     public void login(String nickname, String pass){
-        this.user.login(nickname, pass);
-        result.redirectTo(TasksController.class).index(null);
+        if(user.authenticate(nickname, pass)){
+            result.redirectTo(TasksController.class).index(null);
+        } else {
+            result.redirectTo(this).index();
+        }
     }
 
     @Get("/logout")
     public void logout(){
-        this.user.logout();
+        sessionUser.logout();
         result.redirectTo(this).index();
     }
 
