@@ -66,6 +66,13 @@ public class UserTest {
     }
 
     @Test
+    public void fromUserToDbObject_type() {
+        User user = populateTestUser();
+        BasicDBObject dbObject = user.toDbObject();
+        assertEquals("N2", dbObject.get("type"));
+    }
+
+    @Test
     public void fromUserToDbObject_password() {
         User user = populateTestUser();
         BasicDBObject dbObject = user.toDbObject();
@@ -109,6 +116,13 @@ public class UserTest {
     }
 
     @Test
+    public void fromDbObjectToUser_type() {
+        BasicDBObject dbUser = populateTestDbUser();
+        User usrObj = User.fromDbObject(dbUser);
+        assertEquals("N2", usrObj.getType());
+    }
+
+    @Test
     public void fromDbObjectToUser_password() {
         BasicDBObject dbUser = populateTestDbUser();
         User usrObj = User.fromDbObject(dbUser);
@@ -132,6 +146,7 @@ public class UserTest {
         User user = new User("testusr");
         user.setName("A Test User");
         user.setEmail("test@example.com");
+        user.setType("N2");
         user.setPasswordHash("AAAAABBBBBCCCCCDDDDDEEEEE");
 
         List<Application> applications = new ArrayList<>();
@@ -146,6 +161,7 @@ public class UserTest {
                 .append("_id", "testusr")
                 .append("name", "A Test User")
                 .append("email", "test@example.com")
+                .append("type", "N2")
                 .append("passwordHash", "AAAAABBBBBCCCCCDDDDDEEEEE");
 
         BasicDBList applications = new BasicDBList();

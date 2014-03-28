@@ -106,6 +106,7 @@ public class UsersService {
         updatedUser.setPasswordHash(currentlySavedUser.getPasswordHash());
         updatedUser.setName(user.getName());
         updatedUser.setEmail(user.getEmail());
+        updatedUser.setType(user.getType());
         updatedUser.setApplications(user.getApplications());
 
         try {

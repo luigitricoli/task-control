@@ -46,6 +46,7 @@ public class UserRestTest {
                     "'login':'testusr'," +
                     "'name':'A Test User'," +
                     "'email':'test@example.com'," +
+                    "'type':'N1'," +
                     "'applications':[" +
                         "{'name':'OLM'},{'name':'TaskControl'}" +
                     "]" +
@@ -53,6 +54,7 @@ public class UserRestTest {
                     "'login':'aseconduser'," +
                     "'name':'Another Test User'," +
                     "'email':'other@example.com'," +
+                    "'type':'N2'," +
                     "'applications':[" +
                         "{'name':'EMM'}" +
                     "]" +
@@ -72,6 +74,7 @@ public class UserRestTest {
                 "'login':'testusr'," +
                 "'name':'A Test User'," +
                 "'email':'test@example.com'," +
+                "'type':'N1'," +
                 "'applications':[" +
                    "{'name':'OLM'},{'name':'TaskControl'}" +
                 "]" +
@@ -96,6 +99,7 @@ public class UserRestTest {
             "'login':'testusr3'," +
             "'name':'A Third Test User'," +
             "'email':'test3@example.com'," +
+            "'type':'N3'," +
             "'applications':[" +
                 "{'name':'FEM'},{'name':'EMM'}" +
             "]" +
@@ -125,6 +129,7 @@ public class UserRestTest {
                 // No login
                 "'name':'A Third Test User'," +
                 "'email':'test3@example.com'," +
+                "'type':'N3'," +
                 "'applications':[" +
                 "{'name':'FEM'},{'name':'EMM'}" +
                 "]" +
@@ -143,6 +148,7 @@ public class UserRestTest {
         String userJson = "{" +
             "'name':'A Modified Test User'," +
             "'email':'changed@example.com'," +
+            "'type':'N2'," +
             "'applications':[" +
                  "{'name':'FEM'},{'name':'EMM'}" +
             "]" +
@@ -169,6 +175,7 @@ public class UserRestTest {
                 .append("_id", "testusr")
                 .append("name", "A Test User")
                 .append("email", "test@example.com")
+                .append("type", "N1")
                 .append("passwordHash", "AAAAABBBBBCCCCCDDDDDEEEEE");
 
         BasicDBList applications = new BasicDBList();
@@ -183,6 +190,7 @@ public class UserRestTest {
                 .append("_id", "aseconduser")
                 .append("name", "Another Test User")
                 .append("email", "other@example.com")
+                .append("type", "N2")
                 .append("passwordHash", "ZZZZZZZZYYYYYYYYXXXXXXXX");
 
         applications = new BasicDBList();

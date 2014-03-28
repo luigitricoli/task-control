@@ -21,6 +21,7 @@ public class User {
     private String login;
     private String name;
     private String email;
+    private String type;
     private String passwordHash;
 
     private List<Application> applications;
@@ -59,6 +60,9 @@ public class User {
         }
         if (StringUtils.isBlank(this.getEmail())) {
             throw new ValidationException("E-mail is empty");
+        }
+        if (StringUtils.isBlank(this.getType())) {
+            throw new ValidationException("User type is empty");
         }
         if (StringUtils.isBlank(this.getPasswordHash())) {
             throw new ValidationException("Password is empty");
@@ -100,6 +104,7 @@ public class User {
         result.put("_id", this.getLogin());
         result.put("name", this.getName());
         result.put("email", this.getEmail());
+        result.put("type", this.getType());
         result.put("passwordHash", this.getPasswordHash());
 
         BasicDBList resultApplications = new BasicDBList();
@@ -126,6 +131,7 @@ public class User {
         User u = new User(login);
         u.setName(dbUser.getString("name"));
         u.setEmail(dbUser.getString("email"));
+        u.setType(dbUser.getString("type"));
         u.setPasswordHash(dbUser.getString("passwordHash"));
 
         @SuppressWarnings("unchecked")
@@ -174,6 +180,14 @@ public class User {
 
     public void setPasswordHash(String hash) {
         this.passwordHash = hash;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 
     private String extractHash(String pass) {

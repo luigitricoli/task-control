@@ -63,6 +63,7 @@ public class UsersRepositoryTest {
         assertEquals("testusr2", result.getLogin());
         assertEquals("A Test User", result.getName());
         assertEquals("test@example.com", result.getEmail());
+        assertEquals("N2", result.getType());
         assertEquals("AAAAABBBBBCCCCCDDDDDEEEEE", result.getPasswordHash());
 
         List<Application> applications = result.getApplications();
@@ -117,6 +118,7 @@ public class UsersRepositoryTest {
         User user = new User("testusr");
         user.setName("A Test User");
         user.setEmail("test@example.com");
+        user.setType("N2");
         user.setPasswordHash("AAAAABBBBBCCCCCDDDDDEEEEE");
 
         List<Application> applications = new ArrayList<Application>();
@@ -131,6 +133,7 @@ public class UsersRepositoryTest {
                 .append("_id", "testusr")
                 .append("name", "A Test User")
                 .append("email", "test@example.com")
+                .append("type", "N2")
                 .append("passwordHash", "AAAAABBBBBCCCCCDDDDDEEEEE");
 
         BasicDBList applications = new BasicDBList();
