@@ -12,50 +12,73 @@ import java.text.ParseException;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
+import java.util.regex.Pattern;
 
 @Resource
 @AuthRequired
 public class TasksController {
 
     private static final Logger log = LoggerFactory.getLogger(TasksController.class);
+    public static final String EMPTY = "";
 
-	private Result result;
-	private TaskRepository tasks;
+    private Result result;
+    private TaskRepository tasks;
 
-	public TasksController(Result result, TaskRepository repository) {
-		this.result = result;
-		this.tasks = repository;
-	}
+    public TasksController(Result result, TaskRepository repository) {
+        this.result = result;
+        this.tasks = repository;
+    }
 
-	@Get("/tarefas")
-	public void index(String task) {
-		if (task != null) {
-			result.include("openTask", task);
-		}
-	}
+    @Get("/tarefas")
+    public void index(String task) {
+        if (task != null) {
+            result.include("openTask", task);
+        }
+    }
 
-	@Get("/tarefas/mes/{month}")
-	public void tasksBy(Integer month, String filters) {	
-		if(filters == null){
-			result.include("weeks", tasks.weeksBy(month));	
-		} else {
-			result.include("weeks", tasks.weeksBy(month, Arrays.asList(filters.split(","))));
-		}
-		
-	}
+    @Get("/tarefas/mes/{month}")
+    public void tasksBy(Integer month, String filters) {
+        if (filters == null) {
+            result.include("weeks", tasks.weeksBy(month));
+        } else {
+            result.include("weeks", tasks.weeksBy(month, Arrays.asList(filters.split(","))));
+        }
+
+    }
 
     @Post("/tarefas")
     public void addTask(String start, String foreseen, String type, String system, String description, List<String> owners) {
-        if(start == null || foreseen == null || type == null || system == null || description == null || owners == null){
-            result.use(Results.http()).body("fail");
-        } else if (tasks.add(start, foreseen, type, system, description, owners)) {
+        if(!isValidTask(start, foreseen, type, system, description, owners)){
+            return;
+        }
+
+        if (tasks.add(start, foreseen, type, system, description, owners)) {
             result.use(Results.http()).body("success");
         } else {
             result.use(Results.http()).body("fail");
         }
     }
 
-    @Put(value="/tarefas/{task}/finalizacao")
+    public boolean isValidTask(String start, String foreseen, String type, String system, String description, List<String> owners) {
+        Pattern pValidDate = Pattern.compile("([0-2][0-9]|3[0-1])\\/(0[1-9]|1[0-2])\\/[1-9][0-9]");
+        if (start == null || !pValidDate.matcher(start).matches()) {
+            result.use(Results.http()).body("Data de início inválida");
+            return false;
+        } else if (foreseen == null || !pValidDate.matcher(foreseen).matches()) {
+            result.use(Results.http()).body("Data fim inválida");
+            return false;
+        } else if (description == null || description.equals(EMPTY)) {
+            result.use(Results.http()).body("Descrição inválida");
+            return false;
+        } else if (type == null || system == null || owners == null) {
+            result.use(Results.http()).body("fail");
+            return false;
+        }
+        return true;
+    }
+
+
+    @Put(value = "/tarefas/{task}/finalizacao")
     public void finish(String task, String date) {
         log.debug("Value task param: {}", task);
         log.debug("Value date param: {}", date);
@@ -71,19 +94,19 @@ public class TasksController {
         }
     }
 
-	@Get("/tarefas/{task}/historico")
-	public void postsBy(String task) {
-		result.include("posts", tasks.postsBy(task));
-	}
+    @Get("/tarefas/{task}/historico")
+    public void postsBy(String task) {
+        result.include("posts", tasks.postsBy(task));
+    }
 
-	@Post("/tarefas/{task}/historico")
-	public void addPost(String task, String text) {
-		br.com.egs.task.control.web.model.Post post = new br.com.egs.task.control.web.model.Post(Calendar.getInstance(), "Luigi", text);
-		if (tasks.add(post, task)) {
-			result.use(Results.http()).body("success");
-		} else {
-			result.use(Results.http()).body("fail");
-		}
-	}
+    @Post("/tarefas/{task}/historico")
+    public void addPost(String task, String text) {
+        br.com.egs.task.control.web.model.Post post = new br.com.egs.task.control.web.model.Post(Calendar.getInstance(), "Luigi", text);
+        if (tasks.add(post, task)) {
+            result.use(Results.http()).body("success");
+        } else {
+            result.use(Results.http()).body("fail");
+        }
+    }
 
 }

@@ -26,12 +26,9 @@ public class MonthStructure {
         maxCurrent = reference.getActualMaximum(Calendar.DAY_OF_MONTH);
         int dayOfWeekFirstDay = reference.get(Calendar.DAY_OF_WEEK);
 
-        Calendar prevous = Calendar.getInstance();
-        prevous.set(Calendar.YEAR, year);
-        prevous.set(Calendar.MONTH, month.getId());
-        prevous.add(Calendar.MONTH, -1);
-        prevous.set(Calendar.DAY_OF_MONTH, FIRST_DAY);
-        maxPreviousMonth = prevous.getActualMaximum(Calendar.DAY_OF_MONTH);
+        Calendar previous = (Calendar) reference.clone();
+        previous.add(Calendar.MONTH, -1);
+        maxPreviousMonth = previous.getActualMaximum(Calendar.DAY_OF_MONTH);
         minPrevious = Math.abs(maxPreviousMonth - (dayOfWeekFirstDay - 2));
 
         int previousDays = maxPreviousMonth - minPrevious;

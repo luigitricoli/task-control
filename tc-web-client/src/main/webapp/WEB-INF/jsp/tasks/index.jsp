@@ -22,7 +22,7 @@
 </head>
 <body>
     <header id="header">
-        <h1>TaskControl</h1>
+        <h1>TaskControl<span class="sub1">beta</span><span class="sub2">1</span></h1>
         <jsp:include page="../_user.jsp"/>
     </header>
     <section id="main">
@@ -114,63 +114,10 @@
                 </div>
             </div>
             <div id="task-history">
-
-
             </div>
         </div>
         <div id="block-screen">
-            <div id="add-task-container" class="float-window">
-                <form id="add-task-form">
-                    <h4>Nova Tarefa</h4>
-                    <div class="alert begin">
-                        <p>Campos preenchidos incorretametne.</p>
-                    </div>
-                    <div class="field half-left">
-                        <label>In&iacute;cio</label>
-                        <input type="text" name="start" id="startDay" required>
-                        <span class="format">dd/mm/aa</span>
-                    </div>
-                    <div class="field half-right">
-                        <label>Fim</label>
-                        <input type="text" name="foreseen" id="foreseenDay" required>
-                        <span class="format">dd/mm/aa</span>
-                    </div>
-                    <div class="field half-left">
-                        <label>Tipo</label>
-                        <select name="type">
-                            <option value="ccc">CCC</option>
-                            <option value="interna">Interna</option>
-                            <option value="suporte producao">Sup. Produ&ccedil;&atilde;o</option>
-                        </select>
-                    </div>
-                    <div class="field half-right">
-                        <label>Sistema</label>
-                        <select name="system">
-                            <option value="OLM">OLM</option>
-                            <option value="GOL">GOL</option>
-                            <option value="EMA">EMA</option>
-                        </select>
-                    </div>
-                    <div class="field">
-                        <label>Descri&ccedil;&atilde;o</label>
-                        <textarea name="description" required></textarea>
-                    </div>
-                    <div class="field" style="display:none">
-                        <label>Respons&aacute;vel</label>
-                        <input type="text" required>
-                        <button id="add_comentary" type="button" class="btn green"><span class="icon add">+</span></button>
-                    </div>
-                    <div id="users" class="field">
-                        <label>Respons&aacute;vel</label>
-                        <span>${user.nickname}</span>
-                        <input type="text" name="owners[]" value="${user.nickname}" style="display:none" >
-                    </div>
-                    <div class="field">
-                        <button type="reset" id="cancel-register-btn" class="btn red"><span class="icon add">X</span>Cancelar</button>
-                        <button type="button" id="salve-register-btn" class="btn green"><span class="icon add">V</span>Salvar</button>
-                    </div>
-                </form>
-            </div>
+            <jsp:include page="_addTask.jsp"/>
         </div>
         <script type="text/javascript">
             $("#menu").menu();

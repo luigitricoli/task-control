@@ -50,4 +50,8 @@ public class SessionUser {
     public String getEmail() {
         return email;
     }
+
+    public List<String> getSystems() {
+        return systems;
+    }
 }

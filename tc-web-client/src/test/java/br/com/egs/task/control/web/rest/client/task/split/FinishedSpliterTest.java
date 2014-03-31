@@ -129,4 +129,19 @@ public class FinishedSpliterTest {
         assertThat(spliter.secondWeek(), equalTo(first));
         assertThat(spliter.thirdWeek(), equalTo(second));
     }
+
+    @Test
+    public void threeWeeksTaskHashtagInLast() throws ParseException {
+        String json = "{\"id\":\"52f518377cf06f3be158a352\",\"description\":\"My First CoreTask\",\"startDate\":\"2014-03-20\",\"endDate\":\"2014-03-31\",\"foreseenEndDate\":\"2014-03-31\",\"source\":\"CCC\",\"application\":\"OLM\",\"owners\":[{\"login\":\"john\"},{\"login\":\"mary\"}],\"posts\":[{\"timestamp\":\"2014-03-23 09:15:30\",\"user\":\"john\",\"text\":\"Scope changed. No re-scheduling will be necessary\"},{\"timestamp\":\"2014-03-31 18:20:49\",\"user\":\"john\",\"text\":\"Doing #atraso to finish it sooner\"},{\"timestamp\":\"2014-03-31 18:20:49\",\"user\":\"john\",\"text\":\"Doing #horaextra to finish it sooner\"}]}";
+
+        TaskSpliter spliter = new FinishedSpliter(new TaskDate("2014-03-31"));
+        spliter.split(CoreTask.unmarshal(json));
+
+        Map<Integer, Hashtags> hashtags = new HashMap<Integer, Hashtags>();
+        hashtags.put(3, new Hashtags(Hashtag.LATE));
+        hashtags.put(2, new Hashtags(Hashtag.OVERTIME));
+        OneWeekTask third = new OneWeekTask("52f518377cf06f3be158a352", 2, 1, 1, Stage.FINISHED, "My First CoreTask", hashtags, false, true);
+
+        assertThat(spliter.sixthWeek(), equalTo(third));
+    }
 }

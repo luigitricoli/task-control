@@ -1,11 +1,10 @@
 package br.com.egs.task.control.web.rest.client.user;
 
 import com.google.gson.*;
+import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Type;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
+import java.util.LinkedList;
 import java.util.List;
 
 public class CoreUser {
@@ -13,12 +12,7 @@ public class CoreUser {
     private String name;
     private String login;
     private String email;
-
-    public CoreUser(String name, String login, String email) {
-        this.name = name;
-        this.login = login;
-        this.email = email;
-    }
+    private List<String> applications;
 
     public String getName() {
         return name;
@@ -32,7 +26,25 @@ public class CoreUser {
         return email;
     }
 
-    public static CoreUser fromJson(String json){
-        return new Gson().fromJson(json, CoreUser.class);
+    public List<String> getApplications() {
+        return applications;
+    }
+
+    public static CoreUser fromJson(String json) {
+        GsonBuilder gson = new GsonBuilder();
+        gson.registerTypeAdapter(new TypeToken<List<String>>() {
+        }.getType(), new ApplicationsUnmarshaller());
+        return gson.create().fromJson(json, CoreUser.class);
+    }
+
+    private static class ApplicationsUnmarshaller implements JsonDeserializer<List<String>> {
+        @Override
+        public List<String> deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+            List<String> values = new LinkedList<>();
+            for (JsonElement element : jsonElement.getAsJsonArray()) {
+                values.add(element.getAsJsonObject().get("name").getAsString());
+            }
+            return values;
+        }
     }
 }

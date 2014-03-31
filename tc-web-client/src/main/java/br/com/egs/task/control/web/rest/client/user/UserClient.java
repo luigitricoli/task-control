@@ -33,7 +33,7 @@ public class UserClient implements UserRepository {
 
         if(response.getCode().equals(SUCCESS_CODE)){
             CoreUser coreUser = CoreUser.fromJson(response.getContent());
-            user.login(coreUser.getName(), coreUser.getEmail(), coreUser.getLogin(), new ArrayList<String>());
+            user.login(coreUser.getName(), coreUser.getLogin(), coreUser.getEmail(), coreUser.getApplications());
             return true;
         }
 

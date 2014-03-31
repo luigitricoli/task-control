@@ -379,10 +379,10 @@ h1{
     padding: 11px 15px 11px 15px;
     right: -5px;
 }
-#add-task-form .alert.begin{
+.alert.begin{
     background: #ffe5e5;
 }
-#add-task-form .alert.end{
+.alert.end{
     background: #fff;
 }
 .alert{
@@ -394,4 +394,19 @@ h1{
 .alert p{
     color: red;
     font-size: 12px;
+}
+#iteraction-form .alert{
+    margin-bottom: 0px;
+}
+h1 .sub1{
+    color: #607792;
+    font-size: 20px;
+    margin-left: 5px;
+}
+
+h1 .sub2{
+    color: #607792;
+    font-size: 14px;
+    position: relative;
+    top: -5px;
 }
