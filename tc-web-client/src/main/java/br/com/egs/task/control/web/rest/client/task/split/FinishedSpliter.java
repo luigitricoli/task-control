@@ -1,9 +1,13 @@
 package br.com.egs.task.control.web.rest.client.task.split;
 
+import br.com.egs.task.control.web.model.Hashtag;
 import br.com.egs.task.control.web.model.OneWeekTask;
 import br.com.egs.task.control.web.model.Stage;
+import br.com.egs.task.control.web.rest.client.task.CorePost;
 import br.com.egs.task.control.web.rest.client.task.CoreTask;
 import br.com.egs.task.control.web.rest.client.task.TaskDate;
+
+import java.util.Calendar;
 
 class FinishedSpliter extends TaskSpliter {
 
@@ -26,6 +30,7 @@ class FinishedSpliter extends TaskSpliter {
             task.runUntil(task.LAST_UTIL_DAY_OF_WEEK);
             task.foreseenEndDay(task.LAST_UTIL_DAY_OF_WEEK);
         }
+
     }
 
     @Override

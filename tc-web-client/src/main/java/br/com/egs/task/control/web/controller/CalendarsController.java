@@ -4,12 +4,14 @@ import br.com.caelum.vraptor.Get;
 import br.com.caelum.vraptor.Resource;
 import br.com.caelum.vraptor.Result;
 import br.com.caelum.vraptor.view.Results;
+import br.com.egs.task.control.web.interceptor.AuthRequired;
 import br.com.egs.task.control.web.model.calendar.Month;
 import br.com.egs.task.control.web.model.calendar.MonthStructure;
 
 import java.util.Calendar;
 
 @Resource
+@AuthRequired
 public class CalendarsController {
 	
 	private Result result;

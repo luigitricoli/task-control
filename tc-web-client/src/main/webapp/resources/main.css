@@ -280,11 +280,13 @@ h1{
     background: rgba(0,0,0,0.5);
     width: 100%;
     height: 100%;
+    display:none;
 }
-#float-window{
+.float-window{
     background: #fff;
     width: 470px;
-    height: 370px;
+    /*height: 370px;*/
+    height: 320px;
     position: absolute;
     top: 50%;
     margin-top: -200px;
@@ -292,38 +294,119 @@ h1{
     margin-left: -250px;
     padding: 15px;
 }
-#float-window h4{
+.float-window h4{
     font-size: 18px;
     font-weight: bold;
     margin-bottom: 10px;
 }
-#float-window .field{
+.float-window .field{
     padding-bottom: 10px;
     min-height: 43px;
 }
-#float-window label{
+.float-window .field .format{
+    color: red;
+}
+.float-window label{
     display: block;
     font-size: 14px;
     margin-bottom: 3px;
 }
-#float-window input, #float-window textarea, div.select-crud{
+.float-window input, .float-window textarea, .float-window select{
     font-size: 14px;
     padding: 3px;
     border: 1px solid #636363;
     border-radius: 3px;
 }
-#float-window .half-left{
+.float-window select{
+    width: 214px;
+}
+.float-window .half-left{
     float: left;
     width: 240px;
 }
-#float-window .half-right{
+.float-window .half-right{
     width: 240px;
     margin-left: 255px;
 }
-#float-window textarea{
+.float-window textarea{
     width: 460px;
     height: 50px;
 }
-#float-window #salve-register, #float-window #cancel-register{
+.float-window #salve-register, .float-window #cancel-register{
     margin-left: 10px;
+}
+#users span {
+    padding: 5px 10px;
+    background: #d3d3d3;
+    font-size: 14px;
+    margin-top: 10px;
+    diplay: block;
+    float: left;
+}
+#cancel-register-btn{
+    margin-left: 20px;
+}
+#add-task-container{
+    display:none;
+}
+#login-container{
+    width: 300px;
+    height: 150px;
+    background: #FFF;
+    position: relative;
+    left: 50%;
+    margin-left: -180px;
+    margin-top: 100px;
+    box-shadow: -17px 18px 20px -20px #888;
+    padding: 30px;
+}
+#login-container label {
+    font-size: 14px;
+    font-weight: bold;
+    display: block;
+    margin-bottom: 5px;
+}
+#login-container input {
+    font-size: 14px;
+    display: block;
+    margin-bottom: 15px;
+    border: 1px solid #4f4f4f;
+    border-radius: 3px;
+    padding: 3px;
+    width: 100%;
+}
+#login-btn{
+    padding: 11px 15px 11px 15px;
+    right: -5px;
+}
+.alert.begin{
+    background: #ffe5e5;
+}
+.alert.end{
+    background: #fff;
+}
+.alert{
+    display: none;
+    padding: 5px 0px;
+    border-radius: 5px;
+    margin-bottom: 10px;
+}
+.alert p{
+    color: red;
+    font-size: 12px;
+}
+#iteraction-form .alert{
+    margin-bottom: 0px;
+}
+h1 .sub1{
+    color: #607792;
+    font-size: 20px;
+    margin-left: 5px;
+}
+
+h1 .sub2{
+    color: #607792;
+    font-size: 14px;
+    position: relative;
+    top: -5px;
 }

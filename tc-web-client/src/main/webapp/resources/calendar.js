@@ -58,6 +58,7 @@ function populateCalendar(days){
 function getMonth(month){
 	var url = DOMAIN + "calendario/mes/" + month;
 	$.getJSON(url,function(data){
+	    $("#calendar-month-label").text(data.label);
 		populateCalendar(data.days);
 	});
 }
@@ -136,8 +137,15 @@ function populateTimeline(task){
 
         var html = $($.parseHTML(data));
         $("#task-history").append(html);
+
         $( ".post:contains('#atraso')" ).addClass("late");
+        $( ".post:contains('#atrasado')" ).addClass("late");
+        $( ".post:contains('#atrasada')" ).addClass("late");
+
         $( ".post:contains('#horaextra')" ).addClass("overtime");
+        $( ".post:contains('#horasextras')" ).addClass("overtime");
+        $( ".post:contains('#horasextra')" ).addClass("overtime");
+        $( ".post:contains('#horaextras')" ).addClass("overtime");
 
         $("#task-description").text(task.find(".task-description").text());
 
@@ -188,17 +196,72 @@ function finish(task){
         "type": "PUT",
         "data": { "date" : dateValue },
         "success": function(data) {
-                    loadMonth();
+                    if("success" === data) {
+                        closePostAlert();
+                        loadMonth();
+                    } else if (task.hasClass("late")) {
+                       closePostAlert();
+                       showPostAlert("É necessário justificar o atraso da tarefa com uma das seguintes hashtag: #atraso ou #atrasado ou #atrasada.")
+                    } else {
+                       closePostAlert();
+                       showPostAlert("Não foi possível finalizar a tarefa.")
+                    }
+
         }
     });
 
+}
+
+function showPostAlert(text){
+        $("#iteraction-form .alert p").text(text);
+        $("#iteraction-form .alert").show();
+        $("#iteraction-form .alert").switchClass( "begin", "end", 1500 );
+}
+
+function closePostAlert(){
+        $("#iteraction-form .alert").hide();
+        $("#iteraction-form .alert").switchClass( "end", "begin", 0 );
 }
 
 function addPost(task, url){
 	$.post(url, { "text": $("#iteraction-form").find("#comentary").val() }, function(data){
 		populateTimeline(task);
 	});
+}
 
+function addTask(){
+    var url = DOMAIN + "tarefas";
+	$.post(url, $("#add-task-form").serialize(), function(data){
+	    if("success" === data) {
+            loadMonth();
+            $("#cancel-register-btn")[0].click();
+	    }else if("fail" !== data) {
+	       closeAddAlert();
+           showAddAlert(data);
+        } else {
+            closeAddAlert();
+           showAddAlert("Campos preenchidos incorretametne.");
+	    }
+	});
+}
+
+function showAddAlert(text){
+        $("#add-task-container").height("355px");
+        $("#add-task-form .alert p").text(text);
+        $("#add-task-form .alert").show();
+        $("#add-task-form .alert").switchClass( "begin", "end", 1500 );
+}
+
+function closeAddAlert(){
+        $("#add-task-container").height("320px");
+        $("#add-task-form .alert").hide();
+        $("#add-task-form .alert").switchClass( "end", "begin", 0 );
+}
+
+function closeFloatWindow(){
+    $("#block-screen").hide();
+    $("#add-task-container").hide();
+    closeAddAlert();
 }
 
 $(document).ready(function(){
@@ -216,5 +279,20 @@ $(document).ready(function(){
 	$("#previous-month").click(function() {
 		prevMonth();
 	});
+	$("#btn_new").click(function(event){
+	    $("#block-screen").show();
+	    $("#add-task-container").show();
+	    event.preventDefault();
+	});
+	$("#cancel-register-btn").click(function(event){
+        closeFloatWindow();
+	});
+	$("#salve-register-btn").click(function(event){
+        addTask();
+    });
+
+    $("#startDay").mask('00/00/00');
+    $("#foreseenDay").mask('00/00/00');
+
 	loadMonth();
 });

@@ -13,6 +13,8 @@ public interface TaskRepository {
 	public List<Week> weeksBy(Integer month, List<String> filters);
 
     public List<Post> postsBy(String taskId);
+
+    public boolean add(String start, String foreseen, String type, String system, String description, List<String> owners);
     
     public boolean add(Post p, String taskId);
 

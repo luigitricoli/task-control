@@ -25,7 +25,7 @@ public class Post {
         if(text != null){
             this.text = text;
             extractHashtags(text);
-            extractHtml(text);
+            createHtml(text);
         } else {
         	this.text = EMPTY;
         	this.html = EMPTY;
@@ -42,7 +42,7 @@ public class Post {
         }
     }
 
-    private void extractHtml(String text) {
+    private void createHtml(String text) {
         this.html = text;
         for (String hashtag : hashtags) {
             this.html = this.html.replaceAll(hashtag, spanTag(hashtag));

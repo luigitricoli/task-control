@@ -18,18 +18,23 @@ public class FilterFormat {
 	
 	public FilterFormat() {
 		filters = new HashMap<>();
-		
-		filters.put("OLM", "application");
-		filters.put("EMA", "application");
-		filters.put("GOL", "application");
-		
+
+        filters.put("Administrativo", "application");
+        filters.put("EMA", "application");
+        filters.put("EMM", "application");
+        filters.put("ESPD", "application");
+        filters.put("GOL", "application");
+        filters.put("OLM", "application");
+        filters.put("Roaming", "application");
+        filters.put("TaskControl", "application");
+
 		filters.put("doing", "status");
 		filters.put("finished", "status");
 		filters.put("late", "status");
 		filters.put("waiting", "status");
 		
 		filters.put("CCC", "sources");
-		filters.put("internal", "sources");
+		filters.put("interna", "sources");
 		filters.put("sup-prod", "sources");
 	}
 	

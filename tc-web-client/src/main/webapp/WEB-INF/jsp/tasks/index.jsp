@@ -4,8 +4,10 @@
 <head>
     <script src="<c:url value="/resources/jquery-1.10.2.min.js"/>"></script>
     <script src="<c:url value="/resources/jquery.cookie.js"/>"></script>
-    <script src="<c:url value="/resources/jquery-ui.js"/>"></script>
+    <script src="<c:url value="/resources/jquery-ui-1.10.4.custom.min.js"/>"></script>
     <script src="<c:url value="/resources/jquery.easydropdown.min.js"/>"></script>
+    <script src="<c:url value="/resources/jquery.mask.min.js"/>"></script>
+    <script src="<c:url value="/resources/user.js"/>"></script>
     <script src="<c:url value="/resources/calendar.js"/>"></script>
     <script type="text/javascript">
 		var DOMAIN='<c:url value="/"/>';
@@ -20,87 +22,15 @@
 </head>
 <body>
     <header id="header">
-        <h1>TaskControl</h1>
-        <div id="user">
-            <select class="dropdown">
-                <option value="" class="label">luigitricoli</option>
-                <option value="">Meus Dados</option>
-                <option value="">Ajuda</option>
-                <option value="">Logout</option>
-            </select>
-        </div>
+        <h1>TaskControl<span class="sub1">beta</span><span class="sub2">1</span></h1>
+        <jsp:include page="../_user.jsp"/>
     </header>
     <section id="main">
         <header id="top-main">
-            <a href="" id="btn_new" class="btn green"><span class="icon add">+</span>Nova Tarefa</a>
+            <a href="#" id="btn_new" class="btn green"><span class="icon add">+</span>Nova Tarefa</a>
         </header>
         <div id="container-left">
-            <div class="filter-group">
-                <form>
-                    <h4>Sistema</h4>
-                    <div class="constraint">
-                        <input type="checkbox" data-filter="GOL" id="chb-GOL">
-                        <label for="chb-GOL" data-filter="GOL">GOL</label>
-                    </div>
-                    <div class="constraint">
-                        <input type="checkbox" data-filter="EMA" id="chb-EMA">
-                        <label for="chb-EMA" data-filter="EMA">EMA</label>
-                    </div>
-                    <div class="constraint">
-                        <input type="checkbox" data-filter="OLM" id="chb-OLM">
-                        <label for="chb-OLM" data-filter="OLM">OLM</label>
-                    </div>
-                </form>
-            </div>
-            <div class="filter-group">
-                <h4>Status</h4>
-                <div class="constraint">
-                    <input type="checkbox" data-filter="finished" id="chb-finished">
-                    <label for="chb-finished" data-filter="finished">Finalizado</label>
-                </div>
-                <div class="constraint">
-                    <input type="checkbox" data-filter="doing" id="chb-doing">
-                    <label for="chb-doing" data-filter="doing">Em andamento</label>
-                </div>
-                <div class="constraint">
-                    <input type="checkbox" data-filter="late" id="chb-late">
-                    <label for="chb-late" data-filter="late">Atrasado</label>
-                </div>
-            </div>
-            <div class="filter-group">
-                <h4>Tipo da Demanda</h4>
-                <div class="constraint">
-                    <input type="checkbox" data-filter="CCC" id="chb-CCC">
-                    <label for="chb-CCC" data-filter="CCC">CCC</label>
-                </div>
-                <div class="constraint">
-                    <input type="checkbox" data-filter="internal" id="chb-internal">
-                    <label for="chb-internal" data-filter="internal">Interna</label>
-                </div>
-                <div class="constraint">
-                    <input type="checkbox" data-filter="sup-prod" id="chb--sup-prod">
-                    <label for="chb--sup-prod" data-filter="sup-prod">Suporte a produ&ccedil;&atilde;o</label>
-                </div>
-            </div>
-            <div class="filter-group">
-                <h4>Respons&aacute;vel</h4>
-                <div class="constraint">
-                    <input type="radio" name="user" checked>
-                    <label>Todos</label>
-                </div>                
-                <div class="constraint">
-                    <input type="radio" name="user">
-                    <label>William</label>
-                </div>
-                <div class="constraint">
-                    <input type="radio" name="user">
-                    <label>Rodrigo</label>
-                </div>
-                <div class="constraint">
-                    <input type="radio" name="user">
-                    <label>Kaue</label>
-                </div>
-            </div>                     
+            <jsp:include page="_filters.jsp"/>
         </div>        
         <div id="container-right">
             <div id="navigation">
@@ -108,7 +38,7 @@
                     <a id="previous-month" href="#" class="btn green previous">&lt;</a>
                     <a id="next-month" href="#" class="btn green next">&gt;</a>
                 </div>
-                <h3>Atual</h3>
+                <h3 id="calendar-month-label">Atual</h3>
             </div>
             <div id="tasks-in-calendar">
                 <table id="calendar-layer">
@@ -184,9 +114,10 @@
                 </div>
             </div>
             <div id="task-history">
-
-
             </div>
+        </div>
+        <div id="block-screen">
+            <jsp:include page="_addTask.jsp"/>
         </div>
         <script type="text/javascript">
             $("#menu").menu();

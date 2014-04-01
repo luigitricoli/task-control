@@ -7,16 +7,20 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
-class CorePost {
+public class CorePost {
 
-	public Calendar timestamp;
-	public String user;
-	public String text;
+	private Calendar timestamp;
+    private String user;
+    private String text;
+
+    private Boolean added;
 
 	public CorePost(Calendar timestamp, String user, String text) {
 		this.timestamp = timestamp;
 		this.user = user;
 		this.text = text;
+
+        this.added = false;
 	}
 
 	public String toJson() {
@@ -56,5 +60,41 @@ class CorePost {
 			return new CorePost(timestamp, user, text);
 		}
 	}
+
+    public Calendar getTimestamp() {
+        return timestamp;
+    }
+
+    public String getUser() {
+        return user;
+    }
+
+    public String getText() {
+        return text;
+    }
+
+    public boolean hasOvetimeHashtag(){
+        return text.contains("#horaextra");
+    }
+
+    public boolean hasLateHashtag(){
+        return text.contains("#atraso");
+    }
+
+    public boolean isBefore(Calendar date){
+        return this.timestamp.compareTo(date) < 0;
+    }
+
+    public Integer getDayOfWeek(){
+        return timestamp.get(Calendar.DAY_OF_WEEK);
+    }
+
+    public boolean wasAdded(){
+        return this.added;
+    }
+
+    public void added(){
+        this.added = true;
+    }
 
 }

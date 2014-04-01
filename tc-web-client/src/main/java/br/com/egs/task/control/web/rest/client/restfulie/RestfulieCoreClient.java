@@ -5,6 +5,7 @@ import br.com.caelum.restfulie.Restfulie;
 import br.com.caelum.vraptor.ioc.Component;
 import br.com.caelum.vraptor.ioc.RequestScoped;
 import br.com.egs.task.control.web.rest.client.JsonClient;
+import br.com.egs.task.control.web.rest.client.Response;
 
 import javax.inject.Inject;
 import java.util.LinkedHashMap;
@@ -102,21 +103,18 @@ public class RestfulieCoreClient implements JsonClient {
 	}
 
 	@Override
-	public String getAsJson() {
-		String response = client.at(getUrl()).accept(JSON_MEDIA_TYPE).get().getContent();
-		return response;
+	public Response getAsJson() {
+        return new RestifulieResponse(client.at(getUrl()).accept(JSON_MEDIA_TYPE).get());
 	}
 
 	@Override
-	public String postAsJson(String body) {
-		String response = client.at(getUrl()).as(JSON_MEDIA_TYPE).accept(JSON_MEDIA_TYPE).post(body).getContent();
-		return response;
+	public Response postAsJson(String body) {
+		return new RestifulieResponse(client.at(getUrl()).as(JSON_MEDIA_TYPE).accept(JSON_MEDIA_TYPE).post(body));
 	}
 
     @Override
-    public String putAsJson(String body) {
-        String response = client.at(getUrl()).as(JSON_MEDIA_TYPE).accept(JSON_MEDIA_TYPE).put(body).getContent();
-        return response;
+    public Response putAsJson(String body) {
+        return new RestifulieResponse(client.at(getUrl()).as(JSON_MEDIA_TYPE).accept(JSON_MEDIA_TYPE).put(body));
     }
 
 }

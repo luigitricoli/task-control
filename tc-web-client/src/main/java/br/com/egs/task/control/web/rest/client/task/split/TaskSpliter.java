@@ -1,7 +1,9 @@
 package br.com.egs.task.control.web.rest.client.task.split;
 
 
+import br.com.egs.task.control.web.model.Hashtag;
 import br.com.egs.task.control.web.model.OneWeekTask;
+import br.com.egs.task.control.web.rest.client.task.CorePost;
 import br.com.egs.task.control.web.rest.client.task.CoreTask;
 import br.com.egs.task.control.web.rest.client.task.TaskDate;
 import org.slf4j.Logger;
@@ -60,9 +62,33 @@ public abstract class TaskSpliter {
                 continue;
             }
 
-
+            addDayInfos(coreTask, builder);
 
             tasks.add(weekIndex, builder.build());
+        }
+    }
+
+    private void addDayInfos(CoreTask coreTask, OneWeekTask.Builder builder) {
+        for (CorePost corePost : coreTask.getPosts()) {
+            Calendar end = coreTask.getStartDate().toCalendar();
+
+            int weeks =  weekIndex - firstWeekIndex(coreTask);
+            int daysCount = weeks*7 + builder.getDaysRun();
+            end.add(Calendar.DAY_OF_MONTH, daysCount);
+            end.set(Calendar.HOUR, 23);
+            end.set(Calendar.MINUTE, 59);
+            end.set(Calendar.SECOND, 59);
+            end.set(Calendar.MILLISECOND, 0);
+
+            if(!corePost.wasAdded() && corePost.isBefore(end)){
+                corePost.added();
+                if(corePost.hasOvetimeHashtag()){
+                    builder.addHashtag(corePost.getDayOfWeek(), Hashtag.OVERTIME);
+                }
+                if(corePost.hasLateHashtag()){
+                    builder.addHashtag(corePost.getDayOfWeek(), Hashtag.LATE);
+                }
+            }
         }
     }
 
