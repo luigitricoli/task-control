@@ -126,7 +126,7 @@ public class AuthenticationServiceTest {
         u.setType("N2");
         u.setApplications(Arrays.asList(new Application("OLM")));
 
-        u.setPasswordAsText("ABCD1234");
+        u.setPassword("ABCD1234");
 
         return u;
     }

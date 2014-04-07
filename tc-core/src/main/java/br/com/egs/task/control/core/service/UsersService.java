@@ -63,12 +63,10 @@ public class UsersService {
 
         User user = null;
         try {
-            user = new Gson().fromJson(body, User.class);
+            user = User.fromJson(body);
         } catch (JsonSyntaxException e) {
             HttpResponseUtils.throwBadRequestException("Invalid request data");
         }
-
-        String generatedPassword = user.generateRandomPassword();
 
         try {
             user.validate();
@@ -76,9 +74,14 @@ public class UsersService {
             HttpResponseUtils.throwBadRequestException("Error validating user: " + ve.getMessage());
         }
 
+        User existingUser = repository.get(user.getLogin());
+        if (existingUser != null) {
+            HttpResponseUtils.throwUnrecoverableBusinessException("User already exists: " + existingUser.getLogin());
+        }
+
         repository.add(user);
 
-        return "{\"generatedPassword\" : \"" + generatedPassword + "\"}";
+        return user.toJson();
     }
 
     @PUT
@@ -103,7 +106,7 @@ public class UsersService {
 
         // The identification attributes (login and password) will not be changed
         User updatedUser = new User(login);
-        updatedUser.setPasswordHash(currentlySavedUser.getPasswordHash());
+        updatedUser.copyPasswordFrom(currentlySavedUser);
         updatedUser.setName(user.getName());
         updatedUser.setEmail(user.getEmail());
         updatedUser.setType(user.getType());

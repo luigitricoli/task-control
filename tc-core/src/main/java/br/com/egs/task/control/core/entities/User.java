@@ -5,24 +5,23 @@ import com.google.gson.*;
 import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 import org.apache.commons.lang.StringUtils;
-import org.bson.types.ObjectId;
 
 import java.lang.reflect.Type;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Representation of a Task Control user.
  */
 public class User {
-    private static final char[] PASSWORD_CHARS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%&".toCharArray();
 
     private String login;
     private String name;
     private String email;
     private String type;
-    private String passwordHash;
+    String passwordHash;
 
     private List<Application> applications;
 
@@ -33,22 +32,10 @@ public class User {
         this.login = login;
     }
 
-    public void setPasswordAsText(String pass) {
+    /** Sets the password as clear text. It is converted and stored as hash */
+    public void setPassword(String pass) {
         String hashedString = extractHash(pass);
         this.passwordHash = hashedString;
-    }
-
-    public String generateRandomPassword() {
-        Random rnd = new Random();
-        StringBuilder generatedPass = new StringBuilder();
-
-        int passwordLength = 6 + rnd.nextInt(6);
-        for (int i = 0; i < passwordLength; i++) {
-            generatedPass.append(PASSWORD_CHARS[rnd.nextInt(PASSWORD_CHARS.length)]);
-        }
-
-        setPasswordAsText(generatedPass.toString());
-        return generatedPass.toString();
     }
 
     public void validate() throws ValidationException {
@@ -132,7 +119,7 @@ public class User {
         u.setName(dbUser.getString("name"));
         u.setEmail(dbUser.getString("email"));
         u.setType(dbUser.getString("type"));
-        u.setPasswordHash(dbUser.getString("passwordHash"));
+        u.passwordHash = dbUser.getString("passwordHash");
 
         @SuppressWarnings("unchecked")
         List<BasicDBObject> dbApplications = (List<BasicDBObject>) dbUser.get("applications");
@@ -144,6 +131,22 @@ public class User {
         u.setApplications(applications);
 
         return u;
+    }
+
+    public void copyPasswordFrom(User other) {
+        this.passwordHash = other.passwordHash;
+    }
+
+    /**
+     *
+     * @param json
+     * @return
+     */
+    public static User fromJson(String json) throws JsonSyntaxException {
+        return new GsonBuilder()
+                .registerTypeAdapter(User.class, new UserDeserializer())
+                .create()
+                .fromJson(json, User.class);
     }
 
     public String getLogin() {
@@ -176,10 +179,6 @@ public class User {
 
     public void setApplications(List<Application> applications) {
         this.applications = applications;
-    }
-
-    public void setPasswordHash(String hash) {
-        this.passwordHash = hash;
     }
 
     public String getType() {
@@ -237,6 +236,22 @@ public class User {
                 jObj.remove("passwordHash");
             }
             return jObj;
+        }
+    }
+
+    private static class UserDeserializer implements JsonDeserializer<User> {
+        @Override
+        public User deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+            // Performs the default parsing, and then add the Password
+            Gson gson = new Gson();
+            User user = gson.fromJson(jsonElement, User.class);
+
+            if (((JsonObject)jsonElement).has("password")) {
+                String passwordText = ((JsonObject)jsonElement).get("password").getAsString();
+                user.setPassword(passwordText);
+            }
+
+            return user;
         }
     }
 }

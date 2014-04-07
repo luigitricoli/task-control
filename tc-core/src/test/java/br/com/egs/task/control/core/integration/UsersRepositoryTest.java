@@ -23,6 +23,10 @@ import static org.junit.Assert.assertEquals;
  *
  */
 public class UsersRepositoryTest {
+
+    private static final String TESTUSER_PASSWORD_PLAIN = "abc";
+    private static final String TESTUSER_PASSWORD_HASH = "EF57FB0FD830B9E8389E94D78D611C9CA3506950";
+
     private MongoDbConnection conn;
     private UsersRepositoryImpl repository;
 
@@ -64,7 +68,7 @@ public class UsersRepositoryTest {
         assertEquals("A Test User", result.getName());
         assertEquals("test@example.com", result.getEmail());
         assertEquals("N2", result.getType());
-        assertEquals("AAAAABBBBBCCCCCDDDDDEEEEE", result.getPasswordHash());
+        assertEquals(TESTUSER_PASSWORD_HASH, result.getPasswordHash());
 
         List<Application> applications = result.getApplications();
         assertNotNull(applications);
@@ -119,7 +123,10 @@ public class UsersRepositoryTest {
         user.setName("A Test User");
         user.setEmail("test@example.com");
         user.setType("N2");
-        user.setPasswordHash("AAAAABBBBBCCCCCDDDDDEEEEE");
+
+        user.setPassword(TESTUSER_PASSWORD_PLAIN);
+        assertEquals("Ensuring that the generated password is the expected value",
+                TESTUSER_PASSWORD_HASH, user.getPasswordHash());
 
         List<Application> applications = new ArrayList<Application>();
         applications.add(new Application("OLM"));
@@ -134,7 +141,7 @@ public class UsersRepositoryTest {
                 .append("name", "A Test User")
                 .append("email", "test@example.com")
                 .append("type", "N2")
-                .append("passwordHash", "AAAAABBBBBCCCCCDDDDDEEEEE");
+                .append("passwordHash", TESTUSER_PASSWORD_HASH);
 
         BasicDBList applications = new BasicDBList();
         applications.add(new BasicDBObject("name", "OLM"));

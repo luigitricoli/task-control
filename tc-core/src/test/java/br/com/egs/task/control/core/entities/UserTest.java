@@ -17,19 +17,19 @@ public class UserTest {
     @Test
     public void generatePasswordHash() {
         User u = new User("user");
-        u.setPasswordAsText("secret");
+        u.setPassword("secret");
         assertEquals("335AA6A62C6C0C1C628AEF13A97E1E63BA3A1612", u.getPasswordHash());
 
         // Ensure that a different user with same password gets a different hash
         u = new User("user2");
-        u.setPasswordAsText("secret");
+        u.setPassword("secret");
         assertEquals("1299DCB1C274905CD58C37A1ABF17B080A06C6C5", u.getPasswordHash());
     }
 
     @Test
     public void checkPassword_failure() {
         User u = new User("user");
-        u.setPasswordAsText("secret");
+        u.setPassword("secret");
 
         boolean check = u.checkPassword("nonono");
         assertFalse(check);
@@ -38,7 +38,7 @@ public class UserTest {
     @Test
     public void checkPassword_ok() {
         User u = new User("user");
-        u.setPasswordAsText("secret");
+        u.setPassword("secret");
 
         boolean check = u.checkPassword("secret");
         assertTrue(check);
@@ -142,12 +142,35 @@ public class UserTest {
         assertEquals("TaskControl", applications.get(1).getName());
     }
 
+    @Test
+    public void fromJsonToUser() {
+        String userJson = "{" +
+                "'login':'user'," +
+                "'name':'A Test User'," +
+                "'password':'secret'," +
+                "'email':'test3@example.com'," +
+                "'type':'N3'," +
+                "'applications':[" +
+                "{'name':'FEM'}, {'name':'EMA'}" +
+                "]" +
+                "}";
+
+        User u = User.fromJson(userJson);
+
+        assertEquals("user", u.getLogin());
+        assertEquals("A Test User", u.getName());
+        assertEquals("335AA6A62C6C0C1C628AEF13A97E1E63BA3A1612", u.getPasswordHash());
+        assertEquals("test3@example.com", u.getEmail());
+        assertEquals("N3", u.getType());
+        assertEquals(2, u.getApplications().size());
+    }
+
     private User populateTestUser() {
         User user = new User("testusr");
         user.setName("A Test User");
         user.setEmail("test@example.com");
         user.setType("N2");
-        user.setPasswordHash("AAAAABBBBBCCCCCDDDDDEEEEE");
+        user.passwordHash ="AAAAABBBBBCCCCCDDDDDEEEEE";
 
         List<Application> applications = new ArrayList<>();
         applications.add(new Application("OLM"));

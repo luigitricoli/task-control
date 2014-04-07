@@ -98,6 +98,7 @@ public class UserRestTest {
         String userJson = "{" +
             "'login':'testusr3'," +
             "'name':'A Third Test User'," +
+            "'password':'foo123bar'," +
             "'email':'test3@example.com'," +
             "'type':'N3'," +
             "'applications':[" +
@@ -105,8 +106,15 @@ public class UserRestTest {
             "]" +
         "}";
 
-        // Returned document example: {"generatedPassword":"ABc#bd614%"}
-        String expectedResponseRegexp = "\\{\"generatedPassword\" : \"[a-zA-Z0-9!@#$%&]+\"\\}";
+        String expectedResponse = "{" +
+                "'login':'testusr3'," +
+                "'name':'A Third Test User'," +
+                "'email':'test3@example.com'," +
+                "'type':'N3'," +
+                "'applications':[" +
+                "{'name':'FEM'},{'name':'EMM'}" +
+                "]" +
+                "}";
 
         Response response = restfulie.at("http://localhost:8090/v1/users").accept("application/json")
                  .as("application/json").post(userJson);
@@ -114,7 +122,7 @@ public class UserRestTest {
         assertEquals(200, response.getCode());
 
         String content = response.getContent();
-        assertTrue("POST must return the generated password", content.matches(expectedResponseRegexp));
+        JSONAssert.assertEquals(expectedResponse, content, true);
 
         assertEquals(3, conn.getCollection("users").count());
         assertNotNull(conn.getCollection("users").findOne(new BasicDBObject("_id", "testusr3")));
