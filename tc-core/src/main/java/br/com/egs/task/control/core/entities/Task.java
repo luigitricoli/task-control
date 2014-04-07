@@ -243,7 +243,10 @@ public class Task {
         if (date.after(this.foreseenEndDate)) {
             boolean atrasoCommentExists = false;
             for (Post post : posts) {
-                if (post.getText().contains("#atraso")) {
+                String text = post.getText().toLowerCase();
+                if (text.contains("#atraso")
+                        || text.contains("#atrasado")
+                        || text.contains("#atrasada")) {
                     atrasoCommentExists = true;
                     break;
                 }

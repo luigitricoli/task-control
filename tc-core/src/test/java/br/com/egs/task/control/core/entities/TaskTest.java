@@ -101,9 +101,31 @@ public class TaskTest {
     }
 
     @Test
-    public void finishTask_lateWithAtrasoPost() throws Exception {
+    public void finishTask_lateWithAtrasoPost_variation1() throws Exception {
         Task t = createTestTask(false, true, false);
         t.addPost(new Post("testusr", "Some #atraso has occured", new Date()));
+
+        Date endDate = timestampFormat.parse("2014-01-20 14:47:48.555");
+        t.finish(endDate);
+
+        assertEquals(timestampFormat.parse("2014-01-20 23:59:59.999"), t.getEndDate());
+    }
+
+    @Test
+    public void finishTask_lateWithAtrasoPost_variation2() throws Exception {
+        Task t = createTestTask(false, true, false);
+        t.addPost(new Post("testusr", "The task is #atrasado", new Date()));
+
+        Date endDate = timestampFormat.parse("2014-01-20 14:47:48.555");
+        t.finish(endDate);
+
+        assertEquals(timestampFormat.parse("2014-01-20 23:59:59.999"), t.getEndDate());
+    }
+
+    @Test
+    public void finishTask_lateWithAtrasoPost_variation3() throws Exception {
+        Task t = createTestTask(false, true, false);
+        t.addPost(new Post("testusr", "The task is #atrasada", new Date()));
 
         Date endDate = timestampFormat.parse("2014-01-20 14:47:48.555");
         t.finish(endDate);
