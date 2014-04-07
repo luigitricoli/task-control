@@ -7,6 +7,7 @@ import br.com.egs.task.control.core.database.MongoDbConnection;
 import br.com.egs.task.control.core.testutils.TestConnectionFactory;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
+import com.mongodb.DBCursor;
 import org.bson.types.ObjectId;
 import org.junit.After;
 import org.junit.Before;
@@ -17,6 +18,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -37,6 +39,7 @@ public class TaskRestTest {
     @After
     public void tearDown() {
         conn.getCollection("tasks").drop();
+        conn.getCollection("users").drop();
         conn.close();
     }
 
@@ -94,8 +97,7 @@ public class TaskRestTest {
                 "source: 'Sup.Producao'," +
                 "application: 'OLM'," +
                 "owners: [" +
-                "           {login: 'john'}," +
-                "           {login: 'mary'}" +
+                "           {login: 'john'}" +
                 "]" +
         "}}";
 
@@ -132,7 +134,7 @@ public class TaskRestTest {
                 .as("application/json")
                 .post(jsonString);
 
-        String content = response.getContent();
+        response.getContent();
 
         assertEquals(200, response.getCode());
 
@@ -157,6 +159,9 @@ public class TaskRestTest {
     private void populateDatabase() throws Exception {
         BasicDBObject t = createTestTask();
         conn.getCollection("tasks").insert(t);
+
+        BasicDBObject u = createTestUser();
+        conn.getCollection("users").insert(u);
     }
 
     private BasicDBObject createTestTask() throws ParseException {
@@ -193,5 +198,14 @@ public class TaskRestTest {
         t.append("posts", posts);
 
         return t;
+    }
+
+    private BasicDBObject createTestUser() {
+        BasicDBObject user = new BasicDBObject()
+                .append("_id", "john")
+                .append("name", "A Test User")
+                .append("type", "N2")
+                .append("applications", Arrays.asList(new BasicDBObject("name", "OLM")));
+        return user;
     }
 }

@@ -130,5 +130,27 @@ public class Post {
             return cal.getTime();
         }
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Post post = (Post) o;
+
+        if (text != null ? !text.equals(post.text) : post.text != null) return false;
+        if (timestamp != null ? !timestamp.equals(post.timestamp) : post.timestamp != null) return false;
+        if (user != null ? !user.equals(post.user) : post.user != null) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = timestamp != null ? timestamp.hashCode() : 0;
+        result = 31 * result + (user != null ? user.hashCode() : 0);
+        result = 31 * result + (text != null ? text.hashCode() : 0);
+        return result;
+    }
 }
 

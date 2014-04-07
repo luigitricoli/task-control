@@ -61,7 +61,7 @@ public class TaskTest {
 
                 "Sup.Producao",
                 new Application("OLM"),
-                Arrays.asList(new TaskOwner("bob")));
+                Arrays.asList(new TaskOwner("bob", "Bob Programmer", "N1")));
 
         t.validateForInsert();
     }
@@ -160,7 +160,8 @@ public class TaskTest {
                 "Sup.Producao",
                 new Application("OLM"),
 
-                Arrays.asList(new TaskOwner("john"), new TaskOwner("mary")));
+                Arrays.asList(new TaskOwner("john", "John Foo", "N1"),
+                        new TaskOwner("mary", "Mary Baz", "N2")));
 
         if (!nullPosts) {
             Post p1 = new Post("john", "Scope changed. No re-scheduling will be necessary",
