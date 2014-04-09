@@ -65,8 +65,11 @@ public class UsersService {
         try {
             user = User.fromJson(body);
         } catch (JsonSyntaxException e) {
-            HttpResponseUtils.throwBadRequestException("Invalid request data");
+            HttpResponseUtils.throwBadRequestException("Invalid request data: " + e.getMessage());
+        } catch (IllegalArgumentException e) {
+            HttpResponseUtils.throwBadRequestException("Invalid request data:" + e.getMessage());
         }
+
 
         try {
             user.validate();
@@ -92,9 +95,9 @@ public class UsersService {
             HttpResponseUtils.throwBadRequestException("Request body cannot by null");
         }
 
-        User user = null;
+        User newUserData = null;
         try {
-            user = new Gson().fromJson(body, User.class);
+            newUserData = User.fromJson(body, login);
         } catch (JsonSyntaxException e) {
             HttpResponseUtils.throwBadRequestException("Invalid request data");
         }
@@ -104,22 +107,31 @@ public class UsersService {
             HttpResponseUtils.throwNotFoundException("User does no exist: " + login);
         }
 
-        // The identification attributes (login and password) will not be changed
-        User updatedUser = new User(login);
-        updatedUser.copyPasswordFrom(currentlySavedUser);
-        updatedUser.setName(user.getName());
-        updatedUser.setEmail(user.getEmail());
-        updatedUser.setType(user.getType());
-        updatedUser.setApplications(user.getApplications());
+        boolean newPasswordInformed = StringUtils.isNotBlank(newUserData.getPasswordHash());
+        boolean userDataInformed = StringUtils.isNotBlank(newUserData.getName())
+                || StringUtils.isNotBlank(newUserData.getType())
+                || StringUtils.isNotBlank(newUserData.getEmail())
+                || newUserData.getApplications() != null;
+
+        if (newPasswordInformed) {
+            currentlySavedUser.copyPasswordFrom(newUserData);
+        }
+
+        if (userDataInformed) {
+            currentlySavedUser.setName(newUserData.getName());
+            currentlySavedUser.setEmail(newUserData.getEmail());
+            currentlySavedUser.setType(newUserData.getType());
+            currentlySavedUser.setApplications(newUserData.getApplications());
+        }
 
         try {
-            updatedUser.validate();
+            currentlySavedUser.validate();
         } catch (ValidationException ve) {
             HttpResponseUtils.throwBadRequestException("Error validating user: " + ve.getMessage());
         }
 
-        repository.update(updatedUser);
+        repository.update(currentlySavedUser);
 
-        return updatedUser.toJson();
+        return currentlySavedUser.toJson();
     }
 }

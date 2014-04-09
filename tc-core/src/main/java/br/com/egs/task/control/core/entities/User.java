@@ -138,15 +138,28 @@ public class User {
     }
 
     /**
-     *
+     * This version of fromJson() method allows to use a json without the login attribute.
+     * Instead, it is informed in its own method parameter.
      * @param json
+     * @param login Overrides the login attribute contained in the document, if it exists.
      * @return
+     * @throws JsonSyntaxException
      */
-    public static User fromJson(String json) throws JsonSyntaxException {
+    public static User fromJson(String json, String login) throws JsonSyntaxException {
         return new GsonBuilder()
-                .registerTypeAdapter(User.class, new UserDeserializer())
+                .registerTypeAdapter(User.class, new UserDeserializer(login))
                 .create()
                 .fromJson(json, User.class);
+    }
+
+    /**
+     *
+     * @param json The user object representation. It must contain the Login attribute.
+     * @return
+     * @throws JsonSyntaxException
+     */
+    public static User fromJson(String json) throws JsonSyntaxException {
+        return fromJson(json, null);
     }
 
     public String getLogin() {
@@ -240,15 +253,43 @@ public class User {
     }
 
     private static class UserDeserializer implements JsonDeserializer<User> {
+        private String loginOverride;
+
+        UserDeserializer(String loginOverride) {
+            this.loginOverride = loginOverride;
+        }
+
         @Override
         public User deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
-            // Performs the default parsing, and then add the Password
-            Gson gson = new Gson();
-            User user = gson.fromJson(jsonElement, User.class);
+            JsonObject userJson = (JsonObject) jsonElement;
 
-            if (((JsonObject)jsonElement).has("password")) {
-                String passwordText = ((JsonObject)jsonElement).get("password").getAsString();
+            String login;
+            if (loginOverride != null) {
+                login = loginOverride;
+            } else if (userJson.has("login")) {
+                login = userJson.get("login").getAsString();
+            } else {
+                throw new IllegalArgumentException("Cannot build a User object without login");
+            }
+
+            User user = new User(login);
+            user.setName(userJson.has("name") ? userJson.get("name").getAsString() : null);
+            user.setType(userJson.has("type") ? userJson.get("type").getAsString() : null);
+            user.setEmail(userJson.has("email") ? userJson.get("email").getAsString() : null);
+
+            if (userJson.has("password")) {
+                String passwordText = userJson.get("password").getAsString();
                 user.setPassword(passwordText);
+            }
+
+            if (userJson.has("applications")) {
+                JsonArray applicationsArray = userJson.get("applications").getAsJsonArray();
+                List<Application> applications = new ArrayList<>(applicationsArray.size());
+                for (JsonElement appJson : applicationsArray) {
+                    String applicName = ((JsonObject)appJson).get("name").getAsString();
+                    applications.add(new Application(applicName));
+                }
+                user.setApplications(applications);
             }
 
             return user;

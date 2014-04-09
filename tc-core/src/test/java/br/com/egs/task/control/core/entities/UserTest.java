@@ -1,5 +1,6 @@
 package br.com.egs.task.control.core.entities;
 
+import com.google.gson.JsonParseException;
 import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 import org.junit.Test;
@@ -163,6 +164,20 @@ public class UserTest {
         assertEquals("test3@example.com", u.getEmail());
         assertEquals("N3", u.getType());
         assertEquals(2, u.getApplications().size());
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void fromJsonToUser_noLogin() {
+        String userJson = "{'name':'Some incomplete User'}";
+        User.fromJson(userJson);
+    }
+
+    @Test
+    public void fromJsonToUser_passwordOnly() {
+        String userJson = "{'password':'secret'}";
+        User u = User.fromJson(userJson, "user");
+
+        assertEquals("335AA6A62C6C0C1C628AEF13A97E1E63BA3A1612", u.getPasswordHash());
     }
 
     private User populateTestUser() {

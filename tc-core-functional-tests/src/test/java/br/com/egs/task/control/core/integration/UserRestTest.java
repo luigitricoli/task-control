@@ -174,6 +174,27 @@ public class UserRestTest {
         JSONAssert.assertEquals(userJson, savedUser.toString(), false);
     }
 
+    @Test
+    public void changePassword() throws JSONException {
+        RestClient restfulie = Restfulie.custom();
+
+        DBObject savedUser = conn.getCollection("users").findOne(new BasicDBObject("_id", "testusr"));
+
+        String changePasswordJson = "{'password':'NEWPASS'}";
+
+        Response response = restfulie.at("http://localhost:8090/v1/users/testusr").accept("application/json")
+                .as("application/json").put(changePasswordJson);
+
+        assertEquals(200, response.getCode());
+        assertEquals(2, conn.getCollection("users").count());
+
+        // The only attribute expected to change
+        savedUser.put("passwordHash", "36644404355E6C29C3CA7179FCF48D158A9BA7AB");
+
+        DBObject savedUserAfter = conn.getCollection("users").findOne(new BasicDBObject("_id", "testusr"));
+
+        assertEquals(savedUser, savedUserAfter);
+    }
 
     /**
      *
