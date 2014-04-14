@@ -2,10 +2,13 @@ package br.com.egs.task.control.core.service;
 
 import br.com.egs.task.control.core.entities.Post;
 import br.com.egs.task.control.core.entities.Task;
+import br.com.egs.task.control.core.entities.TaskOwner;
+import br.com.egs.task.control.core.entities.User;
 import br.com.egs.task.control.core.exception.LateTaskException;
 import br.com.egs.task.control.core.exception.ValidationException;
 import br.com.egs.task.control.core.repository.TaskSearchCriteria;
 import br.com.egs.task.control.core.repository.Tasks;
+import br.com.egs.task.control.core.repository.Users;
 import br.com.egs.task.control.core.utils.HttpResponseUtils;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonParseException;
@@ -17,6 +20,7 @@ import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.List;
 
 @Path("tasks")
@@ -25,10 +29,12 @@ public class TasksService {
 	private static final Logger log = LoggerFactory.getLogger(TasksService.class);
 
     private Tasks repository;
+    private Users userRepository;
 
     @Inject
-    public TasksService(Tasks repository) {
+    public TasksService(Tasks repository, Users userRepository) {
         this.repository = repository;
+        this.userRepository = userRepository;
     }
 
     @GET
@@ -70,6 +76,21 @@ public class TasksService {
         } catch (ValidationException ve) {
             HttpResponseUtils.throwBadRequestException("Error validating task: " + ve.getMessage());
         }
+
+        List<TaskOwner> ownersWithData = new ArrayList<>();
+        for (TaskOwner owner : task.getOwners()) {
+            User user = userRepository.get(owner.getLogin());
+
+            if (user == null) {
+                HttpResponseUtils.throwUnrecoverableBusinessException("Invalid owner login: ["
+                    + owner.getLogin() + "] is not a registered user");
+            }
+
+            ownersWithData.add(new TaskOwner(user.getLogin(), user.getName(), user.getType()));
+        }
+
+        task.getOwners().clear();
+        task.getOwners().addAll(ownersWithData);
 
         task = repository.add(task);
         return task.toJson();

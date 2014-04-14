@@ -178,7 +178,7 @@ public class TasksRepositoryTest {
                 null,
                 "CCC",
                 new Application("OLM"),
-                Arrays.asList(new TaskOwner("joe")));
+                Arrays.asList(new TaskOwner("joe", "Joe The Programmer", "N1")));
 
         t = repository.add(t);
 
@@ -284,8 +284,14 @@ public class TasksRepositoryTest {
         t.append("application", new BasicDBObject("name", "OLM"));
 
         List<BasicDBObject> owners = new ArrayList<>();
-        owners.add(new BasicDBObject("login", "john"));
-        owners.add(new BasicDBObject("login", "mary"));
+        owners.add(new BasicDBObject()
+                .append("login", "john")
+                .append("name", "Joe The Programmer")
+                .append("type", "N1"));
+        owners.add(new BasicDBObject()
+                .append("login", "mary")
+                .append("name", "Mary Developer")
+                .append("type", "N2"));
         t.append("owners", owners);
 
         List<BasicDBObject> posts = new ArrayList<>();
@@ -321,8 +327,8 @@ public class TasksRepositoryTest {
         assertEquals(new Application("OLM"), task.getApplication());
 
         assertEquals(2, task.getOwners().size());
-        assertEquals(new TaskOwner("john"), task.getOwners().get(0));
-        assertEquals(new TaskOwner("mary"), task.getOwners().get(1));
+        assertEquals(new TaskOwner("john", "Joe The Programmer", "N1"), task.getOwners().get(0));
+        assertEquals(new TaskOwner("mary", "Mary Developer", "N2"), task.getOwners().get(1));
 
         assertEquals(2, task.getPosts().size());
         assertEquals(timestampFormat.parse("2014-01-03 09:15:30.700"), task.getPosts().get(0).getTimestamp());

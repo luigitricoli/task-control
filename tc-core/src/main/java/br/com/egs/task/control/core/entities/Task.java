@@ -104,7 +104,10 @@ public class Task {
 
         List<BasicDBObject> owners = new ArrayList<>();
         for (TaskOwner owner : this.getOwners()) {
-            owners.add(new BasicDBObject("login", owner.getLogin()));
+            owners.add(new BasicDBObject()
+                    .append("login", owner.getLogin())
+                    .append("name", owner.getName())
+                    .append("type", owner.getType()));
         }
         obj.append("owners", owners);
 
@@ -143,7 +146,9 @@ public class Task {
         List<TaskOwner> owners = new ArrayList<>();
         List<BasicDBObject> dbOwners = (List<BasicDBObject>) dbTask.get("owners");
         for (BasicDBObject dbOwner : dbOwners) {
-            owners.add(new TaskOwner(dbOwner.getString("login")));
+            owners.add(new TaskOwner(dbOwner.getString("login"),
+                                    dbOwner.getString("name"),
+                                    dbOwner.getString("type")));
         }
         task.owners = (owners);
 
@@ -194,6 +199,11 @@ public class Task {
         if (owners == null || owners.isEmpty()) {
             throw new ValidationException("At least one owner is required");
         }
+        for (TaskOwner owner : owners) {
+            if (StringUtils.isBlank(owner.getLogin())) {
+                throw new ValidationException("Owner login is required");
+            }
+        }
 
         if (posts != null) {
             throw new ValidationException("Posts are not allowed for a new Task");
@@ -233,7 +243,10 @@ public class Task {
         if (date.after(this.foreseenEndDate)) {
             boolean atrasoCommentExists = false;
             for (Post post : posts) {
-                if (post.getText().contains("#atraso")) {
+                String text = post.getText().toLowerCase();
+                if (text.contains("#atraso")
+                        || text.contains("#atrasado")
+                        || text.contains("#atrasada")) {
                     atrasoCommentExists = true;
                     break;
                 }
@@ -369,6 +382,8 @@ public class Task {
             for (TaskOwner to : task.getOwners()) {
                 JsonObject owner = new JsonObject();
                 owner.addProperty("login", to.getLogin());
+                owner.addProperty("name", to.getName());
+                owner.addProperty("type", to.getType());
                 owners.add(owner);
             }
             json.add("owners", owners);
@@ -425,7 +440,12 @@ public class Task {
 
                 for (JsonElement jsonOwner : obj.get("owners").getAsJsonArray()) {
                     JsonObject jsonOwnerObject = jsonOwner.getAsJsonObject();
-                    TaskOwner o = new TaskOwner(jsonOwnerObject.get("login").getAsString());
+                    String login = jsonOwnerObject.get("login").getAsString();
+                    String name = jsonOwnerObject.get("name") == null
+                            ? null : jsonOwnerObject.get("name").getAsString();
+                    String usrType = jsonOwnerObject.get("type") == null
+                            ? null : jsonOwnerObject.get("type").getAsString();
+                    TaskOwner o = new TaskOwner(login, name, usrType);
                     owners.add(o);
                 }
                 t.owners = owners;
@@ -481,5 +501,40 @@ public class Task {
      */
     public static void setFixedCurrentDate(Date dt) {
         fixedCurrentDate = dt;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Task task = (Task) o;
+
+        if (application != null ? !application.equals(task.application) : task.application != null) return false;
+        if (description != null ? !description.equals(task.description) : task.description != null) return false;
+        if (endDate != null ? !endDate.equals(task.endDate) : task.endDate != null) return false;
+        if (foreseenEndDate != null ? !foreseenEndDate.equals(task.foreseenEndDate) : task.foreseenEndDate != null)
+            return false;
+        if (id != null ? !id.equals(task.id) : task.id != null) return false;
+        if (owners != null ? !owners.equals(task.owners) : task.owners != null) return false;
+        if (posts != null ? !posts.equals(task.posts) : task.posts != null) return false;
+        if (source != null ? !source.equals(task.source) : task.source != null) return false;
+        if (startDate != null ? !startDate.equals(task.startDate) : task.startDate != null) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = id != null ? id.hashCode() : 0;
+        result = 31 * result + (description != null ? description.hashCode() : 0);
+        result = 31 * result + (startDate != null ? startDate.hashCode() : 0);
+        result = 31 * result + (foreseenEndDate != null ? foreseenEndDate.hashCode() : 0);
+        result = 31 * result + (endDate != null ? endDate.hashCode() : 0);
+        result = 31 * result + (source != null ? source.hashCode() : 0);
+        result = 31 * result + (application != null ? application.hashCode() : 0);
+        result = 31 * result + (owners != null ? owners.hashCode() : 0);
+        result = 31 * result + (posts != null ? posts.hashCode() : 0);
+        return result;
     }
 }

@@ -5,23 +5,23 @@ import com.google.gson.*;
 import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 import org.apache.commons.lang.StringUtils;
-import org.bson.types.ObjectId;
 
 import java.lang.reflect.Type;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Representation of a Task Control user.
  */
 public class User {
-    private static final char[] PASSWORD_CHARS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%&".toCharArray();
 
     private String login;
     private String name;
     private String email;
-    private String passwordHash;
+    private String type;
+    String passwordHash;
 
     private List<Application> applications;
 
@@ -32,22 +32,10 @@ public class User {
         this.login = login;
     }
 
-    public void setPasswordAsText(String pass) {
+    /** Sets the password as clear text. It is converted and stored as hash */
+    public void setPassword(String pass) {
         String hashedString = extractHash(pass);
         this.passwordHash = hashedString;
-    }
-
-    public String generateRandomPassword() {
-        Random rnd = new Random();
-        StringBuilder generatedPass = new StringBuilder();
-
-        int passwordLength = 6 + rnd.nextInt(6);
-        for (int i = 0; i < passwordLength; i++) {
-            generatedPass.append(PASSWORD_CHARS[rnd.nextInt(PASSWORD_CHARS.length)]);
-        }
-
-        setPasswordAsText(generatedPass.toString());
-        return generatedPass.toString();
     }
 
     public void validate() throws ValidationException {
@@ -59,6 +47,9 @@ public class User {
         }
         if (StringUtils.isBlank(this.getEmail())) {
             throw new ValidationException("E-mail is empty");
+        }
+        if (StringUtils.isBlank(this.getType())) {
+            throw new ValidationException("User type is empty");
         }
         if (StringUtils.isBlank(this.getPasswordHash())) {
             throw new ValidationException("Password is empty");
@@ -100,6 +91,7 @@ public class User {
         result.put("_id", this.getLogin());
         result.put("name", this.getName());
         result.put("email", this.getEmail());
+        result.put("type", this.getType());
         result.put("passwordHash", this.getPasswordHash());
 
         BasicDBList resultApplications = new BasicDBList();
@@ -126,7 +118,8 @@ public class User {
         User u = new User(login);
         u.setName(dbUser.getString("name"));
         u.setEmail(dbUser.getString("email"));
-        u.setPasswordHash(dbUser.getString("passwordHash"));
+        u.setType(dbUser.getString("type"));
+        u.passwordHash = dbUser.getString("passwordHash");
 
         @SuppressWarnings("unchecked")
         List<BasicDBObject> dbApplications = (List<BasicDBObject>) dbUser.get("applications");
@@ -138,6 +131,35 @@ public class User {
         u.setApplications(applications);
 
         return u;
+    }
+
+    public void copyPasswordFrom(User other) {
+        this.passwordHash = other.passwordHash;
+    }
+
+    /**
+     * This version of fromJson() method allows to use a json without the login attribute.
+     * Instead, it is informed in its own method parameter.
+     * @param json
+     * @param login Overrides the login attribute contained in the document, if it exists.
+     * @return
+     * @throws JsonSyntaxException
+     */
+    public static User fromJson(String json, String login) throws JsonSyntaxException {
+        return new GsonBuilder()
+                .registerTypeAdapter(User.class, new UserDeserializer(login))
+                .create()
+                .fromJson(json, User.class);
+    }
+
+    /**
+     *
+     * @param json The user object representation. It must contain the Login attribute.
+     * @return
+     * @throws JsonSyntaxException
+     */
+    public static User fromJson(String json) throws JsonSyntaxException {
+        return fromJson(json, null);
     }
 
     public String getLogin() {
@@ -172,8 +194,12 @@ public class User {
         this.applications = applications;
     }
 
-    public void setPasswordHash(String hash) {
-        this.passwordHash = hash;
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 
     private String extractHash(String pass) {
@@ -223,6 +249,50 @@ public class User {
                 jObj.remove("passwordHash");
             }
             return jObj;
+        }
+    }
+
+    private static class UserDeserializer implements JsonDeserializer<User> {
+        private String loginOverride;
+
+        UserDeserializer(String loginOverride) {
+            this.loginOverride = loginOverride;
+        }
+
+        @Override
+        public User deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+            JsonObject userJson = (JsonObject) jsonElement;
+
+            String login;
+            if (loginOverride != null) {
+                login = loginOverride;
+            } else if (userJson.has("login")) {
+                login = userJson.get("login").getAsString();
+            } else {
+                throw new IllegalArgumentException("Cannot build a User object without login");
+            }
+
+            User user = new User(login);
+            user.setName(userJson.has("name") ? userJson.get("name").getAsString() : null);
+            user.setType(userJson.has("type") ? userJson.get("type").getAsString() : null);
+            user.setEmail(userJson.has("email") ? userJson.get("email").getAsString() : null);
+
+            if (userJson.has("password")) {
+                String passwordText = userJson.get("password").getAsString();
+                user.setPassword(passwordText);
+            }
+
+            if (userJson.has("applications")) {
+                JsonArray applicationsArray = userJson.get("applications").getAsJsonArray();
+                List<Application> applications = new ArrayList<>(applicationsArray.size());
+                for (JsonElement appJson : applicationsArray) {
+                    String applicName = ((JsonObject)appJson).get("name").getAsString();
+                    applications.add(new Application(applicName));
+                }
+                user.setApplications(applications);
+            }
+
+            return user;
         }
     }
 }

@@ -61,7 +61,7 @@ public class TaskTest {
 
                 "Sup.Producao",
                 new Application("OLM"),
-                Arrays.asList(new TaskOwner("bob")));
+                Arrays.asList(new TaskOwner("bob", "Bob Programmer", "N1")));
 
         t.validateForInsert();
     }
@@ -101,9 +101,31 @@ public class TaskTest {
     }
 
     @Test
-    public void finishTask_lateWithAtrasoPost() throws Exception {
+    public void finishTask_lateWithAtrasoPost_variation1() throws Exception {
         Task t = createTestTask(false, true, false);
         t.addPost(new Post("testusr", "Some #atraso has occured", new Date()));
+
+        Date endDate = timestampFormat.parse("2014-01-20 14:47:48.555");
+        t.finish(endDate);
+
+        assertEquals(timestampFormat.parse("2014-01-20 23:59:59.999"), t.getEndDate());
+    }
+
+    @Test
+    public void finishTask_lateWithAtrasoPost_variation2() throws Exception {
+        Task t = createTestTask(false, true, false);
+        t.addPost(new Post("testusr", "The task is #atrasado", new Date()));
+
+        Date endDate = timestampFormat.parse("2014-01-20 14:47:48.555");
+        t.finish(endDate);
+
+        assertEquals(timestampFormat.parse("2014-01-20 23:59:59.999"), t.getEndDate());
+    }
+
+    @Test
+    public void finishTask_lateWithAtrasoPost_variation3() throws Exception {
+        Task t = createTestTask(false, true, false);
+        t.addPost(new Post("testusr", "The task is #atrasada", new Date()));
 
         Date endDate = timestampFormat.parse("2014-01-20 14:47:48.555");
         t.finish(endDate);
@@ -160,7 +182,8 @@ public class TaskTest {
                 "Sup.Producao",
                 new Application("OLM"),
 
-                Arrays.asList(new TaskOwner("john"), new TaskOwner("mary")));
+                Arrays.asList(new TaskOwner("john", "John Foo", "N1"),
+                        new TaskOwner("mary", "Mary Baz", "N2")));
 
         if (!nullPosts) {
             Post p1 = new Post("john", "Scope changed. No re-scheduling will be necessary",

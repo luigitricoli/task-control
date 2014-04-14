@@ -111,6 +111,7 @@ public class AuthenticationServiceTest {
                 "'login':'mylogin'," +
                 "'name':'Authenticated User'," +
                 "'email':'u@ser.com'," +
+                "'type':'N2'," +
                 "'applications':[{'name':'OLM'}]" +
                 "}";
 
@@ -122,9 +123,10 @@ public class AuthenticationServiceTest {
         User u = new User("mylogin");
         u.setName("Authenticated User");
         u.setEmail("u@ser.com");
+        u.setType("N2");
         u.setApplications(Arrays.asList(new Application("OLM")));
 
-        u.setPasswordAsText("ABCD1234");
+        u.setPassword("ABCD1234");
 
         return u;
     }

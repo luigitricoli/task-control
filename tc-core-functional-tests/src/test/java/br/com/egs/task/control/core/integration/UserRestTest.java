@@ -46,6 +46,7 @@ public class UserRestTest {
                     "'login':'testusr'," +
                     "'name':'A Test User'," +
                     "'email':'test@example.com'," +
+                    "'type':'N1'," +
                     "'applications':[" +
                         "{'name':'OLM'},{'name':'TaskControl'}" +
                     "]" +
@@ -53,6 +54,7 @@ public class UserRestTest {
                     "'login':'aseconduser'," +
                     "'name':'Another Test User'," +
                     "'email':'other@example.com'," +
+                    "'type':'N2'," +
                     "'applications':[" +
                         "{'name':'EMM'}" +
                     "]" +
@@ -72,6 +74,7 @@ public class UserRestTest {
                 "'login':'testusr'," +
                 "'name':'A Test User'," +
                 "'email':'test@example.com'," +
+                "'type':'N1'," +
                 "'applications':[" +
                    "{'name':'OLM'},{'name':'TaskControl'}" +
                 "]" +
@@ -95,14 +98,23 @@ public class UserRestTest {
         String userJson = "{" +
             "'login':'testusr3'," +
             "'name':'A Third Test User'," +
+            "'password':'foo123bar'," +
             "'email':'test3@example.com'," +
+            "'type':'N3'," +
             "'applications':[" +
                 "{'name':'FEM'},{'name':'EMM'}" +
             "]" +
         "}";
 
-        // Returned document example: {"generatedPassword":"ABc#bd614%"}
-        String expectedResponseRegexp = "\\{\"generatedPassword\" : \"[a-zA-Z0-9!@#$%&]+\"\\}";
+        String expectedResponse = "{" +
+                "'login':'testusr3'," +
+                "'name':'A Third Test User'," +
+                "'email':'test3@example.com'," +
+                "'type':'N3'," +
+                "'applications':[" +
+                "{'name':'FEM'},{'name':'EMM'}" +
+                "]" +
+                "}";
 
         Response response = restfulie.at("http://localhost:8090/v1/users").accept("application/json")
                  .as("application/json").post(userJson);
@@ -110,7 +122,7 @@ public class UserRestTest {
         assertEquals(200, response.getCode());
 
         String content = response.getContent();
-        assertTrue("POST must return the generated password", content.matches(expectedResponseRegexp));
+        JSONAssert.assertEquals(expectedResponse, content, true);
 
         assertEquals(3, conn.getCollection("users").count());
         assertNotNull(conn.getCollection("users").findOne(new BasicDBObject("_id", "testusr3")));
@@ -125,6 +137,7 @@ public class UserRestTest {
                 // No login
                 "'name':'A Third Test User'," +
                 "'email':'test3@example.com'," +
+                "'type':'N3'," +
                 "'applications':[" +
                 "{'name':'FEM'},{'name':'EMM'}" +
                 "]" +
@@ -143,6 +156,7 @@ public class UserRestTest {
         String userJson = "{" +
             "'name':'A Modified Test User'," +
             "'email':'changed@example.com'," +
+            "'type':'N2'," +
             "'applications':[" +
                  "{'name':'FEM'},{'name':'EMM'}" +
             "]" +
@@ -160,6 +174,27 @@ public class UserRestTest {
         JSONAssert.assertEquals(userJson, savedUser.toString(), false);
     }
 
+    @Test
+    public void changePassword() throws JSONException {
+        RestClient restfulie = Restfulie.custom();
+
+        DBObject savedUser = conn.getCollection("users").findOne(new BasicDBObject("_id", "testusr"));
+
+        String changePasswordJson = "{'password':'NEWPASS'}";
+
+        Response response = restfulie.at("http://localhost:8090/v1/users/testusr").accept("application/json")
+                .as("application/json").put(changePasswordJson);
+
+        assertEquals(200, response.getCode());
+        assertEquals(2, conn.getCollection("users").count());
+
+        // The only attribute expected to change
+        savedUser.put("passwordHash", "36644404355E6C29C3CA7179FCF48D158A9BA7AB");
+
+        DBObject savedUserAfter = conn.getCollection("users").findOne(new BasicDBObject("_id", "testusr"));
+
+        assertEquals(savedUser, savedUserAfter);
+    }
 
     /**
      *
@@ -169,6 +204,7 @@ public class UserRestTest {
                 .append("_id", "testusr")
                 .append("name", "A Test User")
                 .append("email", "test@example.com")
+                .append("type", "N1")
                 .append("passwordHash", "AAAAABBBBBCCCCCDDDDDEEEEE");
 
         BasicDBList applications = new BasicDBList();
@@ -183,6 +219,7 @@ public class UserRestTest {
                 .append("_id", "aseconduser")
                 .append("name", "Another Test User")
                 .append("email", "other@example.com")
+                .append("type", "N2")
                 .append("passwordHash", "ZZZZZZZZYYYYYYYYXXXXXXXX");
 
         applications = new BasicDBList();
