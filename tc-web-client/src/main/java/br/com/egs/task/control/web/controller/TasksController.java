@@ -3,6 +3,7 @@ package br.com.egs.task.control.web.controller;
 import br.com.caelum.vraptor.*;
 import br.com.caelum.vraptor.view.Results;
 import br.com.egs.task.control.web.interceptor.AuthRequired;
+import br.com.egs.task.control.web.model.SessionUser;
 import br.com.egs.task.control.web.model.repository.TaskRepository;
 import br.com.egs.task.control.web.rest.client.task.TaskDate;
 import org.slf4j.Logger;
@@ -23,10 +24,12 @@ public class TasksController {
 
     private Result result;
     private TaskRepository tasks;
+    private SessionUser user;
 
-    public TasksController(Result result, TaskRepository repository) {
+    public TasksController(Result result, TaskRepository repository, SessionUser user) {
         this.result = result;
         this.tasks = repository;
+        this.user = user;
     }
 
     @Get("/tarefas")
@@ -101,7 +104,7 @@ public class TasksController {
 
     @Post("/tarefas/{task}/historico")
     public void addPost(String task, String text) {
-        br.com.egs.task.control.web.model.Post post = new br.com.egs.task.control.web.model.Post(Calendar.getInstance(), "Luigi", text);
+        br.com.egs.task.control.web.model.Post post = new br.com.egs.task.control.web.model.Post(Calendar.getInstance(), user.getName(), text);
         if (tasks.add(post, task)) {
             result.use(Results.http()).body("success");
         } else {

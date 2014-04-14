@@ -19,6 +19,7 @@ public class FilterFormat {
 	public FilterFormat() {
 		filters = new HashMap<>();
 
+        filters.put("Geral", "application");
         filters.put("Administrativo", "application");
         filters.put("EMA", "application");
         filters.put("EMM", "application");

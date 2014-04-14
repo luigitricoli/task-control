@@ -17,11 +17,11 @@ public class SessionUser {
     public SessionUser() {
         this.name = null;
         this.login = null;
-        this.email = null ;
+        this.email = null;
         this.systems = null;
     }
 
-    public Boolean login(String name, String login, String email, List<String> systems){
+    public Boolean login(String name, String login, String email, List<String> systems) {
         this.name = name;
         this.login = login;
         this.email = email;
@@ -30,17 +30,21 @@ public class SessionUser {
         return isLogged();
     }
 
-    public Boolean logout(){
+    public Boolean logout() {
         this.name = null;
         this.login = null;
-        this.email = null ;
+        this.email = null;
         this.systems = null;
 
         return !isLogged();
     }
 
-    public boolean isLogged(){
+    public boolean isLogged() {
         return name != null && login != null;
+    }
+
+    public String getName() {
+        return name;
     }
 
     public String getNickname() {
