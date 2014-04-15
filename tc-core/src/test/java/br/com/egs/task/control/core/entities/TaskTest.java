@@ -31,6 +31,16 @@ public class TaskTest {
         t.validateForInsert();
     }
 
+    @Test
+    public void validateForInsert_ok_startBeforeCurrentDate() throws Exception {
+        // The start date can be less than the current date, as long as the
+        // foreseen end date is in the future.
+        Task.setFixedCurrentDate(timestampFormat.parse("2014-01-08 10:00:00.000"));
+
+        Task t = createTestTask(true, true, true);
+        t.validateForInsert();
+    }
+
     @Test(expected = ValidationException.class)
     public void validateForInsert_nonNullId() throws Exception {
         Task t = createTestTask(false, true, true);
@@ -67,7 +77,7 @@ public class TaskTest {
     }
 
     @Test(expected = ValidationException.class)
-    public void validateForInsert_startBeforeCurrentDate() throws Exception {
+    public void validateForInsert_foreseenBeforeCurrentDate() throws Exception {
         Task.setFixedCurrentDate(timestampFormat.parse("2014-01-15 23:59:59.999"));
 
         Task t = createTestTask(true, true, true);
