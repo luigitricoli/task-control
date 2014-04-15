@@ -108,6 +108,7 @@ public class OneWeekTask {
                 ", daysInterval=" + daysInterval +
                 ", daysRun=" + daysRun +
                 ", continueNextWeek=" + continueNextWeek +
+                ", continuationPreviousWeek=" + continuationPreviousWeek +
                 ", stage=" + stage +
                 ", description='" + description + '\'' +
                 ", hashtagsByDay=" + hashtagsByDay +
