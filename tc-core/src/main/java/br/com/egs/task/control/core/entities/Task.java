@@ -220,8 +220,8 @@ public class Task {
         beginOfCurrentDate.set(Calendar.SECOND, 0);
         beginOfCurrentDate.set(Calendar.MILLISECOND, 0);
 
-        if (beginOfCurrentDate.getTime().after(startDate)) {
-            throw new ValidationException("Start Date cannot be less than the current date");
+        if (beginOfCurrentDate.getTime().after(foreseenEndDate)) {
+            throw new ValidationException("Foreseen End Date cannot be less than the current date");
         }
     }
 
