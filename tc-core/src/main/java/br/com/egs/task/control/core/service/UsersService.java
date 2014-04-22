@@ -13,7 +13,6 @@ import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import javax.ws.rs.*;
-import javax.ws.rs.core.MediaType;
 import java.util.List;
 
 /**
@@ -32,7 +31,7 @@ public class UsersService {
     }
 
     @GET
-    @Produces(MediaType.APPLICATION_JSON)
+    @Produces("application/json;charset=UTF-8")
     public String listUsers(
             @QueryParam("application") String application) {
 
@@ -51,7 +50,7 @@ public class UsersService {
 
     @GET
     @Path("{login}")
-    @Produces(MediaType.APPLICATION_JSON)
+    @Produces("application/json;charset=UTF-8")
     public String findUser(@PathParam("login") String login) {
         User user = repository.get(login);
 
@@ -63,7 +62,7 @@ public class UsersService {
     }
 
     @POST
-    @Produces(MediaType.APPLICATION_JSON)
+    @Produces("application/json;charset=UTF-8")
     public String create(String body) {
         if (StringUtils.isBlank(body)) {
             HttpResponseUtils.throwBadRequestException("Request body cannot by null");
@@ -97,7 +96,7 @@ public class UsersService {
 
     @PUT
     @Path("{login}")
-    @Produces(MediaType.APPLICATION_JSON)
+    @Produces("application/json;charset=UTF-8")
     public String update(@PathParam("login") String login, String body) {
         if (StringUtils.isBlank(body)) {
             HttpResponseUtils.throwBadRequestException("Request body cannot by null");

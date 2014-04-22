@@ -18,7 +18,6 @@ import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import javax.ws.rs.*;
-import javax.ws.rs.core.MediaType;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
@@ -47,7 +46,7 @@ public class TasksService {
     }
 
     @GET
-	@Produces("application/json; charset=UTF-8")
+	@Produces("application/json;charset=UTF-8")
 	public String searchTasks(
                             @QueryParam("year") String year,
                             @QueryParam("month") String month,
@@ -109,7 +108,7 @@ public class TasksService {
 
     @POST
     @Path("{id}")
-    @Produces("application/json; charset=UTF-8")
+    @Produces("application/json;charset=UTF-8")
     public String addPost(@PathParam("id") String id, String body) {
         Post post = null;
         try {
@@ -139,7 +138,7 @@ public class TasksService {
      */
     @PUT
     @Path("{id}")
-    @Produces("application/json; charset=UTF-8")
+    @Produces("application/json;charset=UTF-8")
     public String modifyTask(@PathParam("id") String id, String body) {
         Task changedAttributes = jsonToTask(body);
         Task task = retrieveTask(id);

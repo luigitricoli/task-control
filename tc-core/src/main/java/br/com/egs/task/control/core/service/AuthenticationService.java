@@ -31,7 +31,7 @@ public class AuthenticationService {
     }
 
     @POST
-    @Produces(MediaType.APPLICATION_JSON)
+    @Produces("application/json;charset=UTF-8")
     public String authenticate(String body) {
         if (StringUtils.isBlank(body)) {
             HttpResponseUtils.throwBadRequestException("Request body cannot by null");

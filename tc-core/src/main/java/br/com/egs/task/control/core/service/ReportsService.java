@@ -29,7 +29,7 @@ public class ReportsService {
 
     @GET
     @Path("simpleMonthlyReport")
-    @Produces(MediaType.APPLICATION_JSON)
+    @Produces("application/json;charset=UTF-8")
     public String simpleMonthlyReport(
             @QueryParam("year") String yearParam,
             @QueryParam("month") String monthParam
