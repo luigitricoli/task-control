@@ -15,7 +15,7 @@
     <section id="main">
         <h1>Relatório Mensal de Projetos</h1>
 
-        <display:table name="items" export="true">
+        <display:table name="items" export="true" requestURI="/relatorios/mensalprojetos">
             <display:column title="Recurso" property="user" />
             <display:column title="Sistema" property="application" />
             <display:column title="Horas/Mês" property="hoursInMonth" />

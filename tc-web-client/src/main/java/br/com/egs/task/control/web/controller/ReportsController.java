@@ -27,7 +27,7 @@ public class ReportsController {
     }
 
     @Get("/relatorios/mensalprojetos")
-    public void simpleMonthlyReport(String year, String month) {
+    public void tasksMonthlyReport(String year, String month) {
 
         Integer yearInt = Integer.valueOf(year, 10);
         Integer monthInt = Integer.valueOf(month, 10);
