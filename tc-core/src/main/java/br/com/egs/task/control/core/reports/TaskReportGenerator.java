@@ -8,4 +8,5 @@ public interface TaskReportGenerator {
     public SimpleMonthlyReportResult generateSimpleMonthlyReport(int year, int month);
 
 
+    public UserTypeSummaryResult generateUserTypeSummaryReport(int year, int month);
 }

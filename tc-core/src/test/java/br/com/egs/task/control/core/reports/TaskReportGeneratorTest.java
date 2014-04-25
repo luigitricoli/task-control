@@ -153,6 +153,70 @@ public class TaskReportGeneratorTest {
         assertEquals(24, result.getRecords().get(0).getHoursInMonth());
     }
 
+    @Test
+    public void userTypeSummary_multipleTypes() {
+
+        List<Task> returnedByRepository = Arrays.asList(
+
+                // 1 whole day = 8 hours
+                createTestTask("First Task",
+                        "2014-04-01 00:00:00.000", "2014-04-01 23:59:59.000", "2014-04-01 23:59:59.000",
+                        "TaskControl", new TaskOwner("s", "Smith", "N1")) ,
+
+                createTestTask("Second Task",
+                        "2014-04-01 00:00:00.000", "2014-04-01 23:59:59.000", "2014-04-01 23:59:59.000",
+                        "TaskControl", new TaskOwner("s", "Jones", "N2"))
+        );
+
+        Mockito.when(taskRepository.searchTasks(Mockito.any(TaskSearchCriteria.class)))
+                .thenReturn(returnedByRepository);
+
+        UserTypeSummaryResult result = reportGenerator.generateUserTypeSummaryReport(2014, 4);
+
+        assertNotNull(result);
+        assertEquals(2, result.getRecords().size());
+
+        assertEquals("TaskControl", result.getRecords().get(0).getApplication());
+        assertEquals("N1", result.getRecords().get(0).getUserType());
+        assertEquals(8, result.getRecords().get(0).getHoursInMonth());
+
+        assertEquals("TaskControl", result.getRecords().get(1).getApplication());
+        assertEquals("N2", result.getRecords().get(1).getUserType());
+        assertEquals(8, result.getRecords().get(1).getHoursInMonth());
+    }
+
+    @Test
+    public void userTypeSummary_multipleApplications() {
+
+        List<Task> returnedByRepository = Arrays.asList(
+
+                // 1 whole day = 8 hours
+                createTestTask("First Task",
+                        "2014-04-01 00:00:00.000", "2014-04-01 23:59:59.000", "2014-04-01 23:59:59.000",
+                        "TaskControl", new TaskOwner("s", "Smith", "N1")) ,
+
+                createTestTask("Second Task",
+                        "2014-04-01 00:00:00.000", "2014-04-01 23:59:59.000", "2014-04-01 23:59:59.000",
+                        "EMM", new TaskOwner("s", "Jones", "N1"))
+        );
+
+        Mockito.when(taskRepository.searchTasks(Mockito.any(TaskSearchCriteria.class)))
+                .thenReturn(returnedByRepository);
+
+        UserTypeSummaryResult result = reportGenerator.generateUserTypeSummaryReport(2014, 4);
+
+        assertNotNull(result);
+        assertEquals(2, result.getRecords().size());
+
+        assertEquals("EMM", result.getRecords().get(0).getApplication());
+        assertEquals("N1", result.getRecords().get(0).getUserType());
+        assertEquals(8, result.getRecords().get(0).getHoursInMonth());
+
+        assertEquals("TaskControl", result.getRecords().get(1).getApplication());
+        assertEquals("N1", result.getRecords().get(1).getUserType());
+        assertEquals(8, result.getRecords().get(1).getHoursInMonth());
+    }
+
     private Task createTestTask(
                 String description,
                 String start,

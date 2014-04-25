@@ -6,12 +6,10 @@ import br.com.egs.task.control.core.repository.TaskSearchCriteria;
 import br.com.egs.task.control.core.repository.Tasks;
 
 import javax.inject.Inject;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
- * TODO: Class description
+ *
  */
 public class TaskReportGeneratorImpl implements TaskReportGenerator {
 
@@ -47,6 +45,33 @@ public class TaskReportGeneratorImpl implements TaskReportGenerator {
         return result;
     }
 
+    @Override
+    public UserTypeSummaryResult generateUserTypeSummaryReport(int year, int month) {
+        TaskSearchCriteria criteria = new TaskSearchCriteria().month(year, month);
+        List<Task> tasks = taskRepository.searchTasks(criteria);
+
+        Map<ApplicationUserTypeKey, Integer> hourSummary = new TreeMap<>();
+
+        for (Task task : tasks) {
+            // The report presents one record per owner, not one record per task
+            // Project hours are divided among the workers
+            int totalHours = calculateWorkHours(task, year, month);
+            int numberOfWorkers = task.getOwners().size();
+
+            for (TaskOwner owner : task.getOwners()) {
+                int hoursPerWorker = totalHours / numberOfWorkers;
+                hourSummary.put(
+                        new ApplicationUserTypeKey(task.getApplication().getName(), owner.getType()), hoursPerWorker);
+            }
+        }
+
+        UserTypeSummaryResult result = new UserTypeSummaryResult();
+        for (ApplicationUserTypeKey key : hourSummary.keySet()) {
+            result.addItem(new UserTypeSummaryResult.Item(key.application, key.userType, hourSummary.get(key)));
+        }
+        return result;
+    }
+
     private int calculateWorkHours(Task task, int reportYear, int reportMonth) {
         Calendar cal = Calendar.getInstance();
         cal.setTime(task.getStartDate());
@@ -71,5 +96,44 @@ public class TaskReportGeneratorImpl implements TaskReportGenerator {
         }
 
         return totalHours;
+    }
+
+    private static class ApplicationUserTypeKey implements Comparable<ApplicationUserTypeKey> {
+        String application;
+        String userType;
+
+        private ApplicationUserTypeKey(String application, String userType) {
+            this.application = application;
+            this.userType = userType;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            ApplicationUserTypeKey that = (ApplicationUserTypeKey) o;
+
+            if (application != null ? !application.equals(that.application) : that.application != null) return false;
+            if (userType != null ? !userType.equals(that.userType) : that.userType != null) return false;
+
+            return true;
+        }
+
+        @Override
+        public int hashCode() {
+            int result = application != null ? application.hashCode() : 0;
+            result = 31 * result + (userType != null ? userType.hashCode() : 0);
+            return result;
+        }
+
+        @Override
+        public int compareTo(ApplicationUserTypeKey o) {
+            if (this.application.compareTo(o.application) != 0) {
+                return this.application.compareTo(o.application);
+            } else {
+                return this.userType.compareTo(o.userType);
+            }
+        }
     }
 }
