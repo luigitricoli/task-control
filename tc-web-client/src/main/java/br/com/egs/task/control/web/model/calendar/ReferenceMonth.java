@@ -2,21 +2,21 @@ package br.com.egs.task.control.web.model.calendar;
 
 import java.util.Calendar;
 
-public class MonthStructure {
+public class ReferenceMonth {
 
     public static final int FIRST_DAY = 1;
     public static final String OPEN_ELEMENT = "\"";
     public static final String CLOSE_ELEMENT = "\",";
 
-    private Month month;
+    private Label month;
     private int year;
     private int maxCurrent;
-    private int minPrevious;
-    private int maxPreviousMonth;
-    private int maxNextMonth;
+    private int dayLimitOfPreviousMonth;
+    private int lastDayOfPreviousMonth;
+    private int dayLimitNextMonth;
 
-    public MonthStructure(Month m, int year) {
-        this.month = m;
+    public ReferenceMonth(int month, int year) {
+        this.month = Label.getByNumber(month);
         this.year = year;
 
         Calendar reference = Calendar.getInstance();
@@ -28,11 +28,11 @@ public class MonthStructure {
 
         Calendar previous = (Calendar) reference.clone();
         previous.add(Calendar.MONTH, -1);
-        maxPreviousMonth = previous.getActualMaximum(Calendar.DAY_OF_MONTH);
-        minPrevious = Math.abs(maxPreviousMonth - (dayOfWeekFirstDay - 2));
+        lastDayOfPreviousMonth = previous.getActualMaximum(Calendar.DAY_OF_MONTH);
+        dayLimitOfPreviousMonth = Math.abs(lastDayOfPreviousMonth - (dayOfWeekFirstDay - 2));
 
-        int previousDays = maxPreviousMonth - minPrevious;
-        maxNextMonth = 42 - (maxCurrent + previousDays);
+        int previousDays = lastDayOfPreviousMonth - dayLimitOfPreviousMonth;
+        dayLimitNextMonth = 41 - (maxCurrent + previousDays);
     }
 
     public String getDaysAsJson() {
@@ -56,7 +56,7 @@ public class MonthStructure {
         days.append(OPEN_ELEMENT);
         days.append(month.getNext());
         days.append(" 1\",");
-        for (int value = 2; value < maxNextMonth; value++) {
+        for (int value = 2; value <= dayLimitNextMonth; value++) {
             days.append(OPEN_ELEMENT);
             days.append(value);
             days.append(CLOSE_ELEMENT);
@@ -95,12 +95,60 @@ public class MonthStructure {
 
     private String previousMonthDays() {
         StringBuilder days = new StringBuilder();
-        for (int value = minPrevious; value <= maxPreviousMonth; value++) {
+        for (int value = dayLimitOfPreviousMonth; value <= lastDayOfPreviousMonth; value++) {
             days.append(OPEN_ELEMENT);
             days.append(value);
             days.append(CLOSE_ELEMENT);
         }
         return days.toString();
+    }
+
+    public enum Label {
+        Jan(0, "Janeiro"),
+        Fev(1, "Fevereiro"),
+        Mar(2, "Março"),
+        Abr(3, "Abril"),
+        Mai(4, "Maio"),
+        Jun(5, "Junho"),
+        Jul(6, "Julho"),
+        Ago(7, "Agosto"),
+        Set(8, "Setembro"),
+        Out(9, "Outubro"),
+        Nov(10, "Novembro"),
+        Dez(11, "Dezembro");
+
+        private int id;
+        private String fullName;
+
+        Label(int id, String fullName) {
+            this.id = id;
+            this.fullName = fullName;
+        }
+
+        public static Label getByNumber(int number) {
+            int id = number - 1;
+            return Label.values()[id];
+        }
+
+        public static Label getById(int id) {
+            return Label.values()[id];
+        }
+
+        public Label getNext() {
+            int next = id + 1;
+            if(next > 11){
+                next = 0;
+            }
+            return Label.values()[next];
+        }
+
+        public int getId() {
+            return id;
+        }
+
+        public String getFullName() {
+            return fullName;
+        }
     }
 
 }
