@@ -25,6 +25,9 @@ public class TaskReportGeneratorTest {
     private Tasks taskRepository;
     private TaskReportGenerator reportGenerator;
 
+    /* ---- Relatorio esta em reformulacao! ----------
+
+
     @Before
     public void setUp() {
         taskRepository = Mockito.mock(Tasks.class);
@@ -238,4 +241,8 @@ public class TaskReportGeneratorTest {
 
         return t;
     }
+
+
+     */
+
 }

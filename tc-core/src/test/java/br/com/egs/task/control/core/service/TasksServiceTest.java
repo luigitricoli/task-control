@@ -64,8 +64,8 @@ public class TasksServiceTest {
                 "Sup.Producao",
                 new Application("OLM"),
                 Arrays.asList(
-                        new TaskOwner("john", "John Dev1", "N1"),
-                        new TaskOwner("mary", "Mary Dev2", "N2")
+                        new TaskOwner("john", "John Dev1", "N1", 0),
+                        new TaskOwner("mary", "Mary Dev2", "N2", 0)
                 )
         );
         Task taskAfterInsert = new Task(
@@ -77,8 +77,8 @@ public class TasksServiceTest {
                 "Sup.Producao",
                 new Application("OLM"),
                 Arrays.asList(
-                        new TaskOwner("john", "John Dev1", "N1"),
-                        new TaskOwner("mary", "Mary Dev2", "N2")
+                        new TaskOwner("john", "John Dev1", "N1", 0),
+                        new TaskOwner("mary", "Mary Dev2", "N2", 0)
                 )
         );
 
@@ -111,8 +111,8 @@ public class TasksServiceTest {
                 "source: 'Sup.Producao'," +
                 "application: 'OLM'," +
                 "owners: [" +
-                "           {login: 'john', name: 'John Dev1', type='N1'}," +
-                "           {login: 'mary', name: 'Mary Dev2', type='N2'}" +
+                "           {login: 'john', name: 'John Dev1', type:'N1', workHours: 0}," +
+                "           {login: 'mary', name: 'Mary Dev2', type:'N2', workHours: 0}" +
                 "]" +
                 "}";
 
@@ -457,8 +457,8 @@ public class TasksServiceTest {
                     "Sup.Producao",
                     new Application("OLM"),
 
-                    Arrays.asList(new TaskOwner("john", "John The Programmer", "N1"),
-                                    new TaskOwner("mary", "Mary Developer", "N2")));
+                    Arrays.asList(new TaskOwner("john", "John The Programmer", "N1", -2),
+                                    new TaskOwner("mary", "Mary Developer", "N2", -1)));
 
         if (!excludePosts) {
             Post p1 = new Post("john", "Scope changed. No re-scheduling will be necessary",

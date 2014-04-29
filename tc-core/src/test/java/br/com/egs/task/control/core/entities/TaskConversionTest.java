@@ -39,10 +39,12 @@ public class TaskConversionTest {
                 "owners: [" +
                 "           {login: 'john'," +
                 "            name: 'John Programmer'," +
-                "            type: 'N1'}," +
+                "            type: 'N1'," +
+                "            workHours: 8}," +
                 "           {login: 'mary'," +
                 "            name: 'Mary Devs'," +
-                "            type: 'N2'}" +
+                "            type: 'N2'," +
+                "            workHours: 16}" +
                 "]," +
                 "posts: [" +
                 "           {timestamp: '2014-01-03 09:15:30'," +
@@ -74,10 +76,12 @@ public class TaskConversionTest {
                 "owners: [" +
                 "           {login: 'john'," +
                 "            name: 'John Programmer'," +
-                "            type: 'N1'}," +
+                "            type: 'N1'," +
+                "            workHours: 8}," +
                 "           {login: 'mary'," +
                 "            name: 'Mary Devs'," +
-                "            type: 'N2'}" +
+                "            type: 'N2'," +
+                "            workHours: 16}" +
                 "]" +
                 "}";
 
@@ -97,10 +101,12 @@ public class TaskConversionTest {
                 "owners: [" +
                 "           {login: 'john'," +
                 "            name: 'John Programmer'," +
-                "            type: 'N1'}," +
+                "            type: 'N1'," +
+                "            workHours: 8}," +
                 "           {login: 'mary'," +
                 "            name: 'Mary Devs'," +
-                "            type: 'N2'}" +
+                "            type: 'N2'," +
+                "            workHours: 16}" +
                 "]" +
                 "}}";
 
@@ -114,12 +120,16 @@ public class TaskConversionTest {
         assertEquals("OLM", t.getApplication().getName());
 
         assertEquals(2, t.getOwners().size());
+
         assertEquals("john", t.getOwners().get(0).getLogin());
         assertEquals("John Programmer", t.getOwners().get(0).getName());
         assertEquals("N1", t.getOwners().get(0).getType());
+        assertEquals(Integer.valueOf(8), t.getOwners().get(0).getWorkHours());
+
         assertEquals("mary", t.getOwners().get(1).getLogin());
         assertEquals("Mary Devs", t.getOwners().get(1).getName());
         assertEquals("N2", t.getOwners().get(1).getType());
+        assertEquals(Integer.valueOf(16), t.getOwners().get(1).getWorkHours());
     }
 
     @Test
@@ -229,9 +239,11 @@ public class TaskConversionTest {
         assertEquals("john", owners.get(0).get("login"));
         assertEquals("John Programmer", owners.get(0).get("name"));
         assertEquals("N1", owners.get(0).get("type"));
+        assertEquals(8, owners.get(0).get("workHours"));
         assertEquals("mary", owners.get(1).get("login"));
         assertEquals("Mary Devs", owners.get(1).get("name"));
         assertEquals("N2", owners.get(1).get("type"));
+        assertEquals(16, owners.get(1).get("workHours"));
     }
 
     @Test
@@ -328,8 +340,8 @@ public class TaskConversionTest {
         Task task = Task.fromDbObject(dbTask);
 
         assertEquals(2, task.getOwners().size());
-        assertEquals(new TaskOwner("john", "John Programmer", "N1"), task.getOwners().get(0));
-        assertEquals(new TaskOwner("mary", "Mary Devs", "N2"), task.getOwners().get(1));
+        assertEquals(new TaskOwner("john", "John Programmer", "N1", 8), task.getOwners().get(0));
+        assertEquals(new TaskOwner("mary", "Mary Devs", "N2", 16), task.getOwners().get(1));
     }
 
     @Test
@@ -362,8 +374,8 @@ public class TaskConversionTest {
                 "Sup.Producao",
                 new Application("OLM"),
 
-                Arrays.asList(new TaskOwner("john", "John Programmer", "N1"),
-                                new TaskOwner("mary", "Mary Devs", "N2")));
+                Arrays.asList(new TaskOwner("john", "John Programmer", "N1", 8),
+                                new TaskOwner("mary", "Mary Devs", "N2", 16)));
 
         if (!nullPosts) {
             Post p1 = new Post("john", "Scope changed. No re-scheduling will be necessary",
@@ -395,11 +407,13 @@ public class TaskConversionTest {
         owners.add(new BasicDBObject()
                 .append("login", "john")
                 .append("name", "John Programmer")
-                .append("type", "N1"));
+                .append("type", "N1")
+                .append("workHours", 8));
         owners.add(new BasicDBObject()
                 .append("login", "mary")
                 .append("name", "Mary Devs")
-                .append("type", "N2"));
+                .append("type", "N2")
+                .append("workHours", 16));
         t.append("owners", owners);
 
         List<BasicDBObject> posts = new ArrayList<>();

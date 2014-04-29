@@ -107,7 +107,8 @@ public class Task {
             owners.add(new BasicDBObject()
                     .append("login", owner.getLogin())
                     .append("name", owner.getName())
-                    .append("type", owner.getType()));
+                    .append("type", owner.getType())
+                    .append("workHours", owner.getWorkHours()));
         }
         obj.append("owners", owners);
 
@@ -148,7 +149,8 @@ public class Task {
         for (BasicDBObject dbOwner : dbOwners) {
             owners.add(new TaskOwner(dbOwner.getString("login"),
                                     dbOwner.getString("name"),
-                                    dbOwner.getString("type")));
+                                    dbOwner.getString("type"),
+                                    dbOwner.containsField("workHours") ? dbOwner.getInt("workHours") : 0));
         }
         task.owners = (owners);
 
@@ -390,6 +392,7 @@ public class Task {
                 owner.addProperty("login", to.getLogin());
                 owner.addProperty("name", to.getName());
                 owner.addProperty("type", to.getType());
+                owner.addProperty("workHours", to.getWorkHours());
                 owners.add(owner);
             }
             json.add("owners", owners);
@@ -451,7 +454,9 @@ public class Task {
                             ? null : jsonOwnerObject.get("name").getAsString();
                     String usrType = jsonOwnerObject.get("type") == null
                             ? null : jsonOwnerObject.get("type").getAsString();
-                    TaskOwner o = new TaskOwner(login, name, usrType);
+                    Integer workHours =  jsonOwnerObject.get("workHours") == null
+                            ? null : jsonOwnerObject.get("workHours").getAsInt();
+                    TaskOwner o = new TaskOwner(login, name, usrType, workHours);
                     owners.add(o);
                 }
                 t.owners = owners;
