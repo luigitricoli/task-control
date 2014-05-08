@@ -78,6 +78,7 @@ public class TaskTest {
                 timestampFormat.parse("2014-01-11 00:00:00.000"),
                 timestampFormat.parse("2014-01-10 23:59:59.999"),
                 null,
+                30,
 
                 "Sup.Producao",
                 new Application("OLM"),
@@ -225,7 +226,7 @@ public class TaskTest {
             t = new Task(id, description,
                     df.parse(start), df.parse(foreseen),
                     end != null ? df.parse(end) : null,
-                    "Project", new Application(applicationName), Arrays.asList(owners));
+                    30, "Project", new Application(applicationName), Arrays.asList(owners));
 
             if (createDefaultPosts) {
                 Post p1 = new Post("john", "Scope changed. No re-scheduling will be necessary",

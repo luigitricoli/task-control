@@ -34,6 +34,7 @@ public class TaskConversionTest {
                 "description: 'Test the Task Implementation'," +
                 "startDate: '2014-01-02'," +
                 "foreseenEndDate: '2014-01-10'," +
+                "foreseenWorkHours: 50," +
                 "endDate: '2014-01-09'," +
                 "source: 'Sup.Producao'," +
                 "application: 'OLM'," +
@@ -76,6 +77,7 @@ public class TaskConversionTest {
                 "description: 'Test the Task Implementation'," +
                 "startDate: '2014-01-02'," +
                 "foreseenEndDate: '2014-01-10'," +
+                "foreseenWorkHours: 50," +
                 "endDate: '2014-01-09'," +
                 "source: 'Sup.Producao'," +
                 "application: 'OLM'," +
@@ -106,6 +108,7 @@ public class TaskConversionTest {
                 "description: 'Test the Task Implementation'," +
                 "startDate: '2014-01-02'," +
                 "foreseenEndDate: '2014-01-10'," +
+                "foreseenWorkHours: 50," +
                 "endDate: '2014-01-09'," +
                 "source: 'Sup.Producao'," +
                 "application: 'OLM'," +
@@ -132,6 +135,7 @@ public class TaskConversionTest {
         assertEquals(timestampFormat.parse("2014-01-02 00:00:00.000"), t.getStartDate());
         assertEquals(timestampFormat.parse("2014-01-10 23:59:59.999"), t.getForeseenEndDate());
         assertEquals(timestampFormat.parse("2014-01-09 23:59:59.999"), t.getEndDate());
+        assertEquals(50, t.getForeseenWorkHours().intValue());
         assertEquals("Sup.Producao", t.getSource());
         assertEquals("OLM", t.getApplication().getName());
 
@@ -159,6 +163,7 @@ public class TaskConversionTest {
         assertNull(t.getDescription());
         assertNull(t.getStartDate());
         assertNull(t.getForeseenEndDate());
+        assertNull(t.getForeseenWorkHours());
         assertNull(t.getEndDate());
         assertNull(t.getSource());
         assertNull(t.getApplication());
@@ -213,6 +218,14 @@ public class TaskConversionTest {
         BasicDBObject dbTask = t.toDbObject();
 
         assertEquals(timestampFormat.parse("2014-01-10 23:59:59.999"), dbTask.get("foreseenEndDate"));
+    }
+
+    @Test
+    public void fromTaskToDbObject_foreseenWorkHours() throws Exception {
+        Task t = createTestTask(false, false, false);
+        BasicDBObject dbTask = t.toDbObject();
+
+        assertEquals(50, dbTask.get("foreseenWorkHours"));
     }
 
     @Test
@@ -330,6 +343,13 @@ public class TaskConversionTest {
     }
 
     @Test
+    public void fromDbObjectToTask_foreseenWorkHours() throws Exception {
+        BasicDBObject dbTask = createTestTaskAsDbObject();
+        Task task = Task.fromDbObject(dbTask);
+        assertEquals(50, task.getForeseenWorkHours().intValue());
+    }
+
+    @Test
     public void fromDbObjectToTask_endDate() throws Exception {
         BasicDBObject dbTask = createTestTaskAsDbObject();
         Task task = Task.fromDbObject(dbTask);
@@ -405,6 +425,7 @@ public class TaskConversionTest {
                 timestampFormat.parse("2014-01-02 00:00:00.000"),
                 timestampFormat.parse("2014-01-10 23:59:59.999"),
                 nullEndDate ? null : timestampFormat.parse("2014-01-09 23:59:59.999"),
+                50,
 
                 "Sup.Producao",
                 new Application("OLM"),
@@ -433,6 +454,7 @@ public class TaskConversionTest {
 
         t.append("startDate", timestampFormat.parse("2014-01-02 00:00:00.000"));
         t.append("foreseenEndDate", timestampFormat.parse("2014-01-10 23:59:59.999"));
+        t.append("foreseenWorkHours", 50);
         t.append("endDate", timestampFormat.parse("2014-01-09 23:59:59.999"));
 
         t.append("source", "Sup.Producao");

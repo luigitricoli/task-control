@@ -55,25 +55,13 @@ public class TasksServiceTest {
         owner2.setName("Mary Dev2");
         owner2.setType("N2");
 
-        Task taskBeforeInsert = new Task(
-                null,
-                "Test the Task Implementation",
-                timestampFormat.parse("2014-01-02 00:00:00.000"),
-                timestampFormat.parse("2014-01-10 23:59:59.999"),
-                null,
-                "Sup.Producao",
-                new Application("OLM"),
-                Arrays.asList(
-                        new TaskOwner("john", "John Dev1", "N1"),
-                        new TaskOwner("mary", "Mary Dev2", "N2")
-                )
-        );
-        Task taskAfterInsert = new Task(
+        Task generatedTask = new Task(
                 DEFAULT_TASK_ID,
                 "Test the Task Implementation",
                 timestampFormat.parse("2014-01-02 00:00:00.000"),
                 timestampFormat.parse("2014-01-10 23:59:59.999"),
                 null,
+                50,
                 "Sup.Producao",
                 new Application("OLM"),
                 Arrays.asList(
@@ -85,12 +73,13 @@ public class TasksServiceTest {
         Mockito.when(userRepository.get("john")).thenReturn(owner1);
         Mockito.when(userRepository.get("mary")).thenReturn(owner2);
         Mockito.when(taskRepository.add(Mockito.any(Task.class)))
-                .thenReturn(taskAfterInsert);
+                .thenReturn(generatedTask);
 
         String inputString = "{task: {" +
                 "description: 'Test the Task Implementation'," +
                 "startDate: '2014-01-02'," +
                 "foreseenEndDate: '2014-01-10'," +
+                "foreseenWorkHours: 50," +
                 "source: 'Sup.Producao'," +
                 "application: 'OLM'," +
                 "owners: [" +
@@ -106,6 +95,7 @@ public class TasksServiceTest {
                 "description: 'Test the Task Implementation'," +
                 "startDate: '2014-01-02'," +
                 "foreseenEndDate: '2014-01-10'," +
+                "foreseenWorkHours: 50," +
                 "source: 'Sup.Producao'," +
                 "application: 'OLM'," +
                 "owners: [" +
@@ -118,7 +108,7 @@ public class TasksServiceTest {
     }
 
     @Test
-    public void createTask_unknownOwner() throws Exception {
+    public void createTask_unknownUser() throws Exception {
         Task.setFixedCurrentDate(timestampFormat.parse("2014-01-02 00:00:00.000"));
 
         Mockito.when(userRepository.get("the_non-existing_user")).thenReturn(null);
@@ -451,6 +441,7 @@ public class TasksServiceTest {
                     timestampFormat.parse("2014-01-02 00:00:00.000"),
                     timestampFormat.parse("2014-01-10 23:59:59.000"),
                     nullEndDate ? null : timestampFormat.parse("2014-01-09 23:59:59.000"),
+                    50,
 
                     "Sup.Producao",
                     new Application("OLM"),

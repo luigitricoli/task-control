@@ -176,6 +176,7 @@ public class TasksRepositoryTest {
                 new Date(),
                 new Date(),
                 null,
+                30,
                 "CCC",
                 new Application("OLM"),
                 Arrays.asList(new TaskOwner("joe", "Joe The Programmer", "N1")));
@@ -200,6 +201,7 @@ public class TasksRepositoryTest {
                 task.getStartDate(),
                 task.getForeseenEndDate(),
                 task.getEndDate(),
+                30,
                 task.getSource(),
                 task.getApplication(),
                 task.getOwners()
@@ -224,7 +226,7 @@ public class TasksRepositoryTest {
 
     @Test
     public void removeTask() {
-        Task t = new Task("111122223333aaaabbbbccc1", null, null, null, null, null, null, null);
+        Task t = new Task("111122223333aaaabbbbccc1", null, null, null, null, 0, null, null, null);
 
         // Precondition
         assertNotNull(conn.getCollection("tasks").findOne(new BasicDBObject("_id", new ObjectId(t.getId()))));

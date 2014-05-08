@@ -27,6 +27,7 @@ public class Task {
     private Date startDate;
     private Date foreseenEndDate;
     private Date endDate;
+    private Integer foreseenWorkHours;
 
     private String source;
     private Application application;
@@ -45,6 +46,7 @@ public class Task {
                 Date startDate,
                 Date foreseenEndDate,
                 Date endDate,
+                Integer foreseenWorkHours,
                 String source,
                 Application application,
                 List<TaskOwner> owners) {
@@ -54,6 +56,7 @@ public class Task {
         this.startDate = startDate;
         this.foreseenEndDate = foreseenEndDate;
         this.endDate = endDate;
+        this.foreseenWorkHours = foreseenWorkHours;
         this.source = source;
         this.application = application;
         this.owners = owners;
@@ -98,6 +101,8 @@ public class Task {
         if (this.getEndDate() != null) {
             obj.append("endDate", toMaxHourDate(this.getEndDate()));
         }
+
+        obj.append("foreseenWorkHours", this.getForeseenWorkHours());
 
         obj.append("source", this.getSource());
         obj.append("application", new BasicDBObject("name", this.getApplication().getName()));
@@ -149,6 +154,8 @@ public class Task {
         task.startDate = (dbTask.getDate("startDate"));
         task.foreseenEndDate = (dbTask.getDate("foreseenEndDate"));
         task.endDate = (dbTask.getDate("endDate"));
+
+        task.foreseenWorkHours = (dbTask.getInt("foreseenWorkHours"));
 
         task.source = (dbTask.getString("source"));
         task.application = (new Application(((BasicDBObject) dbTask.get("application")).getString("name")));
@@ -332,6 +339,10 @@ public class Task {
         return foreseenEndDate;
     }
 
+    public Integer getForeseenWorkHours() {
+        return foreseenWorkHours;
+    }
+
     public Date getEndDate() {
         return endDate;
     }
@@ -400,6 +411,8 @@ public class Task {
                 json.addProperty("endDate", dateFormat.format(task.getEndDate()));
             }
 
+            json.addProperty("foreseenWorkHours", task.getForeseenWorkHours());
+
             json.addProperty("source", task.getSource());
             json.addProperty("application", task.getApplication().getName());
 
@@ -467,6 +480,7 @@ public class Task {
             t.description = (obj.get("description") == null ? null : obj.get("description").getAsString());
             t.startDate = (obj.get("startDate") == null ? null : parseDate(obj.get("startDate").getAsString(), false));
             t.foreseenEndDate = (obj.get("foreseenEndDate") == null ? null : parseDate(obj.get("foreseenEndDate").getAsString(), true));
+            t.foreseenWorkHours = (obj.get("foreseenWorkHours") == null ? null : obj.get("foreseenWorkHours").getAsInt());
             t.endDate = (obj.get("endDate") == null ? null : parseDate(obj.get("endDate").getAsString(), true));
             t.source = (obj.get("source") == null ? null : obj.get("source").getAsString());
             t.application = (obj.get("application") == null ? null : new Application(obj.get("application").getAsString()));
