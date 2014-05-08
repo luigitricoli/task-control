@@ -104,11 +104,20 @@ public class Task {
 
         List<BasicDBObject> owners = new ArrayList<>();
         for (TaskOwner owner : this.getOwners()) {
-            owners.add(new BasicDBObject()
+            BasicDBObject dbOwner = new BasicDBObject()
                     .append("login", owner.getLogin())
                     .append("name", owner.getName())
-                    .append("type", owner.getType())
-                    .append("workHours", owner.getWorkHours()));
+                    .append("type", owner.getType());
+
+            List<BasicDBObject> dbWorkdays = new ArrayList<>();
+            for (TaskOwner.WorkDay wd : owner.getWorkDays()) {
+                dbWorkdays.add(new BasicDBObject()
+                            .append("day", wd.getDay())
+                            .append("hours", wd.getHours()));
+            }
+            dbOwner.append("workDays", dbWorkdays);
+
+            owners.add(dbOwner);
         }
         obj.append("owners", owners);
 
@@ -147,10 +156,18 @@ public class Task {
         List<TaskOwner> owners = new ArrayList<>();
         List<BasicDBObject> dbOwners = (List<BasicDBObject>) dbTask.get("owners");
         for (BasicDBObject dbOwner : dbOwners) {
-            owners.add(new TaskOwner(dbOwner.getString("login"),
-                                    dbOwner.getString("name"),
-                                    dbOwner.getString("type"),
-                                    dbOwner.containsField("workHours") ? dbOwner.getInt("workHours") : 0));
+            TaskOwner owner = new TaskOwner(dbOwner.getString("login"),
+                    dbOwner.getString("name"),
+                    dbOwner.getString("type"));
+
+            List<BasicDBObject> dbWorkdays = (List<BasicDBObject>) dbOwner.get("workDays");
+            for (BasicDBObject dbWorkday : dbWorkdays) {
+                String day = (String) dbWorkday.get("day");
+                int hours = (int) dbWorkday.get("hours");
+                owner.addWorkHours(day, hours);
+            }
+
+            owners.add(owner);
         }
         task.owners = (owners);
 
@@ -392,7 +409,17 @@ public class Task {
                 owner.addProperty("login", to.getLogin());
                 owner.addProperty("name", to.getName());
                 owner.addProperty("type", to.getType());
-                owner.addProperty("workHours", to.getWorkHours());
+
+                JsonArray workDays = new JsonArray();
+                for (TaskOwner.WorkDay workDay : to.getWorkDays()) {
+                    JsonObject workDayJson = new JsonObject();
+                    workDayJson.addProperty("day", workDay.getDay());
+                    workDayJson.addProperty("hours", workDay.getHours());
+                    workDays.add(workDayJson);
+                }
+
+                owner.add("workDays", workDays);
+
                 owners.add(owner);
             }
             json.add("owners", owners);
@@ -454,9 +481,19 @@ public class Task {
                             ? null : jsonOwnerObject.get("name").getAsString();
                     String usrType = jsonOwnerObject.get("type") == null
                             ? null : jsonOwnerObject.get("type").getAsString();
-                    Integer workHours =  jsonOwnerObject.get("workHours") == null
-                            ? null : jsonOwnerObject.get("workHours").getAsInt();
-                    TaskOwner o = new TaskOwner(login, name, usrType, workHours);
+
+                    TaskOwner o = new TaskOwner(login, name, usrType);
+
+                    if (jsonOwnerObject.get("workDays") != null) {
+                        for (JsonElement jsonWorkDay : jsonOwnerObject.get("workDays").getAsJsonArray()) {
+                            JsonObject jsonDayObject = jsonWorkDay.getAsJsonObject();
+                            String day = jsonDayObject.get("day").getAsString();
+                            int hours = jsonDayObject.get("hours").getAsInt();
+
+                            o.addWorkHours(day, hours);
+                        }
+                    }
+
                     owners.add(o);
                 }
                 t.owners = owners;
@@ -514,38 +551,4 @@ public class Task {
         fixedCurrentDate = dt;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        Task task = (Task) o;
-
-        if (application != null ? !application.equals(task.application) : task.application != null) return false;
-        if (description != null ? !description.equals(task.description) : task.description != null) return false;
-        if (endDate != null ? !endDate.equals(task.endDate) : task.endDate != null) return false;
-        if (foreseenEndDate != null ? !foreseenEndDate.equals(task.foreseenEndDate) : task.foreseenEndDate != null)
-            return false;
-        if (id != null ? !id.equals(task.id) : task.id != null) return false;
-        if (owners != null ? !owners.equals(task.owners) : task.owners != null) return false;
-        if (posts != null ? !posts.equals(task.posts) : task.posts != null) return false;
-        if (source != null ? !source.equals(task.source) : task.source != null) return false;
-        if (startDate != null ? !startDate.equals(task.startDate) : task.startDate != null) return false;
-
-        return true;
-    }
-
-    @Override
-    public int hashCode() {
-        int result = id != null ? id.hashCode() : 0;
-        result = 31 * result + (description != null ? description.hashCode() : 0);
-        result = 31 * result + (startDate != null ? startDate.hashCode() : 0);
-        result = 31 * result + (foreseenEndDate != null ? foreseenEndDate.hashCode() : 0);
-        result = 31 * result + (endDate != null ? endDate.hashCode() : 0);
-        result = 31 * result + (source != null ? source.hashCode() : 0);
-        result = 31 * result + (application != null ? application.hashCode() : 0);
-        result = 31 * result + (owners != null ? owners.hashCode() : 0);
-        result = 31 * result + (posts != null ? posts.hashCode() : 0);
-        return result;
-    }
 }

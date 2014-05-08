@@ -64,8 +64,8 @@ public class TasksServiceTest {
                 "Sup.Producao",
                 new Application("OLM"),
                 Arrays.asList(
-                        new TaskOwner("john", "John Dev1", "N1", 0),
-                        new TaskOwner("mary", "Mary Dev2", "N2", 0)
+                        new TaskOwner("john", "John Dev1", "N1"),
+                        new TaskOwner("mary", "Mary Dev2", "N2")
                 )
         );
         Task taskAfterInsert = new Task(
@@ -77,14 +77,14 @@ public class TasksServiceTest {
                 "Sup.Producao",
                 new Application("OLM"),
                 Arrays.asList(
-                        new TaskOwner("john", "John Dev1", "N1", 0),
-                        new TaskOwner("mary", "Mary Dev2", "N2", 0)
+                        new TaskOwner("john", "John Dev1", "N1"),
+                        new TaskOwner("mary", "Mary Dev2", "N2")
                 )
         );
 
         Mockito.when(userRepository.get("john")).thenReturn(owner1);
         Mockito.when(userRepository.get("mary")).thenReturn(owner2);
-        Mockito.when(taskRepository.add(taskBeforeInsert))
+        Mockito.when(taskRepository.add(Mockito.any(Task.class)))
                 .thenReturn(taskAfterInsert);
 
         String inputString = "{task: {" +
@@ -101,8 +101,6 @@ public class TasksServiceTest {
 
         String result = service.create(inputString);
 
-        Mockito.verify(taskRepository).add(taskBeforeInsert);
-
         String expectedReturn = "{" +
                 "id: '" + DEFAULT_TASK_ID + "'," +
                 "description: 'Test the Task Implementation'," +
@@ -111,8 +109,8 @@ public class TasksServiceTest {
                 "source: 'Sup.Producao'," +
                 "application: 'OLM'," +
                 "owners: [" +
-                "           {login: 'john', name: 'John Dev1', type:'N1', workHours: 0}," +
-                "           {login: 'mary', name: 'Mary Dev2', type:'N2', workHours: 0}" +
+                "           {login: 'john', name: 'John Dev1', type:'N1', workDays: []}," +
+                "           {login: 'mary', name: 'Mary Dev2', type:'N2', workDays: []}" +
                 "]" +
                 "}";
 
@@ -457,8 +455,8 @@ public class TasksServiceTest {
                     "Sup.Producao",
                     new Application("OLM"),
 
-                    Arrays.asList(new TaskOwner("john", "John The Programmer", "N1", -2),
-                                    new TaskOwner("mary", "Mary Developer", "N2", -1)));
+                    Arrays.asList(new TaskOwner("john", "John The Programmer", "N1"),
+                                    new TaskOwner("mary", "Mary Developer", "N2")));
 
         if (!excludePosts) {
             Post p1 = new Post("john", "Scope changed. No re-scheduling will be necessary",

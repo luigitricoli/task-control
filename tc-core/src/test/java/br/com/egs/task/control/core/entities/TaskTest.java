@@ -28,8 +28,8 @@ public class TaskTest {
     @Test
     public void validateForInsert_ok() throws Exception {
         Task t = createTestTask(null, "Test the Task Implementation", "2014-01-02 00:00:00.000",
-                "2014-01-10 23:59:59.999", null, "OLM", false, new TaskOwner("john", "John Foo", "N1", 8),
-                new TaskOwner("mary", "Mary Baz", "N2", 8));
+                "2014-01-10 23:59:59.999", null, "OLM", false, new TaskOwner("john", "John Foo", "N1"),
+                new TaskOwner("mary", "Mary Baz", "N2"));
         t.validateForInsert();
     }
 
@@ -40,8 +40,8 @@ public class TaskTest {
         Task.setFixedCurrentDate(timestampFormat.parse("2014-01-08 10:00:00.000"));
 
         Task t = createTestTask(null, "Test the Task Implementation", "2014-01-02 00:00:00.000",
-                "2014-01-10 23:59:59.999", null, "OLM", false, new TaskOwner("john", "John Foo", "N1", 8),
-                new TaskOwner("mary", "Mary Baz", "N2", 8));
+                "2014-01-10 23:59:59.999", null, "OLM", false, new TaskOwner("john", "John Foo", "N1"),
+                new TaskOwner("mary", "Mary Baz", "N2"));
         t.validateForInsert();
     }
 
@@ -49,7 +49,7 @@ public class TaskTest {
     public void validateForInsert_nonNullId() throws Exception {
         Task t = createTestTask("111122223333aaaabbbbcccc", "Test the Task Implementation",
                 "2014-01-02 00:00:00.000", "2014-01-10 23:59:59.999", null, "OLM", false, new TaskOwner("john",
-                "John Foo", "N1", 8), new TaskOwner("mary", "Mary Baz", "N2", 8));
+                "John Foo", "N1"), new TaskOwner("mary", "Mary Baz", "N2"));
         t.validateForInsert();
     }
 
@@ -57,15 +57,15 @@ public class TaskTest {
     public void validateForInsert_nonNullEndDate() throws Exception {
         Task t = createTestTask(null, "Test the Task Implementation", "2014-01-02 00:00:00.000",
                 "2014-01-10 23:59:59.999", "2014-01-09 23:59:59.999", "OLM", false, new TaskOwner("john", "John Foo",
-                "N1", 8), new TaskOwner("mary", "Mary Baz", "N2", 8));
+                "N1"), new TaskOwner("mary", "Mary Baz", "N2"));
         t.validateForInsert();
     }
 
     @Test(expected = ValidationException.class)
     public void validateForInsert_nonNullPosts() throws Exception {
         Task t = createTestTask(null, "Test the Task Implementation", "2014-01-02 00:00:00.000",
-                "2014-01-10 23:59:59.999", null, "OLM", true, new TaskOwner("john", "John Foo", "N1", 8),
-                new TaskOwner("mary", "Mary Baz", "N2", 8));
+                "2014-01-10 23:59:59.999", null, "OLM", true, new TaskOwner("john", "John Foo", "N1"),
+                new TaskOwner("mary", "Mary Baz", "N2"));
         t.validateForInsert();
     }
 
@@ -81,7 +81,7 @@ public class TaskTest {
 
                 "Sup.Producao",
                 new Application("OLM"),
-                Arrays.asList(new TaskOwner("bob", "Bob Programmer", "N1", -1)));
+                Arrays.asList(new TaskOwner("bob", "Bob Programmer", "N1")));
 
         t.validateForInsert();
     }
@@ -91,8 +91,8 @@ public class TaskTest {
         Task.setFixedCurrentDate(timestampFormat.parse("2014-01-15 23:59:59.999"));
 
         Task t = createTestTask(null, "Test the Task Implementation", "2014-01-02 00:00:00.000",
-                "2014-01-10 23:59:59.999", null, "OLM", false, new TaskOwner("john", "John Foo", "N1", 8),
-                new TaskOwner("mary", "Mary Baz", "N2", 8));
+                "2014-01-10 23:59:59.999", null, "OLM", false, new TaskOwner("john", "John Foo", "N1"),
+                new TaskOwner("mary", "Mary Baz", "N2"));
         t.validateForInsert();
     }
 
@@ -100,7 +100,7 @@ public class TaskTest {
     public void finishTask_ontime() throws Exception {
         Task t = createTestTask("111122223333aaaabbbbcccc", "Test the Task Implementation",
                 "2014-01-02 00:00:00.000", "2014-01-10 23:59:59.999", null, "OLM", true, new TaskOwner("john",
-                "John Foo", "N1", 8), new TaskOwner("mary", "Mary Baz", "N2", 8));
+                "John Foo", "N1"), new TaskOwner("mary", "Mary Baz", "N2"));
 
         Date endDate = timestampFormat.parse("2014-01-10 14:47:48.555");
         t.finish(endDate);
@@ -112,7 +112,7 @@ public class TaskTest {
     public void finishTask_alreadyFinished() throws Exception {
         Task t = createTestTask("111122223333aaaabbbbcccc", "Test the Task Implementation",
                 "2014-01-02 00:00:00.000", "2014-01-10 23:59:59.999", "2014-01-09 23:59:59.999", "OLM", true,
-                new TaskOwner("john", "John Foo", "N1", 8), new TaskOwner("mary", "Mary Baz", "N2", 8));
+                new TaskOwner("john", "John Foo", "N1"), new TaskOwner("mary", "Mary Baz", "N2"));
 
         Date endDate = timestampFormat.parse("2014-01-10 14:47:48.555");
         t.finish(endDate);
@@ -122,7 +122,7 @@ public class TaskTest {
     public void finishTask_lateWithNoAtrasoPost() throws Exception {
         Task t = createTestTask("111122223333aaaabbbbcccc", "Test the Task Implementation",
                 "2014-01-02 00:00:00.000", "2014-01-10 23:59:59.999", null, "OLM", true, new TaskOwner("john",
-                "John Foo", "N1", 8), new TaskOwner("mary", "Mary Baz", "N2", 8));
+                "John Foo", "N1"), new TaskOwner("mary", "Mary Baz", "N2"));
 
         Date endDate = timestampFormat.parse("2014-01-20 14:47:48.555");
         t.finish(endDate);
@@ -132,7 +132,7 @@ public class TaskTest {
     public void finishTask_lateWithAtrasoPost_variation1() throws Exception {
         Task t = createTestTask("111122223333aaaabbbbcccc", "Test the Task Implementation",
                 "2014-01-02 00:00:00.000", "2014-01-10 23:59:59.999", null, "OLM", true, new TaskOwner("john",
-                "John Foo", "N1", 8), new TaskOwner("mary", "Mary Baz", "N2", 8));
+                "John Foo", "N1"), new TaskOwner("mary", "Mary Baz", "N2"));
         t.addPost(new Post("testusr", "Some #atraso has occured", new Date()));
 
         Date endDate = timestampFormat.parse("2014-01-20 14:47:48.555");
@@ -145,7 +145,7 @@ public class TaskTest {
     public void finishTask_lateWithAtrasoPost_variation2() throws Exception {
         Task t = createTestTask("111122223333aaaabbbbcccc", "Test the Task Implementation",
                 "2014-01-02 00:00:00.000", "2014-01-10 23:59:59.999", null, "OLM", true, new TaskOwner("john",
-                "John Foo", "N1", 8), new TaskOwner("mary", "Mary Baz", "N2", 8));
+                "John Foo", "N1"), new TaskOwner("mary", "Mary Baz", "N2"));
         t.addPost(new Post("testusr", "The task is #atrasado", new Date()));
 
         Date endDate = timestampFormat.parse("2014-01-20 14:47:48.555");
@@ -158,7 +158,7 @@ public class TaskTest {
     public void finishTask_lateWithAtrasoPost_variation3() throws Exception {
         Task t = createTestTask("111122223333aaaabbbbcccc", "Test the Task Implementation",
                 "2014-01-02 00:00:00.000", "2014-01-10 23:59:59.999", null, "OLM", true, new TaskOwner("john",
-                "John Foo", "N1", 8), new TaskOwner("mary", "Mary Baz", "N2", 8));
+                "John Foo", "N1"), new TaskOwner("mary", "Mary Baz", "N2"));
         t.addPost(new Post("testusr", "The task is #atrasada", new Date()));
 
         Date endDate = timestampFormat.parse("2014-01-20 14:47:48.555");
@@ -175,7 +175,7 @@ public class TaskTest {
 
         Task t = createTestTask("111122223333aaaabbbbcccc", "Test the Task Implementation",
                 "2014-01-02 00:00:00.000", "2014-01-10 23:59:59.999", null, "OLM", true, new TaskOwner("john",
-                "John Foo", "N1", 8), new TaskOwner("mary", "Mary Baz", "N2", 8));
+                "John Foo", "N1"), new TaskOwner("mary", "Mary Baz", "N2"));
 
         Date startDate = timestampFormat.parse("2014-01-05 14:47:48.555");
         t.changeStartDate(startDate);
@@ -189,7 +189,7 @@ public class TaskTest {
         Task.setFixedCurrentDate(timestampFormat.parse("2014-01-06 12:00:00.000"));
         Task t = createTestTask("111122223333aaaabbbbcccc", "Test the Task Implementation",
                 "2014-01-02 00:00:00.000", "2014-01-10 23:59:59.999", null, "OLM", true, new TaskOwner("john",
-                "John Foo", "N1", 8), new TaskOwner("mary", "Mary Baz", "N2", 8));
+                "John Foo", "N1"), new TaskOwner("mary", "Mary Baz", "N2"));
 
         Date startDate = timestampFormat.parse("2014-01-05 14:47:48.555");
 
@@ -200,7 +200,7 @@ public class TaskTest {
     public void changeForeseenEndDate() throws Exception {
         Task t = createTestTask("111122223333aaaabbbbcccc", "Test the Task Implementation",
                 "2014-01-02 00:00:00.000", "2014-01-10 23:59:59.999", null, "OLM", true, new TaskOwner("john",
-                "John Foo", "N1", 8), new TaskOwner("mary", "Mary Baz", "N2", 8));
+                "John Foo", "N1"), new TaskOwner("mary", "Mary Baz", "N2"));
 
         Date foreseen = timestampFormat.parse("2014-01-17 16:28:49.179");
         t.changeForeseenEndDate(foreseen);

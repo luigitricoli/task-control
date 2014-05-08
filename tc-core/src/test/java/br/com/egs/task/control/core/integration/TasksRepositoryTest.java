@@ -178,7 +178,7 @@ public class TasksRepositoryTest {
                 null,
                 "CCC",
                 new Application("OLM"),
-                Arrays.asList(new TaskOwner("joe", "Joe The Programmer", "N1", 8)));
+                Arrays.asList(new TaskOwner("joe", "Joe The Programmer", "N1")));
 
         t = repository.add(t);
 
@@ -341,8 +341,8 @@ public class TasksRepositoryTest {
         assertEquals(new Application("OLM"), task.getApplication());
 
         assertEquals(2, task.getOwners().size());
-        assertEquals(new TaskOwner("john", "Joe The Programmer", "N1", 8), task.getOwners().get(0));
-        assertEquals(new TaskOwner("mary", "Mary Developer", "N2", 16), task.getOwners().get(1));
+        assertEquals(new TaskOwner("john", "Joe The Programmer", "N1"), task.getOwners().get(0));
+        assertEquals(new TaskOwner("mary", "Mary Developer", "N2"), task.getOwners().get(1));
 
         assertEquals(2, task.getPosts().size());
         assertEquals(timestampFormat.parse("2014-01-03 09:15:30.700"), task.getPosts().get(0).getTimestamp());

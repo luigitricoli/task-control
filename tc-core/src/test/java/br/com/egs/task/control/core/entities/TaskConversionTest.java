@@ -11,6 +11,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static org.junit.Assert.*;
@@ -40,11 +41,16 @@ public class TaskConversionTest {
                 "           {login: 'john'," +
                 "            name: 'John Programmer'," +
                 "            type: 'N1'," +
-                "            workHours: 8}," +
+                "            workDays: [" +
+                "                {" +
+                "                   day: '2014-01-03'," +
+                "                   hours: 8" +
+                "                }" +
+                "            ]}," +
                 "           {login: 'mary'," +
                 "            name: 'Mary Devs'," +
                 "            type: 'N2'," +
-                "            workHours: 16}" +
+                "            workDays: []}" +
                 "]," +
                 "posts: [" +
                 "           {timestamp: '2014-01-03 09:15:30'," +
@@ -77,11 +83,16 @@ public class TaskConversionTest {
                 "           {login: 'john'," +
                 "            name: 'John Programmer'," +
                 "            type: 'N1'," +
-                "            workHours: 8}," +
+                "            workDays: [" +
+                "                {" +
+                "                   day: '2014-01-03'," +
+                "                   hours: 8," +
+                "                }" +
+                "            ]}," +
                 "           {login: 'mary'," +
                 "            name: 'Mary Devs'," +
                 "            type: 'N2'," +
-                "            workHours: 16}" +
+                "            workDays: []}" +
                 "]" +
                 "}";
 
@@ -102,11 +113,16 @@ public class TaskConversionTest {
                 "           {login: 'john'," +
                 "            name: 'John Programmer'," +
                 "            type: 'N1'," +
-                "            workHours: 8}," +
+                "            workDays: [" +
+                "                {" +
+                "                   day: '2014-01-03'," +
+                "                   hours: 8" +
+                "                }" +
+                "            ]}," +
                 "           {login: 'mary'," +
                 "            name: 'Mary Devs'," +
                 "            type: 'N2'," +
-                "            workHours: 16}" +
+                "            workDays: []}" +
                 "]" +
                 "}}";
 
@@ -124,12 +140,14 @@ public class TaskConversionTest {
         assertEquals("john", t.getOwners().get(0).getLogin());
         assertEquals("John Programmer", t.getOwners().get(0).getName());
         assertEquals("N1", t.getOwners().get(0).getType());
-        assertEquals(Integer.valueOf(8), t.getOwners().get(0).getWorkHours());
+        assertEquals(1, t.getOwners().get(0).getWorkDays().size());
+        assertEquals("2014-01-03", t.getOwners().get(0).getWorkDays().get(0).getDay());
+        assertEquals(8, t.getOwners().get(0).getWorkDays().get(0).getHours());
 
         assertEquals("mary", t.getOwners().get(1).getLogin());
         assertEquals("Mary Devs", t.getOwners().get(1).getName());
         assertEquals("N2", t.getOwners().get(1).getType());
-        assertEquals(Integer.valueOf(16), t.getOwners().get(1).getWorkHours());
+        assertEquals(0, t.getOwners().get(1).getWorkDays().size());
     }
 
     @Test
@@ -239,11 +257,18 @@ public class TaskConversionTest {
         assertEquals("john", owners.get(0).get("login"));
         assertEquals("John Programmer", owners.get(0).get("name"));
         assertEquals("N1", owners.get(0).get("type"));
-        assertEquals(8, owners.get(0).get("workHours"));
+
+        List<BasicDBObject> owner1Workdays = (List<BasicDBObject>) owners.get(0).get("workDays");
+        assertEquals(1, owner1Workdays.size());
+        assertEquals("2014-01-03", owner1Workdays.get(0).get("day"));
+        assertEquals(8, owner1Workdays.get(0).get("hours"));
+
         assertEquals("mary", owners.get(1).get("login"));
         assertEquals("Mary Devs", owners.get(1).get("name"));
         assertEquals("N2", owners.get(1).get("type"));
-        assertEquals(16, owners.get(1).get("workHours"));
+
+        List<BasicDBObject> owner2Workdays = (List<BasicDBObject>) owners.get(1).get("workDays");
+        assertEquals(0, owner2Workdays.size());
     }
 
     @Test
@@ -337,11 +362,21 @@ public class TaskConversionTest {
     @Test
     public void fromDbObjectToTask_owners() throws Exception {
         BasicDBObject dbTask = createTestTaskAsDbObject();
-        Task task = Task.fromDbObject(dbTask);
+        Task t = Task.fromDbObject(dbTask);
 
-        assertEquals(2, task.getOwners().size());
-        assertEquals(new TaskOwner("john", "John Programmer", "N1", 8), task.getOwners().get(0));
-        assertEquals(new TaskOwner("mary", "Mary Devs", "N2", 16), task.getOwners().get(1));
+        assertEquals(2, t.getOwners().size());
+
+        assertEquals("john", t.getOwners().get(0).getLogin());
+        assertEquals("John Programmer", t.getOwners().get(0).getName());
+        assertEquals("N1", t.getOwners().get(0).getType());
+        assertEquals(1, t.getOwners().get(0).getWorkDays().size());
+        assertEquals("2014-01-03", t.getOwners().get(0).getWorkDays().get(0).getDay());
+        assertEquals(8, t.getOwners().get(0).getWorkDays().get(0).getHours());
+
+        assertEquals("mary", t.getOwners().get(1).getLogin());
+        assertEquals("Mary Devs", t.getOwners().get(1).getName());
+        assertEquals("N2", t.getOwners().get(1).getType());
+        assertEquals(0, t.getOwners().get(1).getWorkDays().size());
     }
 
     @Test
@@ -374,8 +409,8 @@ public class TaskConversionTest {
                 "Sup.Producao",
                 new Application("OLM"),
 
-                Arrays.asList(new TaskOwner("john", "John Programmer", "N1", 8),
-                                new TaskOwner("mary", "Mary Devs", "N2", 16)));
+                Arrays.asList(new TaskOwner("john", "John Programmer", "N1").addWorkHours("2014-01-03", 8),
+                                new TaskOwner("mary", "Mary Devs", "N2")));
 
         if (!nullPosts) {
             Post p1 = new Post("john", "Scope changed. No re-scheduling will be necessary",
@@ -408,12 +443,16 @@ public class TaskConversionTest {
                 .append("login", "john")
                 .append("name", "John Programmer")
                 .append("type", "N1")
-                .append("workHours", 8));
+                .append("workDays", Arrays.asList(
+                        new BasicDBObject()
+                                .append("day", "2014-01-03")
+                                .append("hours", 8)
+                )));
         owners.add(new BasicDBObject()
                 .append("login", "mary")
                 .append("name", "Mary Devs")
                 .append("type", "N2")
-                .append("workHours", 16));
+                .append("workDays", Collections.emptyList()));
         t.append("owners", owners);
 
         List<BasicDBObject> posts = new ArrayList<>();

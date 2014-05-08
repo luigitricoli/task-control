@@ -96,7 +96,7 @@ public class TasksService {
                     + owner.getLogin() + "] is not a registered user");
             }
 
-            ownersWithData.add(new TaskOwner(user.getLogin(), user.getName(), user.getType(), 0));
+            ownersWithData.add(new TaskOwner(user.getLogin(), user.getName(), user.getType()));
         }
 
         task.getOwners().clear();
