@@ -190,7 +190,8 @@ public class TasksService {
         }
 
         if (StringUtils.isNotBlank(owner)) {
-            criteria.ownerLogin(owner);
+            String[] ownerTokens = owner.split(",");
+            criteria.ownerLogins(ownerTokens);
         }
 
         if (StringUtils.isNotBlank(application)) {

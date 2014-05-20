@@ -109,7 +109,7 @@ public class TasksRepositoryTest {
     @Test
     public void searchByOwner() throws Exception {
         TaskSearchCriteria criteria = new TaskSearchCriteria()
-                .ownerLogin("bob");
+                .ownerLogins("bob");
         List<Task> result = repository.searchTasks(criteria);
 
         assertEquals(2, result.size());
@@ -122,7 +122,7 @@ public class TasksRepositoryTest {
     public void searchByMonthAndOwner() throws Exception {
         TaskSearchCriteria criteria = new TaskSearchCriteria()
                 .month(2013, 12)
-                .ownerLogin("bob");
+                .ownerLogins("bob");
         List<Task> result = repository.searchTasks(criteria);
 
         assertEquals(1, result.size());

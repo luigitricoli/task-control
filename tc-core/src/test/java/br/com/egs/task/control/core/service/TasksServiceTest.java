@@ -17,6 +17,7 @@ import javax.ws.rs.core.Response;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -226,7 +227,7 @@ public class TasksServiceTest {
     public void searchTasks_byMonthYearAndOwner() throws Exception {
         TaskSearchCriteria generatedCriteria = new TaskSearchCriteria()
                 .month(2014, 1)
-                .ownerLogin("john");
+                .ownerLogins("john");
 
         Task t1 = createTestTask(DEFAULT_TASK_ID, false, false);
 
@@ -248,10 +249,7 @@ public class TasksServiceTest {
                 .month(2014, 1)
                 .applications("OLM");
 
-        Task t1 = createTestTask(DEFAULT_TASK_ID, false, false);
-
-        List<Task> taskList = Arrays.asList(t1);
-        Mockito.when(taskRepository.searchTasks(generatedCriteria)).thenReturn(taskList);
+        Mockito.when(taskRepository.searchTasks(generatedCriteria)).thenReturn(new ArrayList<Task>());
 
         String result = service.searchTasks("2014", "1", null, "OLM", null, null, null);
 
@@ -266,12 +264,24 @@ public class TasksServiceTest {
                 .month(2014, 1)
                 .applications("OLM", "EMM");
 
-        Task t1 = createTestTask(DEFAULT_TASK_ID, false, false);
-
-        List<Task> taskList = Arrays.asList(t1);
-        Mockito.when(taskRepository.searchTasks(generatedCriteria)).thenReturn(taskList);
+        Mockito.when(taskRepository.searchTasks(generatedCriteria)).thenReturn(new ArrayList<Task>());
 
         String result = service.searchTasks("2014", "1", null, "OLM,EMM", null, null, null);
+
+        // Other tests check the resulting data. Here we only ensure that the repository
+        // was called with the appropriate Criteria object.
+        Mockito.verify(taskRepository).searchTasks(generatedCriteria);
+    }
+
+    @Test
+    public void searchTasks_byOwner_multiple() throws Exception {
+        TaskSearchCriteria generatedCriteria = new TaskSearchCriteria()
+                .month(2014, 1)
+                .ownerLogins("john", "mary");
+
+        Mockito.when(taskRepository.searchTasks(generatedCriteria)).thenReturn(new ArrayList<Task>());
+
+        String result = service.searchTasks("2014", "1", "john,mary", null, null, null, null);
 
         // Other tests check the resulting data. Here we only ensure that the repository
         // was called with the appropriate Criteria object.
@@ -284,10 +294,7 @@ public class TasksServiceTest {
                 .month(2014, 1)
                 .status(TaskSearchCriteria.Status.FINISHED);
 
-        Task t1 = createTestTask(DEFAULT_TASK_ID, false, false);
-
-        List<Task> taskList = Arrays.asList(t1);
-        Mockito.when(taskRepository.searchTasks(generatedCriteria)).thenReturn(taskList);
+        Mockito.when(taskRepository.searchTasks(generatedCriteria)).thenReturn(new ArrayList<Task>());
 
         String result = service.searchTasks("2014", "1", null, null, "finished", null, null);
 
@@ -312,10 +319,7 @@ public class TasksServiceTest {
                 .month(2014, 1)
                 .status(TaskSearchCriteria.Status.DOING, TaskSearchCriteria.Status.WAITING);
 
-        Task t1 = createTestTask(DEFAULT_TASK_ID, false, false);
-
-        List<Task> taskList = Arrays.asList(t1);
-        Mockito.when(taskRepository.searchTasks(generatedCriteria)).thenReturn(taskList);
+        Mockito.when(taskRepository.searchTasks(generatedCriteria)).thenReturn(new ArrayList<Task>());
 
         String result = service.searchTasks("2014", "1", null, null, "doing,waiting", null, null);
 
@@ -330,10 +334,7 @@ public class TasksServiceTest {
                 .month(2014, 1)
                 .sources("CCC", "Internal");
 
-        Task t1 = createTestTask(DEFAULT_TASK_ID, false, false);
-
-        List<Task> taskList = Arrays.asList(t1);
-        Mockito.when(taskRepository.searchTasks(generatedCriteria)).thenReturn(taskList);
+        Mockito.when(taskRepository.searchTasks(generatedCriteria)).thenReturn(new ArrayList<Task>());
 
         String result = service.searchTasks("2014", "1", null, null, null, "CCC,Internal", null);
 
@@ -348,10 +349,7 @@ public class TasksServiceTest {
                 .month(2014, 1)
                 .excludePosts();
 
-        Task t1 = createTestTask(DEFAULT_TASK_ID, false, false);
-
-        List<Task> taskList = Arrays.asList(t1);
-        Mockito.when(taskRepository.searchTasks(generatedCriteria)).thenReturn(taskList);
+        Mockito.when(taskRepository.searchTasks(generatedCriteria)).thenReturn(new ArrayList<Task>());
 
         String result = service.searchTasks("2014", "1", null, null, null, null, "true");
 

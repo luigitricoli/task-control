@@ -269,11 +269,24 @@ public class TasksRepositoryImplTest {
     @Test
     public void filterByOwner() throws Exception {
         TaskSearchCriteria criteria = new TaskSearchCriteria()
-                .ownerLogin("mr.dev");
+                .ownerLogins("mr.dev");
 
         BasicDBObject filter = repository.createFilterObject(criteria);
 
         String expectedFilter = "{'owners.login': 'mr.dev'}";
+
+        JSONAssert.assertEquals(expectedFilter, filter.toString(), true);
+    }
+
+
+    @Test
+    public void filterByOwner_multiple() throws Exception {
+        TaskSearchCriteria criteria = new TaskSearchCriteria()
+                .ownerLogins("mr.dev", "the.programmer");
+
+        BasicDBObject filter = repository.createFilterObject(criteria);
+
+        String expectedFilter = "{'owners.login': { $in: ['mr.dev','the.programmer']}}";
 
         JSONAssert.assertEquals(expectedFilter, filter.toString(), true);
     }
@@ -283,7 +296,7 @@ public class TasksRepositoryImplTest {
         TaskSearchCriteria criteria = new TaskSearchCriteria()
                 .applications("EMM")
                 .sources("CCC")
-                .ownerLogin("mr.dev");
+                .ownerLogins("mr.dev");
 
         BasicDBObject filter = repository.createFilterObject(criteria);
 
