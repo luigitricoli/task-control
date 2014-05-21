@@ -7,8 +7,8 @@ import br.com.egs.task.control.core.entities.User;
 import br.com.egs.task.control.core.exception.LateTaskException;
 import br.com.egs.task.control.core.exception.ValidationException;
 import br.com.egs.task.control.core.repository.TaskSearchCriteria;
-import br.com.egs.task.control.core.repository.Tasks;
-import br.com.egs.task.control.core.repository.Users;
+import br.com.egs.task.control.core.repository.TasksRepository;
+import br.com.egs.task.control.core.repository.UsersRepository;
 import br.com.egs.task.control.core.utils.HttpResponseUtils;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonParseException;
@@ -28,11 +28,11 @@ public class TasksService {
 
 	private static final Logger log = LoggerFactory.getLogger(TasksService.class);
 
-    private Tasks repository;
-    private Users userRepository;
+    private TasksRepository repository;
+    private UsersRepository userRepository;
 
     @Inject
-    public TasksService(Tasks repository, Users userRepository) {
+    public TasksService(TasksRepository repository, UsersRepository userRepository) {
         this.repository = repository;
         this.userRepository = userRepository;
     }

@@ -2,7 +2,7 @@ package br.com.egs.task.control.core.repository.impl;
 
 import br.com.egs.task.control.core.database.MongoDbConnection;
 import br.com.egs.task.control.core.entities.User;
-import br.com.egs.task.control.core.repository.Users;
+import br.com.egs.task.control.core.repository.UsersRepository;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
@@ -14,7 +14,7 @@ import java.util.List;
 /**
  *
  */
-public class UsersRepositoryImpl implements Users {
+public class UsersRepositoryImpl implements UsersRepository {
 
     private MongoDbConnection conn;
 

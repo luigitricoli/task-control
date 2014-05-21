@@ -7,7 +7,7 @@ import java.util.List;
 /**
  *
  */
-public interface Users {
+public interface UsersRepository {
     public User get(String login);
     public void add(User user);
     public List<User> getAll();

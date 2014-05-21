@@ -2,8 +2,8 @@ package br.com.egs.task.control.core.service;
 
 import br.com.egs.task.control.core.entities.*;
 import br.com.egs.task.control.core.repository.TaskSearchCriteria;
-import br.com.egs.task.control.core.repository.Tasks;
-import br.com.egs.task.control.core.repository.Users;
+import br.com.egs.task.control.core.repository.TasksRepository;
+import br.com.egs.task.control.core.repository.UsersRepository;
 import br.com.egs.task.control.core.utils.HttpResponseUtils;
 import org.json.JSONException;
 import org.junit.Before;
@@ -33,14 +33,14 @@ public class TasksServiceTest {
     public static final String DEFAULT_TASK_ID = "111122223333aaaabbbbcccc";
     DateFormat timestampFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 
-    private Tasks taskRepository;
-    private Users userRepository;
+    private TasksRepository taskRepository;
+    private UsersRepository userRepository;
     private TasksService service;
 
     @Before
     public void setUp() {
-        taskRepository = Mockito.mock(Tasks.class);
-        userRepository = Mockito.mock(Users.class);
+        taskRepository = Mockito.mock(TasksRepository.class);
+        userRepository = Mockito.mock(UsersRepository.class);
         service = new TasksService(taskRepository, userRepository);
     }
 

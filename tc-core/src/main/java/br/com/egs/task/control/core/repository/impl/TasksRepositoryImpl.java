@@ -3,18 +3,17 @@ package br.com.egs.task.control.core.repository.impl;
 import br.com.egs.task.control.core.database.MongoDbConnection;
 import br.com.egs.task.control.core.entities.Task;
 import br.com.egs.task.control.core.repository.TaskSearchCriteria;
-import br.com.egs.task.control.core.repository.Tasks;
+import br.com.egs.task.control.core.repository.TasksRepository;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
-import org.apache.commons.lang.StringUtils;
 import org.bson.types.ObjectId;
 
 import javax.inject.Inject;
 import java.util.*;
 
-public class TasksRepositoryImpl implements Tasks {
+public class TasksRepositoryImpl implements TasksRepository {
 
 	private MongoDbConnection connection;
 

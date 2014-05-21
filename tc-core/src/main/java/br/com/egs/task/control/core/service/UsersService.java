@@ -2,7 +2,7 @@ package br.com.egs.task.control.core.service;
 
 import br.com.egs.task.control.core.entities.User;
 import br.com.egs.task.control.core.exception.ValidationException;
-import br.com.egs.task.control.core.repository.Users;
+import br.com.egs.task.control.core.repository.UsersRepository;
 import br.com.egs.task.control.core.utils.HttpResponseUtils;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -24,10 +24,10 @@ public class UsersService {
 
     private static final Logger log = LoggerFactory.getLogger(UsersService.class);
 
-    private Users repository;
+    private UsersRepository repository;
 
     @Inject
-    public UsersService(Users repository) {
+    public UsersService(UsersRepository repository) {
         this.repository = repository;
     }
 
