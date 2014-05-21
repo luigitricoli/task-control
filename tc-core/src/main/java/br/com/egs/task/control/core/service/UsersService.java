@@ -33,12 +33,20 @@ public class UsersService {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public String allUsers() {
-        List<User> allUsers = repository.getAll();
+    public String listUsers(
+            @QueryParam("application") String application) {
+
+        List<User> users;
+        if (StringUtils.isBlank(application)) {
+            users = repository.getAll();
+        } else {
+            users = repository.getByApplication(application);
+        }
+
         Gson gson = new GsonBuilder()
                 .registerTypeAdapter(User.class, new User.UserSerializer(true))
                 .create();
-        return gson.toJson(allUsers);
+        return gson.toJson(users);
     }
 
     @GET

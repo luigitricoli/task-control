@@ -55,6 +55,19 @@ public class UsersRepositoryImpl implements UsersRepository {
     }
 
     @Override
+    public List<User> getByApplication(String application) {
+        DBCollection collection = conn.getCollection("users");
+        DBCursor cursor = collection.find(new BasicDBObject("applications.name", application));
+
+        List<User> results = new ArrayList<>();
+        while (cursor.hasNext()) {
+            BasicDBObject obj = (BasicDBObject) cursor.next();
+            results.add(User.fromDbObject(obj));
+        }
+        return results;
+    }
+
+    @Override
     public void update(User user) {
         DBCollection collection = conn.getCollection("users");
         BasicDBObject dbUser = user.toDbObject();

@@ -11,5 +11,6 @@ public interface UsersRepository {
     public User get(String login);
     public void add(User user);
     public List<User> getAll();
+    public List<User> getByApplication(String application);
     public void update(User user);
 }
