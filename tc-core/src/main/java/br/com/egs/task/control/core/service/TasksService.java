@@ -55,13 +55,23 @@ public class TasksService {
                             @QueryParam("application") String application,
                             @QueryParam("status") String status,
                             @QueryParam("sources") String sources,
-                            @QueryParam("excludePosts") String excludePosts) {
+                            @QueryParam("excludePosts") String excludePosts,
+                            @QueryParam("prettyPrint") String prettyPrint) {
 
         TaskSearchCriteria criteria = buildSearchCriteria(year, month, owner, application, sources, status, excludePosts);
 
         List<Task> result = repository.searchTasks(criteria);
-        return new GsonBuilder().registerTypeAdapter(Task.class, new Task.TaskSerializer())
-                .setPrettyPrinting()
+
+        boolean isPrettyPrint = true;  // default
+        if (StringUtils.isNotBlank(prettyPrint)) {
+            isPrettyPrint = Boolean.parseBoolean(prettyPrint);
+        }
+
+        GsonBuilder gsonBuilder = new GsonBuilder().registerTypeAdapter(Task.class, new Task.TaskSerializer());
+        if (isPrettyPrint) {
+            gsonBuilder.setPrettyPrinting();
+        }
+        return gsonBuilder
                 .create()
                 .toJson(result);
 	}

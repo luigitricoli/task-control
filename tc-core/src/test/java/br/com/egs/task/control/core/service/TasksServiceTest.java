@@ -146,7 +146,7 @@ public class TasksServiceTest {
     @Test
     public void searchTasks_nullMonth() {
         try {
-            service.searchTasks("2014", null, null, null, null, null, null);
+            service.searchTasks("2014", null, null, null, null, null, null, null);
             fail("Exception was expected");
         } catch (WebApplicationException e) {
             assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), e.getResponse().getStatus());
@@ -156,7 +156,7 @@ public class TasksServiceTest {
     @Test
     public void searchTasks_nullYear() {
         try {
-            service.searchTasks(null, "01", null, null, null, null, null);
+            service.searchTasks(null, "01", null, null, null, null, null, null);
             fail("Exception was expected");
         } catch (WebApplicationException e) {
             assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), e.getResponse().getStatus());
@@ -166,7 +166,7 @@ public class TasksServiceTest {
     @Test
     public void searchTasks_invalidMonth() {
         try {
-            service.searchTasks("2014", "x", null, null, null, null, null);
+            service.searchTasks("2014", "x", null, null, null, null, null, null);
             fail("Exception was expected");
         } catch (WebApplicationException e) {
             assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), e.getResponse().getStatus());
@@ -176,7 +176,7 @@ public class TasksServiceTest {
     @Test
     public void searchTasks_invalidMonthValue() {
         try {
-            service.searchTasks("2014", "13", null, null, null, null, null);
+            service.searchTasks("2014", "13", null, null, null, null, null, null);
             fail("Exception was expected");
         } catch (WebApplicationException e) {
             assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), e.getResponse().getStatus());
@@ -186,7 +186,7 @@ public class TasksServiceTest {
     @Test
     public void searchTasks_invalidYear() {
         try {
-            service.searchTasks("a", "1", null, null, null, null, null);
+            service.searchTasks("a", "1", null, null, null, null, null, null);
             fail("Exception was expected");
         } catch (WebApplicationException e) {
             assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), e.getResponse().getStatus());
@@ -200,7 +200,7 @@ public class TasksServiceTest {
         List<Task> empty = Collections.emptyList();
         Mockito.when(taskRepository.searchTasks(generatedCriteria)).thenReturn(empty);
 
-        String result = service.searchTasks("2014", "1", null, null, null, null, null);
+        String result = service.searchTasks("2014", "1", null, null, null, null, null, null);
 
         JSONAssert.assertEquals("[]", result, true);
     }
@@ -216,7 +216,7 @@ public class TasksServiceTest {
         List<Task> taskList = Arrays.asList(t1, t2);
         Mockito.when(taskRepository.searchTasks(generatedCriteria)).thenReturn(taskList);
 
-        String result = service.searchTasks("2014", "1", null, null, null, null, null);
+        String result = service.searchTasks("2014", "1", null, null, null, null, null, null);
 
         Mockito.verify(taskRepository).searchTasks(generatedCriteria);
 
@@ -236,7 +236,7 @@ public class TasksServiceTest {
         List<Task> taskList = Arrays.asList(t1, t2);
         Mockito.when(taskRepository.searchTasks(generatedCriteria)).thenReturn(taskList);
 
-        String result = service.searchTasks("2014", "1", "john", null, null, null, null);
+        String result = service.searchTasks("2014", "1", "john", null, null, null, null, null);
 
         Mockito.verify(taskRepository).searchTasks(generatedCriteria);
 
@@ -251,7 +251,7 @@ public class TasksServiceTest {
 
         Mockito.when(taskRepository.searchTasks(generatedCriteria)).thenReturn(new ArrayList<Task>());
 
-        String result = service.searchTasks("2014", "1", null, "OLM", null, null, null);
+        String result = service.searchTasks("2014", "1", null, "OLM", null, null, null, null);
 
         // Other tests check the resulting data. Here we only ensure that the repository
         // was called with the appropriate Criteria object.
@@ -266,7 +266,7 @@ public class TasksServiceTest {
 
         Mockito.when(taskRepository.searchTasks(generatedCriteria)).thenReturn(new ArrayList<Task>());
 
-        String result = service.searchTasks("2014", "1", null, "OLM,EMM", null, null, null);
+        String result = service.searchTasks("2014", "1", null, "OLM,EMM", null, null, null, null);
 
         // Other tests check the resulting data. Here we only ensure that the repository
         // was called with the appropriate Criteria object.
@@ -281,7 +281,7 @@ public class TasksServiceTest {
 
         Mockito.when(taskRepository.searchTasks(generatedCriteria)).thenReturn(new ArrayList<Task>());
 
-        String result = service.searchTasks("2014", "1", "john,mary", null, null, null, null);
+        String result = service.searchTasks("2014", "1", "john,mary", null, null, null, null, null);
 
         // Other tests check the resulting data. Here we only ensure that the repository
         // was called with the appropriate Criteria object.
@@ -296,7 +296,7 @@ public class TasksServiceTest {
 
         Mockito.when(taskRepository.searchTasks(generatedCriteria)).thenReturn(new ArrayList<Task>());
 
-        String result = service.searchTasks("2014", "1", null, null, "finished", null, null);
+        String result = service.searchTasks("2014", "1", null, null, "finished", null, null, null);
 
         // Other tests check the resulting data. Here we only ensure that the repository
         // was called with the appropriate Criteria object.
@@ -306,7 +306,7 @@ public class TasksServiceTest {
     @Test
     public void searchTasks_byStatus_invalid() throws Exception {
         try {
-            service.searchTasks("2014", "1", null, null, "crazyStatus", null, null);
+            service.searchTasks("2014", "1", null, null, "crazyStatus", null, null, null);
             fail("Exception was expected");
         } catch (WebApplicationException e) {
             assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), e.getResponse().getStatus());
@@ -321,7 +321,7 @@ public class TasksServiceTest {
 
         Mockito.when(taskRepository.searchTasks(generatedCriteria)).thenReturn(new ArrayList<Task>());
 
-        String result = service.searchTasks("2014", "1", null, null, "doing,waiting", null, null);
+        String result = service.searchTasks("2014", "1", null, null, "doing,waiting", null, null, null);
 
         // Other tests check the resulting data. Here we only ensure that the repository
         // was called with the appropriate Criteria object.
@@ -336,7 +336,7 @@ public class TasksServiceTest {
 
         Mockito.when(taskRepository.searchTasks(generatedCriteria)).thenReturn(new ArrayList<Task>());
 
-        String result = service.searchTasks("2014", "1", null, null, null, "CCC,Internal", null);
+        String result = service.searchTasks("2014", "1", null, null, null, "CCC,Internal", null, null);
 
         // Other tests check the resulting data. Here we only ensure that the repository
         // was called with the appropriate Criteria object.
@@ -351,7 +351,7 @@ public class TasksServiceTest {
 
         Mockito.when(taskRepository.searchTasks(generatedCriteria)).thenReturn(new ArrayList<Task>());
 
-        String result = service.searchTasks("2014", "1", null, null, null, null, "true");
+        String result = service.searchTasks("2014", "1", null, null, null, null, "true", null);
 
         // Other tests check the resulting data. Here we only ensure that the repository
         // was called with the appropriate Criteria object.
