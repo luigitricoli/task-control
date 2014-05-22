@@ -39,7 +39,7 @@ public class TasksService {
 
     @GET
     @Path("{id}")
-    @Produces(MediaType.APPLICATION_JSON)
+    @Produces("application/json; charset=UTF-8")
     public String findById(@PathParam("id") String id) {
         Task result = retrieveTask(id);
 
@@ -47,7 +47,7 @@ public class TasksService {
     }
 
     @GET
-	@Produces(MediaType.APPLICATION_JSON)
+	@Produces("application/json; charset=UTF-8")
 	public String searchTasks(
                             @QueryParam("year") String year,
                             @QueryParam("month") String month,
@@ -67,7 +67,8 @@ public class TasksService {
 	}
 
     @POST
-    @Produces(MediaType.APPLICATION_JSON)
+    @Produces("application/json; charset=UTF-8")
+    @Consumes("application/json; charset=UTF-8")
     public String create(String body) {
         Task task = jsonToTask(body);
 
@@ -98,7 +99,7 @@ public class TasksService {
 
     @POST
     @Path("{id}")
-    @Produces(MediaType.APPLICATION_JSON)
+    @Produces("application/json; charset=UTF-8")
     public String addPost(@PathParam("id") String id, String body) {
         Post post = null;
         try {
@@ -128,7 +129,7 @@ public class TasksService {
      */
     @PUT
     @Path("{id}")
-    @Produces(MediaType.APPLICATION_JSON)
+    @Produces("application/json; charset=UTF-8")
     public String modifyTask(@PathParam("id") String id, String body) {
         Task changedAttributes = jsonToTask(body);
         Task task = retrieveTask(id);

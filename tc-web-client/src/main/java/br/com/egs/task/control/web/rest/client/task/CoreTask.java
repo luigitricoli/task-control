@@ -102,7 +102,6 @@ public class CoreTask {
         GsonBuilder gson = new GsonBuilder();
         gson.registerTypeAdapter(TaskDate.class, new TaskDate.JsonMarshaller());
         Gson marhaller = gson.create();
-
         return String.format("{\"task\":%s}", marhaller.toJson(this));
     }
 

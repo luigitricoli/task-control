@@ -2,12 +2,18 @@ package br.com.egs.task.control.web.rest.client.restfulie;
 
 import br.com.caelum.restfulie.RestClient;
 import br.com.caelum.restfulie.Restfulie;
+import br.com.caelum.restfulie.http.Request;
+import br.com.caelum.restfulie.mediatype.MediaType;
+import br.com.caelum.restfulie.relation.Enhancer;
 import br.com.caelum.vraptor.ioc.Component;
 import br.com.caelum.vraptor.ioc.RequestScoped;
 import br.com.egs.task.control.web.rest.client.JsonClient;
 import br.com.egs.task.control.web.rest.client.Response;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
+import java.io.UnsupportedEncodingException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -15,12 +21,13 @@ import java.util.Map;
 @RequestScoped
 public class RestfulieCoreClient implements JsonClient {
 
+    private static final Logger log = LoggerFactory.getLogger(RestfulieCoreClient.class);
+
 	private static final String SLASH = "/";
 	private static final String EMPTY = "";
 	// TODO extract this to a external property
 	private static final String ROOT_URL = "http://localhost:8080/task-control-core/";
 	private static final String DEFAULT_VERSION = "v1";
-	public static final String JSON_MEDIA_TYPE = "application/json";
 	public static final String PARAM_SEPARATOR = "&";
 	public static final String VALUE_SEPARATOR = ",";
 
@@ -40,6 +47,8 @@ public class RestfulieCoreClient implements JsonClient {
 
 	private RestfulieCoreClient(RestClient client, String version, String resource, Map<String, String> params) {
 		this.client = client;
+        this.client.getMediaTypes().register(new JsonUnicode());
+
 		this.version = version;
 		this.resource = resource;
 		this.params = params;
@@ -104,17 +113,18 @@ public class RestfulieCoreClient implements JsonClient {
 
 	@Override
 	public Response getAsJson() {
-        return new RestifulieResponse(client.at(getUrl()).accept(JSON_MEDIA_TYPE).get());
+        return new RestifulieResponse(client.at(getUrl()).accept(JsonUnicode.TYPE).get());
 	}
 
 	@Override
 	public Response postAsJson(String body) {
-		return new RestifulieResponse(client.at(getUrl()).as(JSON_MEDIA_TYPE).accept(JSON_MEDIA_TYPE).post(body));
-	}
+        return new RestifulieResponse(client.at(getUrl()).as(JsonUnicode.TYPE).accept(JsonUnicode.TYPE).post(body.getBytes()));
+    }
 
     @Override
     public Response putAsJson(String body) {
-        return new RestifulieResponse(client.at(getUrl()).as(JSON_MEDIA_TYPE).accept(JSON_MEDIA_TYPE).put(body));
+
+        return new RestifulieResponse(client.at(getUrl()).as(JsonUnicode.TYPE).accept(JsonUnicode.TYPE).put(body.getBytes()));
     }
 
 }

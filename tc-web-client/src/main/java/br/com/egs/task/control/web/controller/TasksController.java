@@ -55,6 +55,7 @@ public class TasksController {
             return;
         }
 
+        log.debug("Description: {}", description);
         if (tasks.add(start, foreseen, type, system, description, owners)) {
             result.use(Results.http()).body("success");
         } else {

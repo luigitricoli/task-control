@@ -5,8 +5,7 @@ import br.com.caelum.vraptor.Resource;
 import br.com.caelum.vraptor.Result;
 import br.com.caelum.vraptor.view.Results;
 import br.com.egs.task.control.web.interceptor.AuthRequired;
-import br.com.egs.task.control.web.model.calendar.Month;
-import br.com.egs.task.control.web.model.calendar.MonthStructure;
+import br.com.egs.task.control.web.model.calendar.ReferenceMonth;
 
 import java.util.Calendar;
 
@@ -23,7 +22,7 @@ public class CalendarsController {
 	@Get("/calendario/mes/{month}")
 	public void monthDays(Integer month){
         int year = Calendar.getInstance().get(Calendar.YEAR);
-        MonthStructure structure = new MonthStructure(Month.getByNumber(month),year);
+        ReferenceMonth structure = new ReferenceMonth(month,year);
 		result.use(Results.http()).body(structure.getDaysAsJson());
 	}
 
