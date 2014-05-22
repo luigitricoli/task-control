@@ -94,6 +94,7 @@ public class TaskRestTest {
                 "description: 'Test the Task Implementation'," +
                 "startDate: '2017-01-02'," +
                 "foreseenEndDate: '2017-01-10'," +
+                "foreseenWorkHours: 8," +
                 "source: 'Sup.Producao'," +
                 "application: 'OLM'," +
                 "owners: [" +
@@ -176,12 +177,26 @@ public class TaskRestTest {
         t.append("foreseenEndDate", timestampFormat.parse("2014-01-10 23:59:59.999"));
         t.append("endDate", timestampFormat.parse("2014-01-09 23:59:59.999"));
 
+        t.append("foreseenWorkHours", 50);
+
         t.append("source", "Sup.Producao");
         t.append("application", new BasicDBObject("name", "OLM"));
 
         List<BasicDBObject> owners = new ArrayList<>();
-        owners.add(new BasicDBObject("login", "john"));
-        owners.add(new BasicDBObject("login", "mary"));
+        owners.add(new BasicDBObject()
+                .append("login", "john")
+                .append("name", "Joe The Programmer")
+                .append("type", "N1")
+                .append("workDays", Arrays.asList(
+                        new BasicDBObject()
+                                .append("day", "2014-01-02")
+                                .append("hours", 8)
+                )));
+        owners.add(new BasicDBObject()
+                .append("login", "mary")
+                .append("name", "Mary Developer")
+                .append("type", "N2")
+                .append("workDays", new ArrayList<>()));
         t.append("owners", owners);
 
         List<BasicDBObject> posts = new ArrayList<>();

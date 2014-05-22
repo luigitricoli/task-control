@@ -259,12 +259,12 @@ public class TasksRepositoryTest {
                             .append("login", "bob")
                             .append("name", "Bob")
                             .append("type", "N1")
-                            .append("workHours", 8),
+                            .append("workDays", new ArrayList<>()),
                     new BasicDBObject()
                             .append("login", "buzz")
                             .append("name", "Buzz")
                             .append("type", "N2")
-                            .append("workHours", 16)))
+                            .append("workDays", new ArrayList<>())))
         ;
         conn.getCollection("tasks").insert(t);
 
@@ -277,7 +277,7 @@ public class TasksRepositoryTest {
                             .append("login", "bob")
                             .append("name", "Bob")
                             .append("type", "N1")
-                            .append("workHours", 8)))
+                            .append("workDays", new ArrayList<>())))
         ;
         t.remove("endDate");
 
@@ -294,6 +294,8 @@ public class TasksRepositoryTest {
         t.append("foreseenEndDate", timestampFormat.parse("2014-01-10 23:59:59.999"));
         t.append("endDate", timestampFormat.parse("2014-01-09 23:59:59.999"));
 
+        t.append("foreseenWorkHours", 8);
+
         t.append("source", "Sup.Producao");
         t.append("application", new BasicDBObject("name", "OLM"));
 
@@ -302,12 +304,16 @@ public class TasksRepositoryTest {
                 .append("login", "john")
                 .append("name", "Joe The Programmer")
                 .append("type", "N1")
-                .append("workHours", 8));
+                .append("workDays", Arrays.asList(
+                        new BasicDBObject()
+                        .append("day", "2014-01-02")
+                        .append("hours", 8)
+                )));
         owners.add(new BasicDBObject()
                 .append("login", "mary")
                 .append("name", "Mary Developer")
                 .append("type", "N2")
-                .append("workHours", 16));
+                .append("workDays", new ArrayList<>()));
         t.append("owners", owners);
 
         List<BasicDBObject> posts = new ArrayList<>();
@@ -343,8 +349,16 @@ public class TasksRepositoryTest {
         assertEquals(new Application("OLM"), task.getApplication());
 
         assertEquals(2, task.getOwners().size());
-        assertEquals(new TaskOwner("john", "Joe The Programmer", "N1"), task.getOwners().get(0));
-        assertEquals(new TaskOwner("mary", "Mary Developer", "N2"), task.getOwners().get(1));
+        assertEquals("john", task.getOwners().get(0).getLogin());
+        assertEquals("Joe The Programmer", task.getOwners().get(0).getName());
+        assertEquals("N1", task.getOwners().get(0).getType());
+        assertEquals(1, task.getOwners().get(0).getWorkDays().size());
+        assertEquals("2014-01-02", task.getOwners().get(0).getWorkDays().get(0).getDay());
+        assertEquals(8, task.getOwners().get(0).getWorkDays().get(0).getHours());
+
+        assertEquals("mary", task.getOwners().get(1).getLogin());
+        assertEquals("Mary Developer", task.getOwners().get(1).getName());
+        assertEquals("N2", task.getOwners().get(1).getType());
 
         assertEquals(2, task.getPosts().size());
         assertEquals(timestampFormat.parse("2014-01-03 09:15:30.700"), task.getPosts().get(0).getTimestamp());

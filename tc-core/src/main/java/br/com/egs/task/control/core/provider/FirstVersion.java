@@ -2,7 +2,6 @@ package br.com.egs.task.control.core.provider;
 
 import br.com.egs.task.control.core.injection.Binder;
 import br.com.egs.task.control.core.service.AuthenticationService;
-import br.com.egs.task.control.core.service.ReportsService;
 import br.com.egs.task.control.core.service.TasksService;
 import br.com.egs.task.control.core.service.UsersService;
 import org.glassfish.jersey.server.ResourceConfig;
@@ -24,7 +23,6 @@ public class FirstVersion extends ResourceConfig {
 		v1.add(TasksService.class);
 		v1.add(UsersService.class);
 		v1.add(AuthenticationService.class);
-		v1.add(ReportsService.class);
 		return v1;
 	}
 
