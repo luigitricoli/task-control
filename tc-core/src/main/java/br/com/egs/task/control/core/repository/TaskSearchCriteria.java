@@ -11,7 +11,7 @@ public class TaskSearchCriteria {
     private String[] applications;
     private Status[] status;
     private String[] sources;
-    private String ownerLogin;
+    private String[] ownerLogins;
     private boolean excludePosts;
 
     public TaskSearchCriteria month(int year, int month) {
@@ -37,8 +37,8 @@ public class TaskSearchCriteria {
         return this;
     }
 
-    public TaskSearchCriteria ownerLogin(String login) {
-        this.ownerLogin = login;
+    public TaskSearchCriteria ownerLogins(String... logins) {
+        this.ownerLogins = logins;
         return this;
     }
 
@@ -72,8 +72,8 @@ public class TaskSearchCriteria {
         return sources;
     }
 
-    public String getOwnerLogin() {
-        return ownerLogin;
+    public String[] getOwnerLogins() {
+        return ownerLogins;
     }
 
     public boolean isExcludePosts() {
@@ -91,7 +91,7 @@ public class TaskSearchCriteria {
         if (month != that.month) return false;
         if (year != that.year) return false;
         if (!Arrays.equals(applications, that.applications)) return false;
-        if (ownerLogin != null ? !ownerLogin.equals(that.ownerLogin) : that.ownerLogin != null) return false;
+        if (!Arrays.equals(ownerLogins, that.ownerLogins)) return false;
         if (!Arrays.equals(sources, that.sources)) return false;
         if (!Arrays.equals(status, that.status)) return false;
 
@@ -105,7 +105,7 @@ public class TaskSearchCriteria {
         result = 31 * result + (applications != null ? Arrays.hashCode(applications) : 0);
         result = 31 * result + (status != null ? Arrays.hashCode(status) : 0);
         result = 31 * result + (sources != null ? Arrays.hashCode(sources) : 0);
-        result = 31 * result + (ownerLogin != null ? ownerLogin.hashCode() : 0);
+        result = 31 * result + (ownerLogins != null ? Arrays.hashCode(ownerLogins) : 0);
         result = 31 * result + (excludePosts ? 1 : 0);
         return result;
     }
@@ -118,7 +118,7 @@ public class TaskSearchCriteria {
                 ", applications=" + (applications == null ? null : Arrays.asList(applications)) +
                 ", status=" + (status == null ? null : Arrays.asList(status)) +
                 ", sources=" + (sources == null ? null : Arrays.asList(sources)) +
-                ", ownerLogin='" + ownerLogin + '\'' +
+                ", ownerLogins=" + (ownerLogins == null ? null : Arrays.asList(ownerLogins)) +
                 ", excludePosts=" + excludePosts +
                 '}';
     }

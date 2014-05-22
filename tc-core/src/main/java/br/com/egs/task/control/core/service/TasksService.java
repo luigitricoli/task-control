@@ -7,8 +7,8 @@ import br.com.egs.task.control.core.entities.User;
 import br.com.egs.task.control.core.exception.LateTaskException;
 import br.com.egs.task.control.core.exception.ValidationException;
 import br.com.egs.task.control.core.repository.TaskSearchCriteria;
-import br.com.egs.task.control.core.repository.Tasks;
-import br.com.egs.task.control.core.repository.Users;
+import br.com.egs.task.control.core.repository.TasksRepository;
+import br.com.egs.task.control.core.repository.UsersRepository;
 import br.com.egs.task.control.core.utils.HttpResponseUtils;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonParseException;
@@ -28,11 +28,11 @@ public class TasksService {
 
 	private static final Logger log = LoggerFactory.getLogger(TasksService.class);
 
-    private Tasks repository;
-    private Users userRepository;
+    private TasksRepository repository;
+    private UsersRepository userRepository;
 
     @Inject
-    public TasksService(Tasks repository, Users userRepository) {
+    public TasksService(TasksRepository repository, UsersRepository userRepository) {
         this.repository = repository;
         this.userRepository = userRepository;
     }
@@ -55,13 +55,23 @@ public class TasksService {
                             @QueryParam("application") String application,
                             @QueryParam("status") String status,
                             @QueryParam("sources") String sources,
-                            @QueryParam("excludePosts") String excludePosts) {
+                            @QueryParam("excludePosts") String excludePosts,
+                            @QueryParam("prettyPrint") String prettyPrint) {
 
         TaskSearchCriteria criteria = buildSearchCriteria(year, month, owner, application, sources, status, excludePosts);
 
         List<Task> result = repository.searchTasks(criteria);
-        return new GsonBuilder().registerTypeAdapter(Task.class, new Task.TaskSerializer())
-                .setPrettyPrinting()
+
+        boolean isPrettyPrint = true;  // default
+        if (StringUtils.isNotBlank(prettyPrint)) {
+            isPrettyPrint = Boolean.parseBoolean(prettyPrint);
+        }
+
+        GsonBuilder gsonBuilder = new GsonBuilder().registerTypeAdapter(Task.class, new Task.TaskSerializer());
+        if (isPrettyPrint) {
+            gsonBuilder.setPrettyPrinting();
+        }
+        return gsonBuilder
                 .create()
                 .toJson(result);
 	}
@@ -191,7 +201,8 @@ public class TasksService {
         }
 
         if (StringUtils.isNotBlank(owner)) {
-            criteria.ownerLogin(owner);
+            String[] ownerTokens = owner.split(",");
+            criteria.ownerLogins(ownerTokens);
         }
 
         if (StringUtils.isNotBlank(application)) {

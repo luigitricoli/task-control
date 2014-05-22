@@ -203,6 +203,12 @@ public class Task {
             if (StringUtils.isBlank(owner.getLogin())) {
                 throw new ValidationException("Owner login is required");
             }
+            if (owner.getLogin().contains(",")) {
+                // The comma can be used as a separator in inputs that require a list of users.
+                // e.g.  /tasks/searchTasks?userFilter=user1,user2
+                // Do not let it be part of the login itself.
+                throw new ValidationException("Owner login contains invalid character: [,]");
+            }
         }
 
         if (posts != null) {

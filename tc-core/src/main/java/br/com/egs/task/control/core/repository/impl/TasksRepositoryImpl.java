@@ -3,18 +3,17 @@ package br.com.egs.task.control.core.repository.impl;
 import br.com.egs.task.control.core.database.MongoDbConnection;
 import br.com.egs.task.control.core.entities.Task;
 import br.com.egs.task.control.core.repository.TaskSearchCriteria;
-import br.com.egs.task.control.core.repository.Tasks;
+import br.com.egs.task.control.core.repository.TasksRepository;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
-import org.apache.commons.lang.StringUtils;
 import org.bson.types.ObjectId;
 
 import javax.inject.Inject;
 import java.util.*;
 
-public class TasksRepositoryImpl implements Tasks {
+public class TasksRepositoryImpl implements TasksRepository {
 
 	private MongoDbConnection connection;
 
@@ -120,8 +119,8 @@ public class TasksRepositoryImpl implements Tasks {
             filters.add(createSourceFilter(criteria.getSources()));
         }
 
-        if (StringUtils.isNotBlank(criteria.getOwnerLogin())) {
-            filters.add(createOwnerFilter(criteria.getOwnerLogin()));
+        if (criteria.getOwnerLogins() != null && criteria.getOwnerLogins().length > 0) {
+            filters.add(createOwnerFilter(criteria.getOwnerLogins()));
         }
 
         if (criteria.getStatus() != null && criteria.getStatus().length > 0) {
@@ -207,8 +206,14 @@ public class TasksRepositoryImpl implements Tasks {
         }
     }
 
-    private BasicDBObject createOwnerFilter(String ownerLogin) {
-        return new BasicDBObject("owners.login", ownerLogin);
+    private BasicDBObject createOwnerFilter(String[] ownerLogin) {
+        BasicDBObject filter;
+        if (ownerLogin.length == 1) {
+            filter = new BasicDBObject("owners.login", ownerLogin[0]);
+        } else {
+            filter = new BasicDBObject("owners.login", new BasicDBObject("$in", ownerLogin));
+        }
+        return filter;
     }
 
     private BasicDBObject createSourceFilter(String[] sources) {

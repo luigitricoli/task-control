@@ -66,6 +66,27 @@ public class UserRestTest {
     }
 
     @Test
+    public void listUsersByApplication() throws JSONException {
+        RestClient restfulie = Restfulie.custom();
+        Response response = restfulie.at("http://localhost:8090/v1/users?application=EMM").accept("application/json").get();
+
+        String expected = "[" +
+                "{" +
+                "'login':'aseconduser'," +
+                "'name':'Another Test User'," +
+                "'email':'other@example.com'," +
+                "'type':'N2'," +
+                "'applications':[" +
+                "     {'name':'EMM'}" +
+                "]" +
+                "}" +
+                "]";
+
+        assertEquals(200, response.getCode());
+        JSONAssert.assertEquals(expected, response.getContent(), true);
+    }
+
+    @Test
     public void getByLogin() throws JSONException {
         RestClient restfulie = Restfulie.custom();
         Response response = restfulie.at("http://localhost:8090/v1/users/testusr").accept("application/json").get();

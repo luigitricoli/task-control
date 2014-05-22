@@ -2,7 +2,7 @@ package br.com.egs.task.control.core.service;
 
 import br.com.egs.task.control.core.entities.User;
 import br.com.egs.task.control.core.exception.ValidationException;
-import br.com.egs.task.control.core.repository.Users;
+import br.com.egs.task.control.core.repository.UsersRepository;
 import br.com.egs.task.control.core.utils.HttpResponseUtils;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -24,21 +24,29 @@ public class UsersService {
 
     private static final Logger log = LoggerFactory.getLogger(UsersService.class);
 
-    private Users repository;
+    private UsersRepository repository;
 
     @Inject
-    public UsersService(Users repository) {
+    public UsersService(UsersRepository repository) {
         this.repository = repository;
     }
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public String allUsers() {
-        List<User> allUsers = repository.getAll();
+    public String listUsers(
+            @QueryParam("application") String application) {
+
+        List<User> users;
+        if (StringUtils.isBlank(application)) {
+            users = repository.getAll();
+        } else {
+            users = repository.getByApplication(application);
+        }
+
         Gson gson = new GsonBuilder()
                 .registerTypeAdapter(User.class, new User.UserSerializer(true))
                 .create();
-        return gson.toJson(allUsers);
+        return gson.toJson(users);
     }
 
     @GET

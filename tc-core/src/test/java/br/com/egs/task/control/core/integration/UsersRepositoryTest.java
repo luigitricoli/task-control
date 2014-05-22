@@ -14,6 +14,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.Assert.*;
@@ -95,6 +96,23 @@ public class UsersRepositoryTest {
         assertEquals(2, users.size());
         assertEquals("testusr", users.get(0).getLogin());
         assertEquals("testusr2", users.get(1).getLogin());
+    }
+
+    @Test
+    public void getByApplication() {
+        BasicDBObject user1 = createTestUserAsDbObject();
+
+        BasicDBObject user2 = createTestUserAsDbObject()
+                .append("_id", "testusr2");
+        user2.remove("applications");
+        user2.append("applications", Arrays.asList(new BasicDBObject("name", "EMM")));
+
+        conn.getCollection("users").insert(user1, user2);
+
+        List<User> users = repository.getByApplication("TaskControl");
+
+        assertEquals(1, users.size());
+        assertEquals("testusr", users.get(0).getLogin());
     }
 
     @Test

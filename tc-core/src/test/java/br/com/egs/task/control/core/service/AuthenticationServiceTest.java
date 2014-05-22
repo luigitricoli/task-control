@@ -2,7 +2,7 @@ package br.com.egs.task.control.core.service;
 
 import br.com.egs.task.control.core.entities.Application;
 import br.com.egs.task.control.core.entities.User;
-import br.com.egs.task.control.core.repository.Users;
+import br.com.egs.task.control.core.repository.UsersRepository;
 import br.com.egs.task.control.core.utils.HttpResponseUtils;
 import org.json.JSONException;
 import org.junit.Before;
@@ -22,12 +22,12 @@ import static org.junit.Assert.fail;
  */
 public class AuthenticationServiceTest {
 
-    private Users userRepository;
+    private UsersRepository userRepository;
     private AuthenticationService service;
 
     @Before
     public void setUp() {
-        userRepository = Mockito.mock(Users.class);
+        userRepository = Mockito.mock(UsersRepository.class);
         service = new AuthenticationService(userRepository);
     }
 

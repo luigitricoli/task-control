@@ -6,7 +6,7 @@ import br.com.egs.task.control.core.entities.Post;
 import br.com.egs.task.control.core.entities.Task;
 import br.com.egs.task.control.core.entities.TaskOwner;
 import br.com.egs.task.control.core.repository.TaskSearchCriteria;
-import br.com.egs.task.control.core.repository.Tasks;
+import br.com.egs.task.control.core.repository.TasksRepository;
 import br.com.egs.task.control.core.repository.impl.TasksRepositoryImpl;
 import br.com.egs.task.control.core.testutils.TestConnectionFactory;
 import com.mongodb.BasicDBObject;
@@ -33,7 +33,7 @@ public class TasksRepositoryTest {
 
     private static final String TODAY = "2014-01-11 15:15:15.000";
 
-	private Tasks repository;
+	private TasksRepository repository;
 	private MongoDbConnection conn;
 	
 	@Before
@@ -109,7 +109,7 @@ public class TasksRepositoryTest {
     @Test
     public void searchByOwner() throws Exception {
         TaskSearchCriteria criteria = new TaskSearchCriteria()
-                .ownerLogin("bob");
+                .ownerLogins("bob");
         List<Task> result = repository.searchTasks(criteria);
 
         assertEquals(2, result.size());
@@ -122,7 +122,7 @@ public class TasksRepositoryTest {
     public void searchByMonthAndOwner() throws Exception {
         TaskSearchCriteria criteria = new TaskSearchCriteria()
                 .month(2013, 12)
-                .ownerLogin("bob");
+                .ownerLogins("bob");
         List<Task> result = repository.searchTasks(criteria);
 
         assertEquals(1, result.size());
