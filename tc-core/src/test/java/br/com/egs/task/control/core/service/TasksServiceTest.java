@@ -478,6 +478,29 @@ public class TasksServiceTest {
         assertEquals(timestampFormat.parse("2014-01-12 23:59:59.999"), argument.getValue().getForeseenEndDate());
     }
 
+    @Test
+    public void findById() throws Exception {
+        Task t1 = createTestTask(null, false, false);
+
+        Mockito.when(taskRepository.get(DEFAULT_TASK_ID)).thenReturn(t1);
+
+        String result = service.findById(DEFAULT_TASK_ID);
+
+        JSONAssert.assertEquals(t1.toJson(), result, true);
+    }
+
+    @Test
+    public void findById_notFound() throws Exception {
+        Mockito.when(taskRepository.get(DEFAULT_TASK_ID)).thenReturn(null);
+
+        try {
+            service.findById(DEFAULT_TASK_ID);
+            fail("Exception expected");
+        } catch (WebApplicationException e) {
+            assertEquals(404, e.getResponse().getStatus());
+        }
+    }
+
     private Task createTestTask(String id, boolean nullEndDate, boolean excludePosts) throws ParseException {
         Task t = new Task(
                     id != null ? id : DEFAULT_TASK_ID,

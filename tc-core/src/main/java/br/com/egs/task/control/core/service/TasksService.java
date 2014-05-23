@@ -10,6 +10,7 @@ import br.com.egs.task.control.core.repository.TaskSearchCriteria;
 import br.com.egs.task.control.core.repository.TasksRepository;
 import br.com.egs.task.control.core.repository.UsersRepository;
 import br.com.egs.task.control.core.utils.HttpResponseUtils;
+import br.com.egs.task.control.core.utils.Messages;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonParseException;
 import org.apache.commons.lang.StringUtils;
@@ -20,6 +21,7 @@ import javax.inject.Inject;
 import javax.ws.rs.*;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Path("tasks")
@@ -29,11 +31,13 @@ public class TasksService {
 
     private TasksRepository repository;
     private UsersRepository userRepository;
+    private HttpResponseUtils responseUtils;
 
     @Inject
     public TasksService(TasksRepository repository, UsersRepository userRepository) {
         this.repository = repository;
         this.userRepository = userRepository;
+        this.responseUtils = new HttpResponseUtils();
     }
 
     @GET
@@ -79,12 +83,15 @@ public class TasksService {
     @Produces("application/json; charset=UTF-8")
     @Consumes("application/json; charset=UTF-8")
     public String create(String body) {
+
+        log.debug("TasksService::create(). Request body:\n{}", body);
+
         Task task = jsonToTask(body);
 
         try {
             task.validateForInsert();
         } catch (ValidationException ve) {
-            HttpResponseUtils.throwBadRequestException("Error validating task: " + ve.getMessage());
+            throw responseUtils.buildUnrecoverableBusinessException(ve.getUserMessageKey());
         }
 
         if (task.getForeseenWorkHours() == null || task.getForeseenWorkHours() == 0) {
@@ -97,8 +104,9 @@ public class TasksService {
             User user = userRepository.get(owner.getLogin());
 
             if (user == null) {
-                HttpResponseUtils.throwUnrecoverableBusinessException("Invalid owner login: ["
-                    + owner.getLogin() + "] is not a registered user");
+                throw responseUtils.buildUnrecoverableBusinessException(
+                      Messages.Keys.VALIDATION_TASK_INVALID_OWNER, owner.getLogin()
+                );
             }
 
             ownersWithData.add(new TaskOwner(user.getLogin(), user.getName(), user.getType()));
@@ -115,17 +123,22 @@ public class TasksService {
     @Path("{id}")
     @Produces("application/json;charset=UTF-8")
     public String addPost(@PathParam("id") String id, String body) {
-        Post post = null;
+
+        log.debug("TasksService::addPost(). ID=[ {} ]. Request body:\n{}", id, body);
+
+        Post post;
         try {
             post = Post.fromJson(body);
         } catch (JsonParseException jpe) {
             if (jpe.getCause() instanceof ParseException
                     || jpe.getCause() instanceof IllegalArgumentException) {
                 // Error generated when parsing a specific field or creating the User object
-                HttpResponseUtils.throwBadRequestException(jpe.getMessage());
+                throw responseUtils.buildBadRequestException(
+                        Messages.Keys.VALIDATION_GENERAL_MALFORMED_REQUEST_ARG, jpe.getMessage());
             } else {
                 // General JSON parse error
-            }   HttpResponseUtils.throwBadRequestException("Invalid JSON body");
+                throw responseUtils.buildBadRequestException(Messages.Keys.VALIDATION_GENERAL_MALFORMED_REQUEST);
+            }
         }
 
         Task task = retrieveTask(id);
@@ -145,36 +158,44 @@ public class TasksService {
     @Path("{id}")
     @Produces("application/json;charset=UTF-8")
     public String modifyTask(@PathParam("id") String id, String body) {
+
+        log.debug("TasksService::modifyTask(). ID: [ {} ]. Request body:\n{}", id, body);
+
         Task changedAttributes = jsonToTask(body);
         Task task = retrieveTask(id);
 
         if (changedAttributes.getEndDate() != null) {
+            log.debug("TasksService::modifyTask(). ID: [ {} ]. Request has endDate, finishing task.", id);
+
             try {
                 task.finish(changedAttributes.getEndDate());
             } catch (LateTaskException lte) {
-                HttpResponseUtils.throwRecoverableBusinessException(lte.getMessage());
+                throw responseUtils.buildRecoverableBusinessException(lte.getUserMessageKey());
             } catch (ValidationException e) {
-                HttpResponseUtils.throwUnrecoverableBusinessException(e.getMessage());
+                throw responseUtils.buildUnrecoverableBusinessException(e.getUserMessageKey());
             }
 
         } else if (changedAttributes.getStartDate() != null) {
+            log.debug("TasksService::modifyTask(). ID: [ {} ]. Requested has startDate, rescheduling", id);
             try {
                 task.changeStartDate(changedAttributes.getStartDate());
             } catch (ValidationException e) {
-                HttpResponseUtils.throwUnrecoverableBusinessException(e.getMessage());
+                throw responseUtils.buildUnrecoverableBusinessException(e.getUserMessageKey());
             }
 
         } else if (changedAttributes.getForeseenEndDate() != null) {
+            log.debug("TasksService::modifyTask(). ID: [ {} ]. Requested has foreseenEndDate, rescheduling", id);
             try {
                 task.changeForeseenEndDate(changedAttributes.getForeseenEndDate());
             } catch (ValidationException e) {
-                HttpResponseUtils.throwUnrecoverableBusinessException(e.getMessage());
+                throw responseUtils.buildUnrecoverableBusinessException(e.getUserMessageKey());
             }
 
 
         } else {
-            HttpResponseUtils.throwBadRequestException(
-                    "No valid operation was present in the message body");
+            log.debug("TasksService::modifyTask(). ID: [ {} ]. No valid operation was present in the request.", id);
+            throw responseUtils.buildBadRequestException(
+                    Messages.Keys.VALIDATION_TASK_CHANGE_NO_OPERATION_SELECTED);
         }
 
         repository.update(task);
@@ -185,6 +206,8 @@ public class TasksService {
     @DELETE
     @Path("{id}")
     public void cancelTask(@PathParam("id") String id) {
+        log.info("Cancelling (DELETE) task. ID: [ {} ]", id);
+
         Task task = retrieveTask(id);
         repository.remove(task);
     }
@@ -193,15 +216,13 @@ public class TasksService {
         TaskSearchCriteria criteria = new TaskSearchCriteria();
 
         if (StringUtils.isBlank(year) || StringUtils.isBlank(month)) {
-            HttpResponseUtils.throwBadRequestException("Year and Month parameters are required");
+            throw responseUtils.buildBadRequestException(Messages.Keys.VALIDATION_TASK_YEAR_AND_MONTH_REQUIRED);
         }
 
         try {
             criteria.month(Integer.parseInt(year, 10), Integer.parseInt(month, 10));
-        } catch (NumberFormatException e) {
-            HttpResponseUtils.throwBadRequestException("Invalid year/month value");
         } catch (IllegalArgumentException iae) {
-            HttpResponseUtils.throwBadRequestException(iae.getMessage());
+            throw responseUtils.buildBadRequestException(Messages.Keys.VALIDATION_TASK_YEAR_OR_MONTH_INVALID);
         }
 
         if (StringUtils.isNotBlank(owner)) {
@@ -228,11 +249,9 @@ public class TasksService {
                 try {
                     statusFilter[i] = TaskSearchCriteria.Status.valueOf(statusToken.trim().toUpperCase());
                 } catch (IllegalArgumentException e) {
-                    String message = "Invalid status: [" + statusToken + "]. Use one of the following:";
-                    for (TaskSearchCriteria.Status statusOption : TaskSearchCriteria.Status.values()) {
-                        message = message + " " + statusOption.name();
-                    }
-                    HttpResponseUtils.throwBadRequestException(message);
+                    throw responseUtils.buildBadRequestException(
+                            Messages.Keys.VALIDATION_TASK_INVALID_STATUS, statusToken,
+                            Arrays.toString(TaskSearchCriteria.Status.values()));
                 }
             }
 
@@ -247,31 +266,36 @@ public class TasksService {
 
     private Task retrieveTask(String id) {
         if (!id.matches("[0-9a-fA-F]{24}")) {
-            HttpResponseUtils.throwNotFoundException("Invalid Task ID");
+            throw responseUtils.buildNotFoundException(
+                    Messages.Keys.VALIDATION_TASK_INVALID_ID, id);
         }
 
         Task task = repository.get(id);
         if (task == null) {
-            HttpResponseUtils.throwNotFoundException("Task not found");
+            throw responseUtils.buildNotFoundException(
+                    Messages.Keys.VALIDATION_TASK_ID_NOT_FOUND, id);
         }
         return task;
     }
 
     private Task jsonToTask(String json) {
         if (StringUtils.isBlank(json)) {
-            HttpResponseUtils.throwBadRequestException("Request body cannot by null");
+            throw responseUtils.buildBadRequestException(
+                    Messages.Keys.VALIDATION_GENERAL_REQUEST_BODY_CANNOT_BE_NULL);
         }
 
-        Task task = null;
+        Task task;
         try {
             task = Task.fromJson(json);
         } catch (JsonParseException jpe) {
             if (jpe.getCause() instanceof ParseException) {
                 // Error generated when parsing a specific field
-                HttpResponseUtils.throwBadRequestException(jpe.getMessage());
+                throw responseUtils.buildBadRequestException(
+                        Messages.Keys.VALIDATION_GENERAL_MALFORMED_REQUEST_ARG, jpe.getMessage());
             } else {
                 // General JSON parse error
-            }   HttpResponseUtils.throwBadRequestException("Invalid JSON body");
+            }   throw responseUtils.buildBadRequestException(
+                    Messages.Keys.VALIDATION_GENERAL_MALFORMED_REQUEST);
         }
         return task;
     }

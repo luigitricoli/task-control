@@ -146,7 +146,7 @@ public class TaskRestTest {
     }
 
     @Test
-    public void createTask_invalidDocument() throws Exception {
+    public void createTask_validationErrors() throws Exception {
         String jsonString = "{aCompletelyUnrelatedAttribute: 1}";
 
         RestClient restfulie = Restfulie.custom();
@@ -154,7 +154,8 @@ public class TaskRestTest {
                 .accept("application/json")
                 .as("application/json")
                 .post(jsonString);
-        assertEquals(400, response.getCode());
+
+        assertEquals(481, response.getCode());
     }
 
     private void populateDatabase() throws Exception {

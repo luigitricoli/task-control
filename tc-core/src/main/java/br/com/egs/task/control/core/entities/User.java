@@ -1,6 +1,7 @@
 package br.com.egs.task.control.core.entities;
 
 import br.com.egs.task.control.core.exception.ValidationException;
+import br.com.egs.task.control.core.utils.Messages;
 import com.google.gson.*;
 import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
@@ -34,35 +35,45 @@ public class User {
 
     /** Sets the password as clear text. It is converted and stored as hash */
     public void setPassword(String pass) {
-        String hashedString = extractHash(pass);
-        this.passwordHash = hashedString;
+        this.passwordHash = extractHash(pass);
     }
 
     public void validate() throws ValidationException {
         if (StringUtils.isBlank(this.getLogin())) {
-            throw new ValidationException("Login is empty");
+            throw new ValidationException("Login is empty",
+                    Messages.Keys.VALIDATION_USER_LOGIN_REQUIRED);
         }
         if (StringUtils.isBlank(this.getName())) {
-            throw new ValidationException("Name is empty");
+            throw new ValidationException("Name is empty",
+                    Messages.Keys.VALIDATION_USER_NAME_REQUIRED);
         }
         if (StringUtils.isBlank(this.getEmail())) {
-            throw new ValidationException("E-mail is empty");
+            throw new ValidationException("E-mail is empty",
+                    Messages.Keys.VALIDATION_USER_EMAIL_REQUIRED);
         }
         if (StringUtils.isBlank(this.getType())) {
-            throw new ValidationException("User type is empty");
+            throw new ValidationException("User type is empty",
+                    Messages.Keys.VALIDATION_USER_TYPE_REQUIRED);
         }
         if (StringUtils.isBlank(this.getPasswordHash())) {
-            throw new ValidationException("Password is empty");
+            throw new ValidationException("Password is empty",
+                    Messages.Keys.VALIDATION_USER_PASSWORD_NOT_SET);
         }
         if (applications == null || applications.size() == 0) {
-            throw new ValidationException("Application list is empty");
+            throw new ValidationException("Application list is empty",
+                    Messages.Keys.VALIDATION_USER_APPLICATIONS_REQUIRED);
+        }
+
+        for (Application application : applications) {
+             if (StringUtils.isBlank(application.getName())) {
+                 throw new ValidationException("Application name is empty",
+                         Messages.Keys.VALIDATION_USER_APPLICATION_NAME_REQUIRED);
+             }
         }
     }
 
     /**
      * Verifies if the given password matches this users' defined password.
-     * @param pass
-     * @return
      */
     public boolean checkPassword(String pass) {
         String hash = extractHash(pass);
@@ -71,7 +82,6 @@ public class User {
 
     /**
      * Convert the user to a JSON representation, removing the password-related attributes
-     * @return
      */
     public String toJson() {
         return new GsonBuilder()
@@ -84,7 +94,6 @@ public class User {
     /**
      * Converts to the MongoDB Object representation
      *
-     * @return
      */
     public BasicDBObject toDbObject() {
         BasicDBObject result = new BasicDBObject();
@@ -109,8 +118,6 @@ public class User {
     /**
      * Converts a MongoDB object representation to a User instance
      *
-     * @param dbUser
-     * @return
      */
     public static User fromDbObject(BasicDBObject dbUser) {
         String login = dbUser.getString("_id");
@@ -124,7 +131,7 @@ public class User {
         @SuppressWarnings("unchecked")
         List<BasicDBObject> dbApplications = (List<BasicDBObject>) dbUser.get("applications");
 
-        List<Application> applications = new ArrayList<Application>();
+        List<Application> applications = new ArrayList<>();
         for (BasicDBObject dbApp : dbApplications) {
             applications.add(new Application(dbApp.getString("name")));
         }
@@ -140,9 +147,8 @@ public class User {
     /**
      * This version of fromJson() method allows to use a json without the login attribute.
      * Instead, it is informed in its own method parameter.
-     * @param json
-     * @param login Overrides the login attribute contained in the document, if it exists.
-     * @return
+     * @param json Json object representation
+     * @param login Overrides the login attribute contained in the json document, if it exists.
      * @throws JsonSyntaxException
      */
     public static User fromJson(String json, String login) throws JsonSyntaxException {
@@ -155,7 +161,6 @@ public class User {
     /**
      *
      * @param json The user object representation. It must contain the Login attribute.
-     * @return
      * @throws JsonSyntaxException
      */
     public static User fromJson(String json) throws JsonSyntaxException {
@@ -204,7 +209,7 @@ public class User {
 
     private String extractHash(String pass) {
         pass = login + pass;
-        MessageDigest digest = null;
+        MessageDigest digest;
         try {
             digest = MessageDigest.getInstance("SHA-1");
         } catch (NoSuchAlgorithmException e) {
@@ -216,8 +221,6 @@ public class User {
 
     /**
      *
-     * @param bytes
-     * @return
      */
     private String bytesToHexString(byte[] bytes) {
         final String hexDigits = "0123456789ABCDEF";

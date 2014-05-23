@@ -2,6 +2,7 @@ package br.com.egs.task.control.core.entities;
 
 import br.com.egs.task.control.core.exception.LateTaskException;
 import br.com.egs.task.control.core.exception.ValidationException;
+import br.com.egs.task.control.core.utils.Messages;
 import com.google.gson.*;
 import com.mongodb.BasicDBObject;
 import org.apache.commons.lang.StringUtils;
@@ -70,7 +71,6 @@ public class Task {
 
     /**
      * Serialize this object to the presentation JSON format.
-     * @return
      */
     public String toJson() {
         return new GsonBuilder().registerTypeAdapter(Task.class, new TaskSerializer())
@@ -87,7 +87,6 @@ public class Task {
 
     /**
      * Converts to the MongoDB Object representation
-     * @return
      */
     public BasicDBObject toDbObject() {
         BasicDBObject obj = new BasicDBObject();
@@ -144,8 +143,6 @@ public class Task {
 
     /**
      * Converts a MongoDB object representation to a Task instance
-     * @param dbTask
-     * @return
      */
     public static Task fromDbObject(BasicDBObject dbTask) {
         Task task = new Task();
@@ -163,12 +160,14 @@ public class Task {
         task.application = (new Application(((BasicDBObject) dbTask.get("application")).getString("name")));
 
         List<TaskOwner> owners = new ArrayList<>();
+        @SuppressWarnings("unchecked")
         List<BasicDBObject> dbOwners = (List<BasicDBObject>) dbTask.get("owners");
         for (BasicDBObject dbOwner : dbOwners) {
             TaskOwner owner = new TaskOwner(dbOwner.getString("login"),
                     dbOwner.getString("name"),
                     dbOwner.getString("type"));
 
+            @SuppressWarnings("unchecked")
             List<BasicDBObject> dbWorkdays = (List<BasicDBObject>) dbOwner.get("workDays");
             for (BasicDBObject dbWorkday : dbWorkdays) {
                 String day = (String) dbWorkday.get("day");
@@ -180,6 +179,7 @@ public class Task {
         }
         task.owners = (owners);
 
+        @SuppressWarnings("unchecked")
         List<BasicDBObject> dbPosts = (List<BasicDBObject>) dbTask.get("posts");
         if (dbPosts != null) {
             for (BasicDBObject dbPost : dbPosts) {
@@ -197,54 +197,67 @@ public class Task {
 
     public void validateForInsert() throws ValidationException {
         if (id != null) {
-            throw new ValidationException("The id field must not be set for a new Task");
+            throw new ValidationException(
+                    "The id field must not be set for a new Task",
+                    Messages.Keys.VALIDATION_TASK_ID_MUST_NOT_BE_SET_ON_CREATE);
         }
 
         if (StringUtils.isBlank(description)) {
-            throw new ValidationException("The description is required");
+            throw new ValidationException("The description is required",
+                    Messages.Keys.VALIDATION_TASK_DESCRIPTION_REQUIRED);
         }
 
         if (startDate == null) {
-            throw new ValidationException("The startDate is required");
+            throw new ValidationException("The startDate is required",
+                    Messages.Keys.VALIDATION_TASK_START_REQUIRED);
         }
 
         if (foreseenEndDate == null) {
-            throw new ValidationException("The foreseenEndDate is required");
+            throw new ValidationException("The foreseenEndDate is required",
+                    Messages.Keys.VALIDATION_TASK_FORESEEN_REQUIRED);
         }
 
         if (endDate != null) {
-            throw new ValidationException("The endDate must not be set for a new Task");
+            throw new ValidationException("The endDate must not be set for a new Task",
+                    Messages.Keys.VALIDATION_TASK_END_MUST_NOT_BE_SET_ON_CREATE);
         }
 
         if (StringUtils.isBlank(source)) {
-            throw new ValidationException("The source is required");
+            throw new ValidationException("The source is required",
+                    Messages.Keys.VALIDATION_TASK_SOURCE_REQUIRED);
         }
 
         if (application == null || StringUtils.isBlank(application.getName())) {
-            throw new ValidationException("The application is required");
+            throw new ValidationException("The application is required",
+                    Messages.Keys.VALIDATION_TASK_APPLICATION_REQUIRED);
         }
 
         if (owners == null || owners.isEmpty()) {
-            throw new ValidationException("At least one owner is required");
+            throw new ValidationException("At least one owner is required",
+                    Messages.Keys.VALIDATION_TASK_OWNER_REQUIRED_AT_LEAST_ONE);
         }
         for (TaskOwner owner : owners) {
             if (StringUtils.isBlank(owner.getLogin())) {
-                throw new ValidationException("Owner login is required");
+                throw new ValidationException("Owner login is required",
+                        Messages.Keys.VALIDATION_TASK_OWNER_LOGIN_REQUIRED);
             }
             if (owner.getLogin().contains(",")) {
                 // The comma can be used as a separator in inputs that require a list of users.
                 // e.g.  /tasks/searchTasks?userFilter=user1,user2
                 // Do not let it be part of the login itself.
-                throw new ValidationException("Owner login contains invalid character: [,]");
+                throw new ValidationException("Owner login contains invalid character: [,]",
+                        Messages.Keys.VALIDATION_TASK_OWNER_LOGIN_CONTAINS_SEPARATOR_CHAR);
             }
         }
 
         if (posts != null) {
-            throw new ValidationException("Posts are not allowed for a new Task");
+            throw new ValidationException("Posts are not allowed for a new Task",
+                    Messages.Keys.VALIDATION_TASK_POSTS_MUST_NOT_BE_SET_ON_CREATE);
         }
 
         if (foreseenEndDate.before(startDate)) {
-            throw new ValidationException("Start Date cannot be greater than Foreseen End Date");
+            throw new ValidationException("Start Date cannot be greater than Foreseen End Date",
+                    Messages.Keys.VALIDATION_TASK_START_AFTER_END);
         }
 
         Calendar beginOfCurrentDate = Calendar.getInstance();
@@ -255,22 +268,24 @@ public class Task {
         beginOfCurrentDate.set(Calendar.MILLISECOND, 0);
 
         if (beginOfCurrentDate.getTime().after(foreseenEndDate)) {
-            throw new ValidationException("Foreseen End Date cannot be less than the current date");
+            throw new ValidationException("Foreseen End Date cannot be less than the current date",
+                    Messages.Keys.VALIDATION_TASK_FORESEEN_END_IN_THE_PAST);
         }
     }
 
     /**
      *
-     * @param date
      * @throws ValidationException
      */
     public void finish(Date date) throws ValidationException {
         if (date == null) {
-            throw new IllegalArgumentException("End date cannot be null");
+            throw new ValidationException("End date cannot be null",
+                    Messages.Keys.VALIDATION_TASK_END_REQUIRED);
         }
 
         if (this.endDate != null) {
-            throw new ValidationException("Task already finished");
+            throw new ValidationException("Task already finished",
+                    Messages.Keys.VALIDATION_TASK_CANNOT_MODIFY_FINISHED);
         }
         date = toMaxHourDate(date);
 
@@ -287,8 +302,7 @@ public class Task {
             }
 
             if (!atrasoCommentExists) {
-                throw new LateTaskException(
-                        "A late task can only be finished if a #atraso message is present in the posts");
+                throw new LateTaskException();
             }
         }
 
@@ -297,16 +311,17 @@ public class Task {
 
     /**
      *
-     * @param startDate
      * @throws ValidationException
      */
     public void changeStartDate(Date startDate) throws ValidationException {
         if (startDate.before(getCurrentDate())) {
-            throw new ValidationException("Cannot change the start date. The task is already started");
+            throw new ValidationException("Cannot change the start date. The task is already started",
+                    Messages.Keys.VALIDATION_TASK_CANNOT_CHANGE_START_ALREADY_STARTED);
         }
 
         if (this.endDate != null) {
-            throw new ValidationException("Task already finished");
+            throw new ValidationException("Task already finished",
+                    Messages.Keys.VALIDATION_TASK_CANNOT_MODIFY_FINISHED);
         }
 
         this.startDate = toZeroHourDate(startDate);
@@ -314,12 +329,12 @@ public class Task {
 
     /**
      *
-     * @param foreseen
      * @throws ValidationException
      */
     public void changeForeseenEndDate(Date foreseen) throws ValidationException {
         if (this.endDate != null) {
-            throw new ValidationException("Task already finished");
+            throw new ValidationException("Task already finished",
+                    Messages.Keys.VALIDATION_TASK_CANNOT_MODIFY_FINISHED);
         }
 
         this.foreseenEndDate = toMaxHourDate(foreseen);
@@ -571,7 +586,6 @@ public class Task {
 
     /**
      *
-     * @return
      */
     private Date getCurrentDate() {
          if (fixedCurrentDate != null) {

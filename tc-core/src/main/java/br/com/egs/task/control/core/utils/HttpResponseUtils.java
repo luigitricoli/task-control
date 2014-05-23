@@ -20,50 +20,48 @@ public class HttpResponseUtils {
      */
     public static final int UNRECOVERABLE_BUSINESS_EXCEPTION_STATUS_CODE = 481;
 
-    /**
-     * End the current request with status 400, by throwing the appropriate
-     * WebApplicationException
-     * @param message
-     */
-    public static void throwBadRequestException(String message) throws WebApplicationException {
-        throwWebApplicationException(Response.Status.BAD_REQUEST, message);
+    private Messages messages;
+
+    public HttpResponseUtils() {
+        this.messages = new Messages();
     }
 
     /**
-     * End the current request with status 404, by throwing the appropriate
-     * WebApplicationException
-     * @param message
+     *
      */
-    public static void throwNotFoundException(String message) throws WebApplicationException {
-        throwWebApplicationException(Response.Status.NOT_FOUND, message);
+    public WebApplicationException buildBadRequestException(Messages.Keys key, Object... messageArguments) throws WebApplicationException {
+        return buildWebApplicationException(Response.Status.BAD_REQUEST, key, messageArguments);
     }
 
     /**
-     * End the current request with status 'Recoverable Business Exception', by throwing the appropriate
-     * WebApplicationException
-     * @param message
+     *
      */
-    public static void throwRecoverableBusinessException(String message) throws WebApplicationException {
-        throwWebApplicationException(RECOVERABLE_BUSINESS_EXCEPTION_STATUS_CODE, message);
+    public WebApplicationException buildNotFoundException(Messages.Keys key, Object... messageArguments) throws WebApplicationException {
+        return buildWebApplicationException(Response.Status.NOT_FOUND, key, messageArguments);
     }
 
     /**
-     * End the current request with status 'Recoverable Business Exception', by throwing the appropriate
-     * WebApplicationException
-     * @param message
+     *
      */
-    public static void throwUnrecoverableBusinessException(String message) throws WebApplicationException {
-        throwWebApplicationException(UNRECOVERABLE_BUSINESS_EXCEPTION_STATUS_CODE, message);
+    public WebApplicationException buildRecoverableBusinessException(Messages.Keys key, Object... messageArguments) throws WebApplicationException {
+        return buildWebApplicationException(RECOVERABLE_BUSINESS_EXCEPTION_STATUS_CODE, key, messageArguments);
     }
 
     /**
-     * Throw a WebApplicationException, which allows the service to return a specific
-     * status code and response body
-     * @param st
-     * @param message
+     *
      */
-    private static void throwWebApplicationException(Response.Status st, String message)
+    public WebApplicationException buildUnrecoverableBusinessException(Messages.Keys key, Object... messageArguments) throws WebApplicationException {
+        return buildWebApplicationException(UNRECOVERABLE_BUSINESS_EXCEPTION_STATUS_CODE, key, messageArguments);
+    }
+
+    /**
+     *
+     */
+    private WebApplicationException buildWebApplicationException(Response.Status st, Messages.Keys key, Object... messageArguments)
             throws WebApplicationException {
+
+        String message = messages.get(key, messageArguments);
+
         JsonObject json = new JsonObject();
         json.addProperty("message", message);
 
@@ -71,17 +69,17 @@ public class HttpResponseUtils {
                 .status(st)
                 .entity(json.toString())
                 .build();
-        throw new WebApplicationException(message, response);
+        return new WebApplicationException(message, response);
     }
 
     /**
-     * Throw a WebApplicationException, which allows the service to return a specific
-     * status code and response body
-     * @param st
-     * @param message
+     *
      */
-    private static void throwWebApplicationException(int st, String message)
+    private WebApplicationException buildWebApplicationException(int st, Messages.Keys key, Object... messageArguments)
             throws WebApplicationException {
+
+        String message = messages.get(key, messageArguments);
+
         JsonObject json = new JsonObject();
         json.addProperty("message", message);
 
@@ -89,6 +87,6 @@ public class HttpResponseUtils {
                 .status(st)
                 .entity(json.toString())
                 .build();
-        throw new WebApplicationException(message, response);
+        return new WebApplicationException(message, response);
     }
 }
