@@ -108,6 +108,51 @@ public class TasksServiceTest {
     }
 
     @Test
+    public void createTask_calculateWorkHoursAutomatically() throws Exception {
+        Task.setFixedCurrentDate(timestampFormat.parse("2014-01-02 00:00:00.000"));
+
+        User owner1 = new User("john");
+        owner1.setName("John Dev1");
+        owner1.setType("N1");
+
+        Task returnedTask = new Task(
+                DEFAULT_TASK_ID,
+                "Test the Task Implementation",
+                timestampFormat.parse("2014-01-02 00:00:00.000"),
+                timestampFormat.parse("2014-01-03 23:59:59.999"),
+                null,
+                16,
+                "Sup.Producao",
+                new Application("OLM"),
+                Arrays.asList(
+                        new TaskOwner("john", "John Dev1", "N1"),
+                        new TaskOwner("mary", "Mary Dev2", "N2")
+                )
+        );
+
+        Mockito.when(userRepository.get("john")).thenReturn(owner1);
+
+        ArgumentCaptor<Task> savedTask = ArgumentCaptor.forClass(Task.class);
+        Mockito.when(taskRepository.add(savedTask.capture()))
+                .thenReturn(returnedTask);
+
+        String inputString = "{task: {" +
+                "description: 'Test the Task Implementation'," +
+                "startDate: '2014-01-02'," +
+                "foreseenEndDate: '2014-01-03'," +
+                "source: 'Sup.Producao'," +
+                "application: 'OLM'," +
+                "owners: [" +
+                "           {login: 'john'}" +
+                "]" +
+                "}}";
+
+        service.create(inputString);
+
+        assertEquals(16, savedTask.getValue().getForeseenWorkHours().intValue());
+    }
+
+    @Test
     public void createTask_unknownUser() throws Exception {
         Task.setFixedCurrentDate(timestampFormat.parse("2014-01-02 00:00:00.000"));
 

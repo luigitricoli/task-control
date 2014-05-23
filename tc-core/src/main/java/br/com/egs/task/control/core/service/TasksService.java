@@ -87,6 +87,11 @@ public class TasksService {
             HttpResponseUtils.throwBadRequestException("Error validating task: " + ve.getMessage());
         }
 
+        if (task.getForeseenWorkHours() == null || task.getForeseenWorkHours() == 0) {
+            // If not provided, calculates automatically
+            task.calculateForeseenWorkHours();
+        }
+
         List<TaskOwner> ownersWithData = new ArrayList<>();
         for (TaskOwner owner : task.getOwners()) {
             User user = userRepository.get(owner.getLogin());

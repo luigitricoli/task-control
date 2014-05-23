@@ -209,6 +209,53 @@ public class TaskTest {
         assertEquals(timestampFormat.parse("2014-01-17 23:59:59.999"), t.getForeseenEndDate());
     }
 
+    @Test
+    public void calculateForeseenWorkHours_simplestCase() throws Exception {
+        Task t = createTestTask("111122223333aaaabbbbcccc", "Test the Task Implementation",
+                "2014-01-02 00:00:00.000", "2014-01-02 23:59:59.999", null, "OLM", true,
+                new TaskOwner("john", "John Foo", "N1"));
+
+        t.calculateForeseenWorkHours();
+
+        assertEquals(8, t.getForeseenWorkHours().intValue());
+    }
+
+    @Test
+    public void calculateForeseenWorkHours_multipleDays() throws Exception {
+        Task t = createTestTask("111122223333aaaabbbbcccc", "Test the Task Implementation",
+                "2014-01-02 00:00:00.000", "2014-01-03 23:59:59.999", null, "OLM", true,
+                new TaskOwner("john", "John Foo", "N1"));
+
+        t.calculateForeseenWorkHours();
+
+        assertEquals(16, t.getForeseenWorkHours().intValue());
+    }
+
+    @Test
+    public void calculateForeseenWorkHours_nonWorkdays() throws Exception {
+        //  2014-01-02 - 2014-01-07  = 6 days, but two of them are weekends = 4 work days
+        Task t = createTestTask("111122223333aaaabbbbcccc", "Test the Task Implementation",
+                "2014-01-02 00:00:00.000", "2014-01-07 23:59:59.999", null, "OLM", true,
+                new TaskOwner("john", "John Foo", "N1"));
+
+        t.calculateForeseenWorkHours();
+
+        assertEquals(32, t.getForeseenWorkHours().intValue());
+    }
+
+    @Test
+    public void calculateForeseenWorkHours_multipleWorkers() throws Exception {
+        Task t = createTestTask("111122223333aaaabbbbcccc", "Test the Task Implementation",
+                "2014-01-02 00:00:00.000", "2014-01-03 23:59:59.999", null, "OLM", true,
+                new TaskOwner("john", "John Foo", "N1"),
+                new TaskOwner("mary", "Mary Baz", "N2"),
+                new TaskOwner("buzz", "Buzz Buzzy", "N2"));
+
+        t.calculateForeseenWorkHours();
+
+        assertEquals(48, t.getForeseenWorkHours().intValue());
+    }
+
     private Task createTestTask(
             String id,
             String description,
@@ -226,7 +273,7 @@ public class TaskTest {
             t = new Task(id, description,
                     df.parse(start), df.parse(foreseen),
                     end != null ? df.parse(end) : null,
-                    30, "Project", new Application(applicationName), Arrays.asList(owners));
+                    1, "Project", new Application(applicationName), Arrays.asList(owners));
 
             if (createDefaultPosts) {
                 Post p1 = new Post("john", "Scope changed. No re-scheduling will be necessary",

@@ -88,7 +88,7 @@ public class TaskConversionTest {
                 "            workDays: [" +
                 "                {" +
                 "                   day: '2014-01-03'," +
-                "                   hours: 8," +
+                "                   hours: 8" +
                 "                }" +
                 "            ]}," +
                 "           {login: 'mary'," +

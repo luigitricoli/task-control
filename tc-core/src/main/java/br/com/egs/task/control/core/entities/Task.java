@@ -21,6 +21,8 @@ import java.util.List;
  */
 public class Task {
 
+    public static final int WORKDAY_DURATION_IN_HOURS = 8;
+
 	private String id;
     private String description;
 
@@ -321,6 +323,28 @@ public class Task {
         }
 
         this.foreseenEndDate = toMaxHourDate(foreseen);
+    }
+
+    /**
+     * Calculates the foreseenWorkHours automatically, based on start/foreseen dates,
+     * and on the number of workers.
+     */
+    public void calculateForeseenWorkHours() {
+        Calendar dt = Calendar.getInstance();
+        dt.setTime(this.startDate);
+
+        int numberOfWorkDays = 0;
+
+        while (dt.getTime().before(this.foreseenEndDate)) {
+            int dayOfWeek = dt.get(Calendar.DAY_OF_WEEK);
+            if (dayOfWeek != Calendar.SATURDAY
+                    && dayOfWeek != Calendar.SUNDAY) {
+                numberOfWorkDays++;
+            }
+            dt.add(Calendar.DAY_OF_MONTH, 1);
+        }
+
+        this.foreseenWorkHours = (numberOfWorkDays * WORKDAY_DURATION_IN_HOURS) * owners.size();
     }
 
     public String getId() {
