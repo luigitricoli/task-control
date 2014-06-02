@@ -3,6 +3,7 @@ package br.com.egs.task.control.web.controller;
 import br.com.caelum.vraptor.*;
 import br.com.caelum.vraptor.view.Results;
 import br.com.egs.task.control.web.interceptor.AuthRequired;
+import br.com.egs.task.control.web.model.SessionUser;
 import br.com.egs.task.control.web.model.repository.TaskRepository;
 import br.com.egs.task.control.web.rest.client.task.TaskDate;
 import org.slf4j.Logger;
@@ -23,10 +24,12 @@ public class TasksController {
 
     private Result result;
     private TaskRepository tasks;
+    private SessionUser session;
 
-    public TasksController(Result result, TaskRepository repository) {
+    public TasksController(Result result, TaskRepository repository, SessionUser user) {
         this.result = result;
         this.tasks = repository;
+        this.session = user;
     }
 
     @Get("/tarefas")
@@ -37,11 +40,11 @@ public class TasksController {
     }
 
     @Get("/tarefas/mes/{month}")
-    public void tasksBy(Integer month, String filters) {
+    public void tasksBy(Integer month, String filters, String users) {
         if (filters == null) {
             result.include("weeks", tasks.weeksBy(month));
         } else {
-            result.include("weeks", tasks.weeksBy(month, Arrays.asList(filters.split(","))));
+            result.include("weeks", tasks.weeksBy(month, Arrays.asList(filters.split(",")), users));
         }
 
     }
@@ -52,6 +55,7 @@ public class TasksController {
             return;
         }
 
+        log.debug("Description: {}", description);
         if (tasks.add(start, foreseen, type, system, description, owners)) {
             result.use(Results.http()).body("success");
         } else {
@@ -101,7 +105,7 @@ public class TasksController {
 
     @Post("/tarefas/{task}/historico")
     public void addPost(String task, String text) {
-        br.com.egs.task.control.web.model.Post post = new br.com.egs.task.control.web.model.Post(Calendar.getInstance(), "Luigi", text);
+        br.com.egs.task.control.web.model.Post post = new br.com.egs.task.control.web.model.Post(Calendar.getInstance(), session.getUser().getName(), text);
         if (tasks.add(post, task)) {
             result.use(Results.http()).body("success");
         } else {

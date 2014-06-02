@@ -3,6 +3,7 @@ package br.com.egs.task.control.web.rest.client.user;
 import br.com.caelum.vraptor.ioc.Component;
 import br.com.caelum.vraptor.ioc.RequestScoped;
 import br.com.egs.task.control.web.model.SessionUser;
+import br.com.egs.task.control.web.model.User;
 import br.com.egs.task.control.web.model.repository.UserRepository;
 import br.com.egs.task.control.web.rest.client.JsonClient;
 import br.com.egs.task.control.web.rest.client.Response;
@@ -10,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.List;
 
 @Component
 @RequestScoped
@@ -32,12 +34,26 @@ public class UserClient implements UserRepository {
         Response response = jsonClient.at("authentication").postAsJson(json);
 
         if(response.getCode().equals(SUCCESS_CODE)){
-            CoreUser coreUser = CoreUser.fromJson(response.getContent());
+            CoreUser coreUser = CoreUser.unmarshal(response.getContent());
             user.login(coreUser.getName(), coreUser.getLogin(), coreUser.getEmail(), coreUser.getApplications());
             return true;
         }
 
         return false;
 	}
+
+    @Override
+    public List<User> getAll(){
+        Response response = jsonClient.at("users").getAsJson();
+
+        List<User> users = new ArrayList<>();
+        if(response.getCode().equals(SUCCESS_CODE)){
+            for(CoreUser user : CoreUser.unmarshalList(response.getContent())){
+                users.add(new User(user.getName(), user.getLogin(), user.getEmail(), user.getApplications()));
+            }
+        }
+
+        return users;
+    }
 
 }

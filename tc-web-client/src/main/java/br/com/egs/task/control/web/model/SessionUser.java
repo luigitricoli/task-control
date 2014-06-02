@@ -2,56 +2,44 @@ package br.com.egs.task.control.web.model;
 
 import br.com.caelum.vraptor.ioc.Component;
 import br.com.caelum.vraptor.ioc.SessionScoped;
+import br.com.egs.task.control.web.model.filter.Applications;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Component
 @SessionScoped
 public class SessionUser {
 
-    private String name;
-    private String login;
-    private String email;
-    private List<String> systems;
+    private static final Logger log = LoggerFactory.getLogger(SessionUser.class);
+    private User user;
 
-    public SessionUser() {
-        this.name = null;
-        this.login = null;
-        this.email = null ;
-        this.systems = null;
-    }
+    public SessionUser() {}
 
-    public Boolean login(String name, String login, String email, List<String> systems){
-        this.name = name;
-        this.login = login;
-        this.email = email;
-        this.systems = systems;
+    public Boolean login(String name, String login, String email, List<String> systems) {
+        user = new User(name, login, email, systems);
+
+        log.debug("Loggin as {}, handling the applications {}", login, systems);
 
         return isLogged();
     }
 
-    public Boolean logout(){
-        this.name = null;
-        this.login = null;
-        this.email = null ;
-        this.systems = null;
-
+    public Boolean logout() {
+        user = null;
         return !isLogged();
     }
 
-    public boolean isLogged(){
-        return name != null && login != null;
+    public boolean isLogged() {
+        return user != null;
     }
 
-    public String getNickname() {
-        return login;
+    public boolean isAdmin(){
+        return user.isAdmin();
     }
 
-    public String getEmail() {
-        return email;
-    }
-
-    public List<String> getSystems() {
-        return systems;
+    public User getUser(){
+        return user;
     }
 }

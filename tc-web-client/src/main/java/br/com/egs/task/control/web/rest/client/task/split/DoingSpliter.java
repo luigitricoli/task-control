@@ -18,7 +18,7 @@ class DoingSpliter extends TaskSpliter {
     protected void run(CoreTask coreTask, OneWeekTask.Builder task) throws Exception {
         task.as(Stage.DOING);
 
-        if (isInSameWeek(current)) {
+        if (isInSameMonth(current) && isInSameWeek(current)) {
             task.runUntil(current.getDayOfWeek());
             setKeepInNextWeek(false);
         } else if (keepInNextWeek()) {

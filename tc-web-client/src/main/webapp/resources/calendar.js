@@ -1,5 +1,7 @@
 var CURRENT_MONTH="currentMonth";
 var activeFilters="";
+var appFilter="";
+var users="";
 
 function getIntCookie(name){
 	return parseInt($.cookie(name));
@@ -93,10 +95,31 @@ function loadMonth(){
 	getTasks(month);
 }
 
-function getTasks(month){
-	var url = DOMAIN + "tarefas/mes/" + month;
+function formatUrlFilters(params){
+    var params = {};
+    var filters = []
+	if(appFilter !== "" && appFilter !== undefined){
+        filters.push(appFilter);
+	}
     if(activeFilters !== "" && activeFilters !== undefined){
-        url = url + "?filters=" + activeFilters;
+        filters.push(activeFilters);
+    }
+    if(filters.length > 0){
+        params["filters"] = filters.join();
+    }
+
+    if(users !== "" && users !== undefined){
+        params["users"] = users;
+    }
+    return params;
+}
+
+function getTasks(month){
+    var url = DOMAIN + "tarefas/mes/" + month;
+
+    var params = formatUrlFilters(params);
+    if(!jQuery.isEmptyObject(params)){
+        url = url + "?" + jQuery.param( params );
     }
 	$.get(url,function(data){
 		$("#tasks-layer").empty();
@@ -265,14 +288,9 @@ function closeFloatWindow(){
 }
 
 $(document).ready(function(){
-//    $(".filter-group label").click(function(){
-//            toogleFilterTasks($(this));
-//        }
-//    );
     $(".filter-group input:checkbox").click(function(event){
-            toogleFilterTasks($(this));
-        }
-    );
+        toogleFilterTasks($(this));
+    });
 	$("#next-month").click(function() {
 		nextMonth();
 	});

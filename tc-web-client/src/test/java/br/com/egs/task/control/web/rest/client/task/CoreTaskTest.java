@@ -1,12 +1,16 @@
 package br.com.egs.task.control.web.rest.client.task;
 
+import br.com.egs.task.control.web.rest.client.user.CoreUser;
 import org.junit.Test;
 
 import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 public class CoreTaskTest {
 
@@ -34,6 +38,19 @@ public class CoreTaskTest {
 
         CoreTask task = new CoreTask("530e76ef7cf056f2dad8fd32", date);
         assertThat(task.toJson(), is("{\"task\":{\"id\":\"530e76ef7cf056f2dad8fd32\",\"endDate\":\"2014-2-20\"}}"));
+    }
+
+    @Test
+    public void marshalUnicode() throws ParseException{
+        TaskDate date = new TaskDate("2014-02-20");
+        List<CoreUser> users = new ArrayList<>();
+        users.add(new CoreUser("luigi"));
+
+        CoreTask task = new CoreTask(date, date, "ção", "CCC", "OLM", users);
+
+        String expected = "{\"task\":{\"description\":\"ção\",\"startDate\":\"2014-2-20\",\"foreseenEndDate\":\"2014-2-20\",\"source\":\"CCC\",\"application\":\"OLM\",\"owners\":[{\"login\":\"luigi\"}]}}";
+        assertThat(task.toJson(), is(expected));
+        assertThat(task.toJson().getBytes(), equalTo(expected.getBytes()));
     }
 	
 }

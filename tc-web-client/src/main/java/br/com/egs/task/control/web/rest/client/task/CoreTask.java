@@ -1,13 +1,12 @@
 package br.com.egs.task.control.web.rest.client.task;
 
 import br.com.egs.task.control.web.rest.client.gson.OwnersUnmarshaller;
-import br.com.egs.task.control.web.rest.client.task.split.CoreUser;
+import br.com.egs.task.control.web.rest.client.user.CoreUser;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -102,7 +101,6 @@ public class CoreTask {
         GsonBuilder gson = new GsonBuilder();
         gson.registerTypeAdapter(TaskDate.class, new TaskDate.JsonMarshaller());
         Gson marhaller = gson.create();
-
         return String.format("{\"task\":%s}", marhaller.toJson(this));
     }
 

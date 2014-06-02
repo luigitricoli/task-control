@@ -8,9 +8,9 @@ import br.com.egs.task.control.web.model.Week;
 import br.com.egs.task.control.web.model.repository.TaskRepository;
 import br.com.egs.task.control.web.rest.client.JsonClient;
 import br.com.egs.task.control.web.rest.client.Response;
-import br.com.egs.task.control.web.rest.client.task.split.CoreUser;
 import br.com.egs.task.control.web.rest.client.task.split.TaskSpliter;
 import br.com.egs.task.control.web.rest.client.task.split.TaskSpliterFactory;
+import br.com.egs.task.control.web.rest.client.user.CoreUser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,29 +25,39 @@ public class TaskClient implements TaskRepository {
 
     private static final Logger log = LoggerFactory.getLogger(TaskClient.class);
     public static final int SUCCESS_CODE = 200;
+    public static final String EMPTY = "";
 
     private JsonClient jsonClient;
 	private FilterFormat fomatter;
-    private SessionUser user;
+    private SessionUser session;
 
 	public TaskClient(final FilterFormat fomatter, JsonClient jsonClient, SessionUser user) {
         this.fomatter = fomatter;
         this.jsonClient = jsonClient;
-        this.user = user;
+        this.session = user;
     }
 
 	@Override
 	public List<Week> weeksBy(Integer month) {
-		return weeksBy(month, new ArrayList<String>());
+		return weeksBy(month, new ArrayList<String>(), null);
 	}
 	
 	@Override
-	public List<Week> weeksBy(Integer month, List<String> filters) {
-		jsonClient.at("tasks").addUrlParam("year", "2014").addUrlParam("month", month.toString()).addUrlParam("owner", user.getNickname());
-		Map<String, String> filterParam = fomatter.formatParams(filters);
-		for(Entry<String, String> filter : filterParam.entrySet()){
-			jsonClient.addUrlParam(filter.getKey(), filter.getValue());
-		}
+	public List<Week> weeksBy(Integer month, List<String> filters, String users) {
+		jsonClient.at("tasks").addUrlParam("year", "2014").addUrlParam("month", month.toString());
+
+        if(users != null && !users.equals(EMPTY)){
+            jsonClient.addUrlParam("owner", users);
+        } else if(!session.isAdmin()){
+            jsonClient.addUrlParam("owner", session.getUser().getNickname());
+        }
+
+        if(filters != null){
+            Map<String, String> filterParam = fomatter.formatParams(filters);
+            for(Entry<String, String> filter : filterParam.entrySet()){
+                jsonClient.addUrlParam(filter.getKey(), filter.getValue());
+            }
+        }
 
 		List<CoreTask> tasks = CoreTask.unmarshalList(jsonClient.getAsJson().getContent());
 		List<Week> weeks = loadWeeks();
@@ -94,7 +104,7 @@ public class TaskClient implements TaskRepository {
     public boolean add(String start, String foreseen, String type, String system, String description, List<String> users) {
         List<CoreUser> owners = new LinkedList<>();
         for (String login : users) {
-            owners.add(new CoreUser(login, null));
+            owners.add(new CoreUser(login));
         }
 
         CoreTask task = null;

@@ -2,6 +2,9 @@ package br.com.egs.task.control.web.rest.client.task;
 
 import br.com.caelum.vraptor.ioc.ApplicationScoped;
 import br.com.caelum.vraptor.ioc.Component;
+import br.com.egs.task.control.web.model.filter.Applications;
+import br.com.egs.task.control.web.model.filter.Sources;
+import br.com.egs.task.control.web.model.filter.Status;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,38 +17,21 @@ import java.util.Map;
 public class FilterFormat {
 
 	private Logger log = LoggerFactory.getLogger(FilterFormat.class);
-	Map<String, String> filters;
 	
 	public FilterFormat() {
-		filters = new HashMap<>();
-
-        filters.put("Administrativo", "application");
-        filters.put("EMA", "application");
-        filters.put("EMM", "application");
-        filters.put("ESPD", "application");
-        filters.put("GOL", "application");
-        filters.put("OLM", "application");
-        filters.put("Roaming", "application");
-        filters.put("TaskControl", "application");
-
-		filters.put("doing", "status");
-		filters.put("finished", "status");
-		filters.put("late", "status");
-		filters.put("waiting", "status");
-		
-		filters.put("CCC", "sources");
-		filters.put("interna", "sources");
-		filters.put("sup-prod", "sources");
 	}
 	
 	public Map<String, String> formatParams(List<String> selected){
 		Map<String, String> formatted = new HashMap<>();
 		for(String filter : selected){
-			String key = filters.get(filter);
-			if(key == null){
+            filter = filter.toLowerCase();
+
+            String key = getFilterKey(filter);
+            if(key == null){
 				log.error("There is no mapped filter for {}", filter);
 				continue;
 			}
+
 			if(formatted.get(key) == null){
 				formatted.put(key, filter);	
 			} else {
@@ -55,6 +41,20 @@ public class FilterFormat {
 		}
 		return formatted;
 	}
-	
+
+    public String getFilterKey(String filter){
+        if(new Applications().contains(filter)){
+            return "application";
+        }
+        try{
+            Status.valueOf(filter);
+            return "status";
+        } catch(IllegalArgumentException e){}
+        if(new Sources().contains(filter)){
+            return "sources";
+        }
+        return null;
+    }
+
 }
 

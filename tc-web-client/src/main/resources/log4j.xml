@@ -8,9 +8,18 @@
 		</layout>
 	</appender>
 
+    <appender name="file" class="org.apache.log4j.FileAppender">
+        <param name="File" value="${catalina.base}/logs/tc-web-client.log" />
+        <param name="Append" value="true" />
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="%d{HH:mm:ss,SSS} %5p [%-20c{1}] %m%n" />
+        </layout>
+    </appender>
+
 	<root>
 		<priority value="debug"></priority>
 		<appender-ref ref="console"/>
+        <appender-ref ref="file"/>
 	</root>
 
 </log4j:configuration>

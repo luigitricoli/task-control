@@ -1,7 +1,9 @@
 package br.com.egs.task.control.web.rest.client.task;
 
 import br.com.egs.task.control.web.model.SessionUser;
+import br.com.egs.task.control.web.model.User;
 import br.com.egs.task.control.web.model.Week;
+import br.com.egs.task.control.web.model.filter.Applications;
 import br.com.egs.task.control.web.model.repository.TaskRepository;
 import br.com.egs.task.control.web.rest.client.JsonClient;
 import br.com.egs.task.control.web.rest.client.Response;
@@ -29,7 +31,14 @@ public class TasckClientTest {
 
         when(client.getAsJson()).thenReturn(resp);
 
-        TaskRepository repo = new TaskClient(new FilterFormat(), client, new SessionUser());
+        User mockUser = mock(User.class);
+        when(mockUser.getNickname()).thenReturn("john");
+
+        SessionUser mockSession = mock(SessionUser.class);
+        when(mockSession.isAdmin()).thenReturn(false);
+        when(mockSession.getUser()).thenReturn(mockUser);
+
+        TaskRepository repo = new TaskClient(new FilterFormat(), client, mockSession);
         List<Week> weeks = repo.weeksBy(1);
 
         assertThat(weeks.size(), is(6));

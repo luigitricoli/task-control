@@ -31,7 +31,11 @@ public class TaskDate implements Comparable<TaskDate> {
         this.date = Calendar.getInstance();
         this.date.setTime(format.parse(date));
 	}
-	
+
+    public Integer getMonth(){
+        return date.get(Calendar.MONTH);
+    }
+
 	public Integer getWeekOfMonth(){
 		return date.get(Calendar.WEEK_OF_MONTH) - 1;
 	}

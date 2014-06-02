@@ -20,10 +20,11 @@ public abstract class TaskSpliter {
     private List<OneWeekTask> tasks;
     private int weekIndex;
     private boolean keepInNextWeek;
-    private TaskDate referenceDateMonth;
+    protected final TaskDate referenceDateMonth;
 
-    protected TaskSpliter(TaskDate referenceDateMonth){
+    protected TaskSpliter(TaskDate referenceDateMonth) {
         this.referenceDateMonth = referenceDateMonth;
+        this.keepInNextWeek = true;
     }
 
     public boolean keepInNextWeek() {
@@ -36,7 +37,6 @@ public abstract class TaskSpliter {
 
     public final void split(CoreTask coreTask) {
         loadTasks();
-        setKeepInNextWeek(true);
 
         for (weekIndex = firstWeekIndex(coreTask); weekIndex <= lastWeekIndex(coreTask); weekIndex++) {
 
@@ -62,7 +62,7 @@ public abstract class TaskSpliter {
                 continue;
             }
 
-            addDayInfos(coreTask, builder);
+            //addDayInfos(coreTask, builder);
 
             tasks.add(weekIndex, builder.build());
         }
@@ -72,20 +72,20 @@ public abstract class TaskSpliter {
         for (CorePost corePost : coreTask.getPosts()) {
             Calendar end = coreTask.getStartDate().toCalendar();
 
-            int weeks =  weekIndex - firstWeekIndex(coreTask);
-            int daysCount = weeks*7 + builder.getDaysRun();
+            int weeks = weekIndex - firstWeekIndex(coreTask);
+            int daysCount = weeks * 7 + builder.getDaysRun();
             end.add(Calendar.DAY_OF_MONTH, daysCount);
             end.set(Calendar.HOUR, 23);
             end.set(Calendar.MINUTE, 59);
             end.set(Calendar.SECOND, 59);
             end.set(Calendar.MILLISECOND, 0);
 
-            if(!corePost.wasAdded() && corePost.isBefore(end)){
+            if (!corePost.wasAdded() && corePost.isBefore(end)) {
                 corePost.added();
-                if(corePost.hasOvetimeHashtag()){
+                if (corePost.hasOvetimeHashtag()) {
                     builder.addHashtag(corePost.getDayOfWeek(), Hashtag.OVERTIME);
                 }
-                if(corePost.hasLateHashtag()){
+                if (corePost.hasLateHashtag()) {
                     builder.addHashtag(corePost.getDayOfWeek(), Hashtag.LATE);
                 }
             }
@@ -100,31 +100,31 @@ public abstract class TaskSpliter {
     }
 
     protected boolean wasFinishedLate(CoreTask coreTask) {
-          return coreTask.getEndDate() != null && coreTask.getEndDate().compareTo(coreTask.getForeseenEndDate()) > 0;
+        return coreTask.getEndDate() != null && coreTask.getEndDate().compareTo(coreTask.getForeseenEndDate()) > 0;
     }
 
     private boolean isFirstWeek(CoreTask coreTask) {
         Integer previousWeeks = referenceDateMonth.toCalendar().get(Calendar.WEEK_OF_YEAR) - coreTask.getStartDate().toCalendar().get(Calendar.WEEK_OF_YEAR);
 
-        if(weekIndex == 0 && previousWeeks <= 1){
+        if (weekIndex == 0 && previousWeeks <= 1) {
             return true;
         } else {
             return weekIndex == coreTask.getStartDate().getWeekOfMonth();
         }
     }
 
-    private boolean isLastWeek(CoreTask coreTask) {
+    protected boolean isLastWeek(CoreTask coreTask) {
         return weekIndex == lastWeekIndex(coreTask);
     }
 
     protected Integer firstWeekIndex(CoreTask coreTask) {
-        if(referenceDateMonth.toCalendar().get(Calendar.MONTH) > coreTask.getStartDate().toCalendar().get(Calendar.MONTH)){
+        if (referenceDateMonth.toCalendar().get(Calendar.MONTH) > coreTask.getStartDate().toCalendar().get(Calendar.MONTH)) {
             return 0;
         }
         return coreTask.getStartDate().getWeekOfMonth();
     }
 
-    protected Integer lastWeekIndex(CoreTask coreTask){
+    protected Integer lastWeekIndex(CoreTask coreTask) {
         if(referenceDateMonth.toCalendar().get(Calendar.MONTH) < coreTask.getForeseenEndDate().toCalendar().get(Calendar.MONTH)){
             return 6;
         }
@@ -132,6 +132,10 @@ public abstract class TaskSpliter {
     }
 
     protected abstract void run(CoreTask coreTask, OneWeekTask.Builder task) throws Exception;
+
+    protected boolean isInSameMonth(TaskDate date) {
+        return date.getMonth().equals(referenceDateMonth.getMonth());
+    }
 
     protected boolean isInSameWeek(TaskDate date) {
         return date.getWeekOfMonth().equals(weekIndex);

@@ -9,6 +9,9 @@
     <script src="<c:url value="/resources/jquery.mask.min.js"/>"></script>
     <script src="<c:url value="/resources/user.js"/>"></script>
     <script src="<c:url value="/resources/calendar.js"/>"></script>
+    <c:if test="${sessionUser.admin}">
+        <script src="<c:url value="/resources/adminFilters.js"/>"></script>
+    </c:if>
     <script type="text/javascript">
 		var DOMAIN='<c:url value="/"/>';
         var OPEN_TASK = undefined;
