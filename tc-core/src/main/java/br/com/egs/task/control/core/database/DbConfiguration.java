@@ -18,6 +18,10 @@ public class DbConfiguration {
 	private int databasePort;
 	private String databaseName;
 	private int databaseMaxConnections;
+
+    private String username;
+    private String password;
+    private String authenticationDatabase;
 	
 	public DbConfiguration() {
 		this(DEFAULT_CONFIGURATION_FILE);
@@ -43,6 +47,10 @@ public class DbConfiguration {
 		this.databasePort = Integer.parseInt(config.getProperty("mongodb.port"));
 		this.databaseName = config.getProperty("mongodb.database");
 		this.databaseMaxConnections = Integer.parseInt(config.getProperty("mongodb.maxconnections"));
+
+        this.username = config.getProperty("mongodb.auth.username");
+        this.password = config.getProperty("mongodb.auth.password");
+        this.authenticationDatabase = config.getProperty("mongodb.auth.database");
 	}
 
 	public String getDatabaseHost() {
@@ -60,4 +68,16 @@ public class DbConfiguration {
 	public int getDatabaseMaxConnections() {
 		return databaseMaxConnections;
 	}
+
+    public String getUsername() {
+        return username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public String getAuthenticationDatabase() {
+        return authenticationDatabase;
+    }
 }

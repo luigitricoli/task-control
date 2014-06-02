@@ -2,9 +2,11 @@ package br.com.egs.task.control.core.database;
 
 import br.com.egs.task.control.core.exception.EnvironmentException;
 import com.mongodb.*;
+import org.apache.commons.lang.StringUtils;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import java.util.Arrays;
 
 /**
  * Encapsulates the MongoClient.
@@ -21,11 +23,27 @@ public class MongoDbConnection {
 		MongoClientOptions options = MongoClientOptions.builder()
 									.connectionsPerHost(props.getDatabaseMaxConnections())
 									.build();
+
+        MongoCredential credential;
+        if (StringUtils.isBlank(props.getUsername())) {
+            credential = null;
+        } else {
+            credential = MongoCredential.createMongoCRCredential(
+                    props.getUsername(), props.getAuthenticationDatabase(), props.getPassword().toCharArray());
+        }
+
 		MongoClient mongoClient;
 		try {
-			mongoClient = new MongoClient(
-					new ServerAddress(props.getDatabaseHost(), props.getDatabasePort()),
-					options);
+            if (credential == null) {
+                mongoClient = new MongoClient(
+                        new ServerAddress(props.getDatabaseHost(), props.getDatabasePort()),
+                        options);
+            } else {
+                mongoClient = new MongoClient(
+                        new ServerAddress(props.getDatabaseHost(), props.getDatabasePort()),
+                        Arrays.asList(credential),
+                        options);
+            }
 		} catch (Exception e) {
 			throw new EnvironmentException("Error initializing database client", e);
 		}
