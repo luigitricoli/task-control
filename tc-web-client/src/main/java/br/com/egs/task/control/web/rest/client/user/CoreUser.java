@@ -14,6 +14,10 @@ public class CoreUser {
     private String email;
     private List<String> applications;
 
+    public CoreUser(String login) {
+        this.login = login;
+    }
+
     public String getName() {
         return name;
     }
@@ -30,11 +34,21 @@ public class CoreUser {
         return applications;
     }
 
-    public static CoreUser fromJson(String json) {
+
+    private static Gson unmarshaller() {
         GsonBuilder gson = new GsonBuilder();
         gson.registerTypeAdapter(new TypeToken<List<String>>() {
         }.getType(), new ApplicationsUnmarshaller());
-        return gson.create().fromJson(json, CoreUser.class);
+        return gson.create();
+    }
+
+    public static CoreUser unmarshal(String json) {
+        return unmarshaller().fromJson(json, CoreUser.class);
+    }
+
+    public static List<CoreUser> unmarshalList(String json) {
+        return unmarshaller().fromJson(json, new TypeToken<List<CoreUser>>() {
+        }.getType());
     }
 
     private static class ApplicationsUnmarshaller implements JsonDeserializer<List<String>> {

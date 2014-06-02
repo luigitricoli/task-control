@@ -62,7 +62,7 @@ public abstract class TaskSpliter {
                 continue;
             }
 
-            addDayInfos(coreTask, builder);
+            //addDayInfos(coreTask, builder);
 
             tasks.add(weekIndex, builder.build());
         }

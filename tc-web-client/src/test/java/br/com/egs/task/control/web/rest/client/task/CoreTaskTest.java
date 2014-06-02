@@ -1,11 +1,10 @@
 package br.com.egs.task.control.web.rest.client.task;
 
-import br.com.egs.task.control.web.rest.client.task.split.CoreUser;
+import br.com.egs.task.control.web.rest.client.user.CoreUser;
 import org.junit.Test;
 
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import static org.hamcrest.Matchers.equalTo;
@@ -45,7 +44,7 @@ public class CoreTaskTest {
     public void marshalUnicode() throws ParseException{
         TaskDate date = new TaskDate("2014-02-20");
         List<CoreUser> users = new ArrayList<>();
-        users.add(new CoreUser("luigi", null));
+        users.add(new CoreUser("luigi"));
 
         CoreTask task = new CoreTask(date, date, "ção", "CCC", "OLM", users);
 

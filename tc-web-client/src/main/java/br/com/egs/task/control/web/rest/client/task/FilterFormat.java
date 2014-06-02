@@ -2,9 +2,9 @@ package br.com.egs.task.control.web.rest.client.task;
 
 import br.com.caelum.vraptor.ioc.ApplicationScoped;
 import br.com.caelum.vraptor.ioc.Component;
-import br.com.egs.task.control.web.rest.client.task.filter.Applications;
-import br.com.egs.task.control.web.rest.client.task.filter.Sources;
-import br.com.egs.task.control.web.rest.client.task.filter.Status;
+import br.com.egs.task.control.web.model.filter.Applications;
+import br.com.egs.task.control.web.model.filter.Sources;
+import br.com.egs.task.control.web.model.filter.Status;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,18 +43,16 @@ public class FilterFormat {
 	}
 
     public String getFilterKey(String filter){
-        try{
-            Applications.valueOf(filter);
+        if(new Applications().contains(filter)){
             return "application";
-        } catch(IllegalArgumentException e){}
+        }
         try{
             Status.valueOf(filter);
             return "status";
         } catch(IllegalArgumentException e){}
-        try{
-            Sources.valueOf(filter);
+        if(new Sources().contains(filter)){
             return "sources";
-        } catch(IllegalArgumentException e){}
+        }
         return null;
     }
 

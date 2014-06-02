@@ -18,16 +18,16 @@
         <div class="field half-left">
             <label>Tipo</label>
             <select name="type">
-                <option value="CCC">CCC</option>
-                <option value="interna">Interna</option>
-                <option value="sup-prod">Sup. Produ&ccedil;&atilde;o</option>
+                <c:forEach var="source" items="${sources.getValues()}">
+                    <option value="${source}">${sources.getLabel(source)}</option>
+                </c:forEach>
             </select>
         </div>
         <div class="field half-right">
             <label>Sistema</label>
             <select name="system">
-                <c:forEach var="system" items="${sessionUser.systems}">
-                    <option value="${system}">${system}</option>
+                <c:forEach var="system" items="${sessionUser.user.systems}">
+                    <option value="${system}">${applications.getLabel(system)}</option>
                 </c:forEach>
             </select>
         </div>
@@ -42,8 +42,8 @@
         </div>
         <div id="users" class="field">
             <label>Respons&aacute;vel</label>
-            <span>${sessionUser.nickname}</span>
-            <input type="text" name="owners[]" value="${sessionUser.nickname}" style="display:none" >
+            <span>${sessionUser.user.nickname}</span>
+            <input type="text" name="owners[]" value="${sessionUser.user.nickname}" style="display:none" >
         </div>
         <div class="field">
             <button type="reset" id="cancel-register-btn" class="btn red"><span class="icon add">X</span>Cancelar</button>

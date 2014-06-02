@@ -10,7 +10,7 @@ public interface TaskRepository {
 
 	public List<Week> weeksBy(Integer month);
 	
-	public List<Week> weeksBy(Integer month, List<String> filters);
+	public List<Week> weeksBy(Integer month, List<String> filters, String users);
 
     public List<Post> postsBy(String taskId);
 

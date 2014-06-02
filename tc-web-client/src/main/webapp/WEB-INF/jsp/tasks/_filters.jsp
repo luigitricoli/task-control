@@ -1,13 +1,37 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <div class="filter-group">
     <h4>Sistema</h4>
-    <c:forEach var="system" items="${sessionUser.systems}">
-        <div class="constraint">
-            <input type="checkbox" data-filter="${system}" id="chb-${system}">
-            <label for="chb-${system}" data-filter="${system}">${system}</label>
-        </div>
-    </c:forEach>
+    <c:if test="${sessionUser.admin}">
+        <c:forEach var="app" items="${applications.getValues()}">
+            <div class="constraint">
+                <input type="radio" class="app"
+                 data-filter="${app}"
+                 id="chb-${app}"
+                 <c:if test="${applications.selected eq app}">
+                    checked
+                 </c:if>
+                 name="applications">
+                <label for="chb-${app}" data-filter="${app}">${applications.getLabel(app)}</label>
+            </div>
+        </c:forEach>
+    </c:if>
+
+    <c:if test="${not sessionUser.admin}">
+        <c:forEach var="app" items="${sessionUser.user.systems}">
+            <div class="constraint">
+                <input type="checkbox" data-filter="${app}" id="chb-${app}">
+                <label for="chb-${app}" data-filter="${app}">${applications.getLabel(app)}</label>
+            </div>
+        </c:forEach>
+    </c:if>
 </div>
+<c:if test="${sessionUser.admin}">
+    <div class="filter-group" id="user-filter-container">
+        <script type="text/javascript">
+            getUsers();
+        </script>
+    </div>
+</c:if>
 <div class="filter-group">
     <h4>Status</h4>
     <div class="constraint">
@@ -25,18 +49,12 @@
 </div>
 <div class="filter-group">
     <h4>Tipo da Demanda</h4>
-    <div class="constraint">
-        <input type="checkbox" data-filter="CCC" id="chb-CCC">
-        <label for="chb-CCC" data-filter="CCC">CCC</label>
-    </div>
-    <div class="constraint">
-        <input type="checkbox" data-filter="interna" id="chb-interna">
-        <label for="chb-interna" data-filter="interna">Interna</label>
-    </div>
-    <div class="constraint">
-        <input type="checkbox" data-filter="sup-prod" id="chb-sup-prod">
-        <label for="chb-sup-prod" data-filter="sup-prod">Suporte a produ&ccedil;&atilde;o</label>
-    </div>
+    <c:forEach var="source" items="${sources.getValues()}">
+        <div class="constraint">
+            <input type="checkbox" data-filter="${source}" id="chb-${source}">
+            <label for="chb-${source}" data-filter="${source}">${sources.getLabel(source)}</label>
+        </div>
+    </c:forEach>
 </div>
 <!--
 <div class="filter-group">
