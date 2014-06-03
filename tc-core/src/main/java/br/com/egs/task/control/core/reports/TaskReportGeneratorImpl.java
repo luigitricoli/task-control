@@ -3,7 +3,7 @@ package br.com.egs.task.control.core.reports;
 import br.com.egs.task.control.core.entities.Task;
 import br.com.egs.task.control.core.entities.TaskOwner;
 import br.com.egs.task.control.core.repository.TaskSearchCriteria;
-import br.com.egs.task.control.core.repository.Tasks;
+import br.com.egs.task.control.core.repository.TasksRepository;
 
 import javax.inject.Inject;
 import java.util.*;
@@ -13,10 +13,10 @@ import java.util.*;
  */
 public class TaskReportGeneratorImpl implements TaskReportGenerator {
 
-    private Tasks taskRepository;
+    private TasksRepository taskRepository;
 
     @Inject
-    public TaskReportGeneratorImpl(Tasks taskRepository) {
+    public TaskReportGeneratorImpl(TasksRepository taskRepository) {
         this.taskRepository = taskRepository;
     }
 
