@@ -175,22 +175,33 @@ public class TasksService {
                 throw responseUtils.buildUnrecoverableBusinessException(e.getUserMessageKey());
             }
 
-        } else if (changedAttributes.getStartDate() != null) {
-            log.debug("TasksService::modifyTask(). ID: [ {} ]. Requested has startDate, rescheduling", id);
-            try {
-                task.changeStartDate(changedAttributes.getStartDate());
-            } catch (ValidationException e) {
-                throw responseUtils.buildUnrecoverableBusinessException(e.getUserMessageKey());
+        } else if (changedAttributes.getStartDate() != null || changedAttributes.getForeseenEndDate() != null) {
+            log.debug(
+                "TasksService::modifyTask(). ID: [ {} ]. Requested has startDate and/or foreseenEndDate, rescheduling",
+                    id);
+
+            if (changedAttributes.getStartDate() != null) {
+                log.debug("TasksService::modifyTask(). ID: [ {} ]. Changing starting date", id);
+                try {
+                    task.changeStartDate(changedAttributes.getStartDate());
+                } catch (ValidationException e) {
+                    throw responseUtils.buildUnrecoverableBusinessException(e.getUserMessageKey());
+                }
+
+            }
+            if (changedAttributes.getForeseenEndDate() != null) {
+                log.debug("TasksService::modifyTask(). ID: [ {} ]. Changing foreseenEndDate", id);
+                try {
+                    task.changeForeseenEndDate(changedAttributes.getForeseenEndDate());
+                } catch (ValidationException e) {
+                    throw responseUtils.buildUnrecoverableBusinessException(e.getUserMessageKey());
+                }
             }
 
-        } else if (changedAttributes.getForeseenEndDate() != null) {
-            log.debug("TasksService::modifyTask(). ID: [ {} ]. Requested has foreseenEndDate, rescheduling", id);
-            try {
-                task.changeForeseenEndDate(changedAttributes.getForeseenEndDate());
-            } catch (ValidationException e) {
-                throw responseUtils.buildUnrecoverableBusinessException(e.getUserMessageKey());
+            if (changedAttributes.getForeseenWorkHours() == null || changedAttributes.getForeseenWorkHours() == 0) {
+                // If not provided, calculate automatically
+                task.calculateForeseenWorkHours();
             }
-
 
         } else {
             log.debug("TasksService::modifyTask(). ID: [ {} ]. No valid operation was present in the request.", id);
