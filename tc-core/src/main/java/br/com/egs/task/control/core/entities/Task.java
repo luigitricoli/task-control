@@ -39,6 +39,8 @@ public class Task {
 
     private List<Post> posts;
 
+    private Messages messages;
+
     /**
      * This must be changed only in testing code, when a precise control over the variables is required.
      */
@@ -63,6 +65,8 @@ public class Task {
         this.source = source;
         this.application = application;
         this.owners = owners;
+
+        this.messages = new Messages();
     }
 
     private Task() {
@@ -293,9 +297,8 @@ public class Task {
             boolean atrasoCommentExists = false;
             for (Post post : posts) {
                 String text = post.getText().toLowerCase();
-                if (text.contains("#atraso")
-                        || text.contains("#atrasado")
-                        || text.contains("#atrasada")) {
+                String latePostExpression = messages.get(Messages.Keys.PARAMETER_TASK_LATE_POST_EXPRESSION);
+                if (text.matches(latePostExpression)) {
                     atrasoCommentExists = true;
                     break;
                 }
