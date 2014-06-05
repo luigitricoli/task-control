@@ -18,6 +18,11 @@ public class Applications {
     public static final String OLM = "olm";
     public static final String ROAMING = "roaming";
     public static final String TASK_CONTROL = "task_control";
+    public static final String SLA = "sla";
+    public static final String BILL_PRESENTMENT = "bill_presentment";
+    public static final String PORTAL = "portal";
+
+
 
     private Map<String, String> labels;
     private String selected;
@@ -33,6 +38,9 @@ public class Applications {
         labels.put(OLM, "OLM");
         labels.put(ROAMING, "Roaming");
         labels.put(TASK_CONTROL, "TaskControl");
+        labels.put(SLA, "SLA");
+        labels.put(PORTAL, "Portal");
+        labels.put(BILL_PRESENTMENT, "Bill Presentment");
 
         selected = GERAL;
     }
