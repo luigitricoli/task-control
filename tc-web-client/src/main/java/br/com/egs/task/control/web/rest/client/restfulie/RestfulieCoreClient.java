@@ -2,9 +2,6 @@ package br.com.egs.task.control.web.rest.client.restfulie;
 
 import br.com.caelum.restfulie.RestClient;
 import br.com.caelum.restfulie.Restfulie;
-import br.com.caelum.restfulie.http.Request;
-import br.com.caelum.restfulie.mediatype.MediaType;
-import br.com.caelum.restfulie.relation.Enhancer;
 import br.com.caelum.vraptor.ioc.Component;
 import br.com.caelum.vraptor.ioc.RequestScoped;
 import br.com.egs.task.control.web.rest.client.JsonClient;
@@ -13,9 +10,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
-import java.io.UnsupportedEncodingException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Properties;
 
 @Component
 @RequestScoped
@@ -25,11 +24,12 @@ public class RestfulieCoreClient implements JsonClient {
 
 	private static final String SLASH = "/";
 	private static final String EMPTY = "";
-	// TODO extract this to a external property
-	private static final String ROOT_URL = "http://localhost:8080/task-control-core/";
 	private static final String DEFAULT_VERSION = "v1";
 	public static final String PARAM_SEPARATOR = "&";
 	public static final String VALUE_SEPARATOR = ",";
+
+    private static String CONFIGURATION_FILE = "/tc-web-client.properties";
+    private static String rootUrl;
 
 	private RestClient client;
 	private String version;
@@ -91,8 +91,12 @@ public class RestfulieCoreClient implements JsonClient {
 
 	@Override
 	public String getUrl() {
+        if (rootUrl == null) {
+            loadRootUrlFromConfig();
+        }
+
 		StringBuilder url = new StringBuilder();
-		url.append(ROOT_URL);
+		url.append(rootUrl);
 		url.append(version);
 		url.append(SLASH);
 		url.append(resource);
@@ -111,7 +115,26 @@ public class RestfulieCoreClient implements JsonClient {
 		return url.toString();
 	}
 
-	@Override
+    private void loadRootUrlFromConfig() {
+        if(!CONFIGURATION_FILE.startsWith("/")){
+            throw new IllegalArgumentException("The configurationFile param needs to begin with slash");
+        }
+        InputStream propFile = getClass().getResourceAsStream(CONFIGURATION_FILE);
+        if (propFile == null) {
+            throw new RuntimeException("Configuration file not found in classpath: " + CONFIGURATION_FILE);
+        }
+
+        Properties config = new Properties();
+        try {
+            config.load(propFile);
+        } catch (IOException e) {
+            throw new RuntimeException("Cannot load configuration file", e);
+        }
+
+        rootUrl = config.getProperty("core.services.root-url");
+    }
+
+    @Override
 	public Response getAsJson() {
         return new RestifulieResponse(client.at(getUrl()).accept(JsonUnicode.TYPE).get());
 	}
