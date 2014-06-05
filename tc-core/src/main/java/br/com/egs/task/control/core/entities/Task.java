@@ -16,6 +16,8 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  *
@@ -23,6 +25,7 @@ import java.util.List;
 public class Task {
 
     public static final int WORKDAY_DURATION_IN_HOURS = 8;
+    public static final String WORKDAY_DATE_FORMAT = "yyyy-MM-dd";
 
 	private String id;
     private String description;
@@ -70,7 +73,7 @@ public class Task {
     }
 
     private Task() {
-
+        this.messages = new Messages();
     }
 
     /**
@@ -186,13 +189,14 @@ public class Task {
         @SuppressWarnings("unchecked")
         List<BasicDBObject> dbPosts = (List<BasicDBObject>) dbTask.get("posts");
         if (dbPosts != null) {
+            task.posts = new ArrayList<>();
             for (BasicDBObject dbPost : dbPosts) {
                 Post p = new Post(
                         dbPost.getString("user"),
                         dbPost.getString("text"),
                         dbPost.getDate("timestamp")
                 );
-                task.addPost(p);
+                task.posts.add(p);
             }
         }
 
@@ -401,11 +405,36 @@ public class Task {
         return posts;
     }
 
-    public void addPost(Post p) {
+    public void addPost(Post p) throws ValidationException {
         if (this.posts == null) {
             this.posts = new ArrayList<>();
         }
+
+        String workedHoursExpression = messages.get(Messages.Keys.PARAMETER_TASK_WORKED_HOURS_POST_EXPRESSION);
+        Pattern pattern = Pattern.compile(workedHoursExpression);
+        Matcher matcher = pattern.matcher(p.getText());
+        if (matcher.find()) {
+            int hours = Integer.parseInt(matcher.group(1));
+            String day = new SimpleDateFormat(WORKDAY_DATE_FORMAT).format(p.getTimestamp());
+            TaskOwner to = getOwnerByLogin(p.getUser());
+            if (to == null) {
+                throw new ValidationException(
+                        "Post informing work hours by a user that is not on the task [" + p.getUser() + "]",
+                        Messages.Keys.VALIDATION_TASK_CANNOT_RECORD_WORK_HOURS_USER_NOT_IN_TASK);
+            }
+            to.addWorkHours(day, hours);
+        }
+
         this.posts.add(p);
+    }
+
+    private TaskOwner getOwnerByLogin(String login) {
+        for (TaskOwner to : owners) {
+            if (to.getLogin().equals(login)) {
+                return to;
+            }
+        }
+        return null;
     }
 
     public String getSource() {

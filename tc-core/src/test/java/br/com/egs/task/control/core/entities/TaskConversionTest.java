@@ -415,7 +415,7 @@ public class TaskConversionTest {
         assertEquals("Doing #overtime to finish it sooner", task.getPosts().get(1).getText());
     }
 
-    private Task createTestTask(boolean nullId, boolean nullEndDate, boolean nullPosts) throws ParseException {
+    private Task createTestTask(boolean nullId, boolean nullEndDate, boolean nullPosts) throws Exception {
         DateFormat timestampFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 
         Task t = new Task(

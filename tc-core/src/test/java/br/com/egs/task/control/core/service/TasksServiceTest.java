@@ -501,7 +501,7 @@ public class TasksServiceTest {
         }
     }
 
-    private Task createTestTask(String id, boolean nullEndDate, boolean excludePosts) throws ParseException {
+    private Task createTestTask(String id, boolean nullEndDate, boolean excludePosts) throws Exception {
         Task t = new Task(
                     id != null ? id : DEFAULT_TASK_ID,
                     "Test the Task Implementation",

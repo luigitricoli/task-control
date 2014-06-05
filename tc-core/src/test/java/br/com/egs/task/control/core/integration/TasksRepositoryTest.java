@@ -5,6 +5,7 @@ import br.com.egs.task.control.core.entities.Application;
 import br.com.egs.task.control.core.entities.Post;
 import br.com.egs.task.control.core.entities.Task;
 import br.com.egs.task.control.core.entities.TaskOwner;
+import br.com.egs.task.control.core.exception.ValidationException;
 import br.com.egs.task.control.core.repository.TaskSearchCriteria;
 import br.com.egs.task.control.core.repository.TasksRepository;
 import br.com.egs.task.control.core.repository.impl.TasksRepositoryImpl;
@@ -188,7 +189,7 @@ public class TasksRepositoryTest {
     }
 
     @Test
-    public void updateTask() throws ParseException {
+    public void updateTask() throws ParseException, ValidationException {
         DBCollection collection = conn.getCollection("tasks");
 
         // Assume that the object returned by createTestTask() was persisted during test SetUp

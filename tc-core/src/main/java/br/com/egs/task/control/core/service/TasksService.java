@@ -142,7 +142,11 @@ public class TasksService {
         }
 
         Task task = retrieveTask(id);
-        task.addPost(post);
+        try {
+            task.addPost(post);
+        } catch (ValidationException e) {
+            throw responseUtils.buildUnrecoverableBusinessException(e.getUserMessageKey());
+        }
         repository.update(task);
 
         return task.toJson();
