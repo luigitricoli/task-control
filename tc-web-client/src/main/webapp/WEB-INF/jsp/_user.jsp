@@ -7,6 +7,7 @@
             <option value="my data">Meus Dados</option>
             <option value="help">Ajuda</option>
             -->
+            <option value="changePass">Troca de Senha</option>
             <option value="logout">Logout</option>
         </select>
     </div>

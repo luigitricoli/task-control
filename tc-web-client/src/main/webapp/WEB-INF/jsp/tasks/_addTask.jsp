@@ -1,5 +1,5 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<div id="add-task-container" class="float-window">
+<div id="add-task-container" class="float-window addTaskWindow">
     <form id="add-task-form">
         <h4>Nova Tarefa</h4>
         <div class="alert begin">

@@ -121,6 +121,7 @@
         </div>
         <div id="block-screen">
             <jsp:include page="_addTask.jsp"/>
+            <jsp:include page="_changePass.jsp"/>
         </div>
         <script type="text/javascript">
             $("#menu").menu();

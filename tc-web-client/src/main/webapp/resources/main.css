@@ -284,15 +284,25 @@ h1{
 }
 .float-window{
     background: #fff;
+    position: absolute;
+    padding: 15px;
+}
+.addTaskWindow{
     width: 470px;
     /*height: 370px;*/
     height: 320px;
-    position: absolute;
     top: 50%;
     margin-top: -200px;
     left: 50%;
     margin-left: -250px;
-    padding: 15px;
+}
+.changePassWindow{
+    width: 250px;
+    height: 240px;
+    top: 50%;
+    margin-top: -200px;
+    left: 50%;
+    margin-left: -150px;
 }
 .float-window h4{
     font-size: 18px;
@@ -317,6 +327,12 @@ h1{
     border: 1px solid #636363;
     border-radius: 3px;
 }
+
+.changePass-input{
+    width: 229px;
+    margin-left: 3px;
+}
+
 .float-window select{
     width: 214px;
 }
@@ -346,9 +362,24 @@ h1{
 #cancel-register-btn{
     margin-left: 20px;
 }
+
+#cancel-register-pass{
+    margin-left: 20px;
+}
+
+.float-window .half-center{
+    float: center;
+    width: 240px;
+}
+
 #add-task-container{
     display:none;
 }
+
+#add-changePass-container{
+    display:none;
+}
+
 #login-container{
     width: 300px;
     height: 150px;
