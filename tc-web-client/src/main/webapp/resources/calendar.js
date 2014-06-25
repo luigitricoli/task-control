@@ -281,25 +281,18 @@ function addTask() {
 
 function changePass() {
 	var url = DOMAIN + "changePass";
-	alert(url);
 	var formData = $("#change-pass-form").serialize();
-	alert(formData);
 	var successFunction = function(data) {
 		if ("sucess" == data) {
 			// Senha antiga e nova est„o corretas
-			console.log(data);
-			console.log("passou1");
-
+			$("#cancel-register-pass")[0].click();
+			
 		} else if ("fail" == data) {
 			// senha nova est· incorreta
-			console.log(data);
-			console.log("passou2");
 			closeAddAlertPass();
 			showAddAlertPass("Senha nova n√£o confere!");
 		} else if ("passFail" == data) {
 			// senha antiga est· incorreta
-			console.log(data);
-			console.log("passou2");
 			closeAddAlertPass();
 			showAddAlertPass("Senha antiga incorreta!");
 		}

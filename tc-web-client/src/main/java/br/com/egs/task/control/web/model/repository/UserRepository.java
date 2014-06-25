@@ -8,4 +8,6 @@ public interface UserRepository {
     public boolean authenticate(String login, String pass);
 
     public List<User> getAll();
+    
+    public boolean changePassword(String login, String newPass);
 }
