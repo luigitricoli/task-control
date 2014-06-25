@@ -285,7 +285,13 @@ function changePass() {
 	var successFunction = function(data) {
 		if ("sucess" == data) {
 			// Senha antiga e nova estão corretas
-			$("#cancel-register-pass")[0].click();
+			//function chama() {
+				//var texto = '<IFRAME SRC="paginatal.html" WIDTH="468" HEIGHT="60" FRAMEBORDER="0" SCROLLING="NO"></IFRAME>';
+				//mostra.innerHTML=texto;
+				//}
+			console.log("");
+			window.setTimeout($("#cancel-register-pass")[0].click(),10000000);
+			//$("#cancel-register-pass")[0].click();
 			
 		} else if ("fail" == data) {
 			// senha nova está incorreta
@@ -335,7 +341,7 @@ function closeFloatWindow() {
 function closeFloatWindowPass() {
 	$("#block-screen").hide();
 	$("#add-changePass-container").hide();
-	closeAddAlert();
+	closeAddAlertPass();
 }
 
 $(document).ready(function() {
