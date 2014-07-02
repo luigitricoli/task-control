@@ -279,26 +279,44 @@ function addTask() {
 	});
 }
 
+function defaultBallonAlert(msg, type){
+	new noty({
+		text: msg,
+		type: type,
+		theme:'task_control',
+		timeout: 5000,
+		animation: {
+	        open: {height: 'toggle'},
+	        close: {height: 'toggle'},
+	        easing: 'swing',
+	        speed: 250
+	    },
+		layout:'topLeft',
+		template: '<div class="noty_message"><span class="noty_text" style="font-family: arial, sans-serif; color: #ffffff; font-size: 14px;"></span></div>'
+			});
+}
+
+function successBallon(msg){
+	defaultBallonAlert(msg, 'success');
+}
+
 function changePass() {
 	var url = DOMAIN + "changePass";
 	var formData = $("#change-pass-form").serialize();
 	var successFunction = function(data) {
 		if ("sucess" == data) {
-			// Senha antiga e nova est„o corretas
-			//function chama() {
-				//var texto = '<IFRAME SRC="paginatal.html" WIDTH="468" HEIGHT="60" FRAMEBORDER="0" SCROLLING="NO"></IFRAME>';
-				//mostra.innerHTML=texto;
-				//}
-			console.log("");
-			window.setTimeout($("#cancel-register-pass")[0].click(),10000000);
-			//$("#cancel-register-pass")[0].click();
+			$("#cancel-register-pass")[0].click();
+			
+			successBallon("Senha atualizada com sucesso!");
 			
 		} else if ("fail" == data) {
 			// senha nova est· incorreta
+			console.log("senha nova est· incorreta");
 			closeAddAlertPass();
 			showAddAlertPass("Senha nova n√£o confere!");
 		} else if ("passFail" == data) {
 			// senha antiga est· incorreta
+			console.log("senha antiga est· incorreta");
 			closeAddAlertPass();
 			showAddAlertPass("Senha antiga incorreta!");
 		}
@@ -306,7 +324,9 @@ function changePass() {
 	$.post(url, formData, successFunction);
 }
 
+
 function showAddAlertPass(text) {
+	console.log("showAddAlertPass");
 	$("#add-changePass-container").height("280px");
 	$("#change-pass-form .alert p").text(text);
 	$("#change-pass-form .alert").show();
@@ -314,6 +334,7 @@ function showAddAlertPass(text) {
 }
 
 function closeAddAlertPass() {
+	console.log("closeAddAlertPass");
 	$("#add-changePass-container").height("245px");
 	$("#change-pass-form .alert").hide();
 	$("#change-pass-form .alert").switchClass("end", "begin", 0);
@@ -343,6 +364,7 @@ function closeFloatWindowPass() {
 	$("#add-changePass-container").hide();
 	closeAddAlertPass();
 }
+
 
 $(document).ready(function() {
 	$(".filter-group input:checkbox").click(function(event) {

@@ -1,0 +1,26 @@
+#noty_topLeft_layout_container{
+	position: absolute !important;
+	top: 70px !important;
+	left: 50% !important;
+}
+
+.task_control {
+	overflow: hidden;
+	border: 1px solid #fff;
+	box-shadow: 2px 3px 5px rgba(0, 0, 0, 0.1);
+	border-bottom-right-radius: 3px;
+	border-bottom-left-radius: 3px;
+	display: block;
+	margin-left: -380px !important;
+	width: 987px !important;
+	text-align: center;
+	padding: 6px 0px 7px;
+}
+
+.task_control.noty_container_type_success {
+	background: #3FA34B;
+	opacity: 0.6;
+	border-color: #3FA34B;
+}
+
+*/

@@ -7,16 +7,16 @@
 		</div>
 
 		<div class="field half-left">
-			<label>Senha Antiga</label> <input type="password" name="oldPass"
-				class="changePass-input" id="oldPass" required>
+			<label>Senha Antiga</label> <input type="password" name="oldPass" 
+				class="changePass-input" id="oldPass" value="maca" required>
 		</div>
 		<div class="field half-left">
 			<label>Senha Nova</label> <input type="password" name="newPass"
-				class="changePass-input" id="newPass" required>
+				class="changePass-input" id="newPass" value="maca" required>
 		</div>
 		<div class="field half-left">
 			<label>Confirme Senha Nova</label> <input type="password"
-				name="newcPass" class="changePass-input" id="newcPass" required>
+				name="newcPass" class="changePass-input" value="maca" id="newcPass" required>
 		</div>
 		<div class="field half-left">
 			<button type="reset" id="cancel-register-pass" class="btn red">

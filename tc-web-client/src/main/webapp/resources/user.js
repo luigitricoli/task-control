@@ -5,6 +5,12 @@ function userInfoActions(selected){
     if("changePass" == selected.value){
     	    $("#block-screen").show();
     	    $("#add-changePass-container").show();
-    	    event.preventDefault();
     }
+    
+    resetUserNick();
+    event.preventDefault();
+}
+
+function resetUserNick(){
+	$("#user .dropdown .selected").text($("#nickName").text());
 }

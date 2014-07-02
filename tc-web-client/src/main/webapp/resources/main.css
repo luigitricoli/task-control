@@ -24,6 +24,7 @@ h1{
     position:absolute;
     top: 19px;
     right: 33px;
+    z-index: 99999999;
 }
 .ui-menu {
     width: 100px;
@@ -33,7 +34,7 @@ h1{
     width: 1220px;
 }
 #top-main{
-    height: 80px;
+    height: 90px;
 }
 .btn{
     cursor: pointer;
@@ -60,7 +61,7 @@ h1{
     float: right;
 }
 #btn_new{
-    margin-top: 19px;
+    margin-top: 39px;
     margin-left: 10px;
 }
 .icon{
@@ -304,6 +305,16 @@ h1{
     left: 50%;
     margin-left: -150px;
 }
+
+.buttonOKWindow{
+    width: 250px;
+    height: 240px;
+    top: 50%;
+    margin-top: -200px;
+    left: 50%;
+    margin-left: -150px;
+}
+
 .float-window h4{
     font-size: 18px;
     font-weight: bold;
@@ -377,6 +388,10 @@ h1{
 }
 
 #add-changePass-container{
+    display:none;
+}
+
+#add-buttonOK-container{
     display:none;
 }
 

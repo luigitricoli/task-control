@@ -6,6 +6,7 @@
     <script src="<c:url value="/resources/jquery.cookie.js"/>"></script>
     <script src="<c:url value="/resources/jquery-ui-1.10.4.custom.min.js"/>"></script>
     <script src="<c:url value="/resources/jquery.easydropdown.min.js"/>"></script>
+    <script src="<c:url value="/resources/jquery.noty.packaged.min.js"/>"></script>
     <script src="<c:url value="/resources/jquery.mask.min.js"/>"></script>
     <script src="<c:url value="/resources/user.js"/>"></script>
     <script src="<c:url value="/resources/calendar.js"/>"></script>
@@ -22,6 +23,7 @@
     <link rel="stylesheet" type="text/css" href="<c:url value="/resources/easydropdown.css"/>">
     <link rel="stylesheet" type="text/css" href="<c:url value="/resources/calendar.css"/>">
     <link rel="stylesheet" type="text/css" href="<c:url value="/resources/main.css"/>">
+    <link rel="stylesheet" type="text/css" href="<c:url value="/resources/noty_theme.css"/>">
 </head>
 <body>
     <header id="header">
@@ -123,9 +125,11 @@
             <jsp:include page="_addTask.jsp"/>
             <jsp:include page="_changePass.jsp"/>
         </div>
+        <!-- 
         <script type="text/javascript">
             $("#menu").menu();
         </script>
+         -->
     </section>        
 </body>
 </html>
