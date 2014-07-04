@@ -4,7 +4,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.text.MessageFormat;
-import java.util.Arrays;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
@@ -29,7 +28,7 @@ public class Messages {
             return "??" + key + "??";
         }
 
-        if (messageArguments.length > 0) {
+        if (messageArguments != null && messageArguments.length > 0) {
             message = MessageFormat.format(message, messageArguments);
         }
 
@@ -37,8 +36,11 @@ public class Messages {
     }
 
     public static enum Keys {
+        PARAMETER_USER_DATE_PATTERN,
+
         PARAMETER_TASK_LATE_POST_EXPRESSION,
         PARAMETER_TASK_WORKED_HOURS_POST_EXPRESSION,
+        PARAMETER_TASK_WORKED_HOURS_POST_EXPRESSION_WITH_DATE,
 
         VALIDATION_GENERAL_REQUEST_BODY_CANNOT_BE_NULL,
         VALIDATION_GENERAL_MALFORMED_REQUEST,
@@ -84,6 +86,7 @@ public class Messages {
         VALIDATION_TASK_CANNOT_MODIFY_FINISHED,
         VALIDATION_TASK_CANNOT_CHANGE_START_ALREADY_STARTED,
         VALIDATION_TASK_CANNOT_RECORD_WORK_HOURS_USER_NOT_IN_TASK,
+        VALIDATION_TASK_POST_BODY_DATE_INVALID,
 
     }
 }

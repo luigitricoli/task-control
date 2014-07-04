@@ -1,14 +1,19 @@
 package br.com.egs.task.control.core.utils;
 
 import com.google.gson.JsonObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
+import java.util.Arrays;
 
 /**
  *
  */
 public class HttpResponseUtils {
+
+    private static final Logger logger = LoggerFactory.getLogger(HttpResponseUtils.class);
 
     /**
      * Recoverable business error, according to the application convention.
@@ -77,6 +82,9 @@ public class HttpResponseUtils {
      */
     private WebApplicationException buildWebApplicationException(int st, Messages.Keys key, Object... messageArguments)
             throws WebApplicationException {
+
+        logger.debug("Building error response. Status: {}, Message: [{}], Args: {}",
+                st, key, messageArguments == null ? "(none)" : Arrays.toString(messageArguments));
 
         String message = messages.get(key, messageArguments);
 

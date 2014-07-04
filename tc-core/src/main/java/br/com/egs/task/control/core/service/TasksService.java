@@ -145,7 +145,7 @@ public class TasksService {
         try {
             task.addPost(post);
         } catch (ValidationException e) {
-            throw responseUtils.buildUnrecoverableBusinessException(e.getUserMessageKey());
+            throw responseUtils.buildUnrecoverableBusinessException(e.getUserMessageKey(), e.getUserMessageArgs());
         }
         repository.update(task);
 

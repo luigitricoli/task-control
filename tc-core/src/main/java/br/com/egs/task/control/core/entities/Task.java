@@ -410,22 +410,63 @@ public class Task {
             this.posts = new ArrayList<>();
         }
 
-        String workedHoursExpression = messages.get(Messages.Keys.PARAMETER_TASK_WORKED_HOURS_POST_EXPRESSION);
-        Pattern pattern = Pattern.compile(workedHoursExpression);
-        Matcher matcher = pattern.matcher(p.getText());
+        handleWorkHoursPost(p);
+
+        this.posts.add(p);
+    }
+
+    /**
+     * Handles Posts that contain worked hours specification.
+     * If the post does not report worked hours, no change is made.
+     * @param p
+     * @throws ValidationException
+     */
+    private void handleWorkHoursPost(Post p) throws ValidationException {
+        Pattern workedHoursExpression = Pattern.compile(
+                messages.get(Messages.Keys.PARAMETER_TASK_WORKED_HOURS_POST_EXPRESSION));
+        Pattern workedHoursWithDateExpression = Pattern.compile(
+                messages.get(Messages.Keys.PARAMETER_TASK_WORKED_HOURS_POST_EXPRESSION_WITH_DATE));
+
+        boolean hasWorkHoursSpecification = false;
+        int workHours = 0;
+        String workDay = null;
+
+        Matcher matcher = workedHoursWithDateExpression.matcher(p.getText());
         if (matcher.find()) {
-            int hours = Integer.parseInt(matcher.group(1));
-            String day = new SimpleDateFormat(WORKDAY_DATE_FORMAT).format(p.getTimestamp());
+            hasWorkHoursSpecification = true;
+            workHours = Integer.parseInt(matcher.group(1));
+
+            DateFormat userDateFormat = new SimpleDateFormat(
+                    messages.get(Messages.Keys.PARAMETER_USER_DATE_PATTERN));
+            userDateFormat.setLenient(false);
+            Date workDayTimestamp;
+            String postBodyDate = matcher.group(2);
+            try {
+                workDayTimestamp = userDateFormat.parse(postBodyDate);
+            } catch (ParseException e) {
+                throw new ValidationException("Invalid workDay date informed in Post: " + postBodyDate,
+                        Messages.Keys.VALIDATION_TASK_POST_BODY_DATE_INVALID, postBodyDate);
+            }
+            workDay = new SimpleDateFormat(WORKDAY_DATE_FORMAT).format(workDayTimestamp);
+
+        } else {
+            matcher = workedHoursExpression.matcher(p.getText());
+            if (matcher.find()) {
+                hasWorkHoursSpecification = true;
+                workHours = Integer.parseInt(matcher.group(1));
+                workDay = new SimpleDateFormat(WORKDAY_DATE_FORMAT).format(p.getTimestamp());
+            }
+        }
+
+        if (hasWorkHoursSpecification) {
             TaskOwner to = getOwnerByLogin(p.getUser());
             if (to == null) {
                 throw new ValidationException(
                         "Post informing work hours by a user that is not on the task [" + p.getUser() + "]",
                         Messages.Keys.VALIDATION_TASK_CANNOT_RECORD_WORK_HOURS_USER_NOT_IN_TASK);
             }
-            to.addWorkHours(day, hours);
+            to.addWorkHours(workDay, workHours);
         }
-
-        this.posts.add(p);
     }
 
     private TaskOwner getOwnerByLogin(String login) {

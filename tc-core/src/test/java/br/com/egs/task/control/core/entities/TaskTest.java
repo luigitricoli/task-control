@@ -276,6 +276,37 @@ public class TaskTest {
         assertEquals(0, t.getOwners().get(1).getWorkDays().size());
     }
 
+    @Test
+    public void post_notifyWorkedHours_withDate() throws Exception {
+        Task t = createTestTask("111122223333aaaabbbbcccc", "Test the Task Implementation",
+                "2014-01-02 00:00:00.000", "2014-01-03 23:59:59.999", null, "OLM", true,
+                new TaskOwner("john", "John Foo", "N1"), new TaskOwner("moe", "Mow Bar", "N1"));
+
+        assertEquals(0, t.getOwners().get(0).getWorkDays().size());
+        assertEquals(0, t.getOwners().get(1).getWorkDays().size());
+
+        // Passing the worked date in the message body. Post timestamp will be ignored.
+        t.addPost(new Post("john", "5 #horasutilizadas em 02/01/2014", timestampFormat.parse("2014-01-03 17:48:00.734")));
+
+        // User "john" now has a 5-hours work day
+        assertEquals(1, t.getOwners().get(0).getWorkDays().size());
+        assertEquals("2014-01-02", t.getOwners().get(0).getWorkDays().get(0).getDay());
+        assertEquals(5, t.getOwners().get(0).getWorkDays().get(0).getHours());
+
+        // No change to the other user
+        assertEquals(0, t.getOwners().get(1).getWorkDays().size());
+    }
+
+    @Test(expected = ValidationException.class)
+    public void post_notifyWorkedHours_withDate_invalid() throws Exception {
+        Task t = createTestTask("111122223333aaaabbbbcccc", "Test the Task Implementation",
+                "2014-01-02 00:00:00.000", "2014-01-03 23:59:59.999", null, "OLM", true,
+                new TaskOwner("john", "John Foo", "N1"), new TaskOwner("moe", "Mow Bar", "N1"));
+
+        // Invalid date in post body
+        t.addPost(new Post("john", "5 #horasutilizadas em 31/15/2014", timestampFormat.parse("2014-01-03 17:48:00.734")));
+    }
+
     private Task createTestTask(
             String id,
             String description,
