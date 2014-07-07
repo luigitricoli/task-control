@@ -55,10 +55,12 @@ public class TaskConversionTest {
                 "]," +
                 "posts: [" +
                 "           {timestamp: '2014-01-03 09:15:30'," +
-                "            user: 'john'," +
+                "            login: 'john'," +
+                "            name: 'John The Programmer'," +
                 "            text: 'Scope changed. No re-scheduling will be necessary'}," +
                 "           {timestamp: '2014-01-08 18:20:49'," +
-                "            user: 'john'," +
+                "            login: 'john'," +
+                "            name: 'John The Programmer'," +
                 "            text: 'Doing #overtime to finish it sooner'}" +
                 "]" +
                 "}";
@@ -294,11 +296,13 @@ public class TaskConversionTest {
         assertEquals(2, posts.size());
 
         assertEquals(timestampFormat.parse("2014-01-03 09:15:30.700"), posts.get(0).get("timestamp"));
-        assertEquals("john", posts.get(0).get("user"));
+        assertEquals("john", posts.get(0).get("login"));
+        assertEquals("John The Programmer", posts.get(0).get("name"));
         assertEquals("Scope changed. No re-scheduling will be necessary", posts.get(0).get("text"));
 
         assertEquals(timestampFormat.parse("2014-01-08 18:20:49.150"), posts.get(1).get("timestamp"));
-        assertEquals("john", posts.get(1).get("user"));
+        assertEquals("john", posts.get(1).get("login"));
+        assertEquals("John The Programmer", posts.get(1).get("name"));
         assertEquals("Doing #overtime to finish it sooner", posts.get(1).get("text"));
 
     }
@@ -407,11 +411,11 @@ public class TaskConversionTest {
         assertEquals(2, task.getPosts().size());
 
         assertEquals(timestampFormat.parse("2014-01-03 09:15:30.700"), task.getPosts().get(0).getTimestamp());
-        assertEquals("john", task.getPosts().get(0).getUser());
+        assertEquals("john", task.getPosts().get(0).getLogin());
+        assertEquals("John The Programmer", task.getPosts().get(0).getName());
         assertEquals("Scope changed. No re-scheduling will be necessary", task.getPosts().get(0).getText());
 
         assertEquals(timestampFormat.parse("2014-01-08 18:20:49.150"), task.getPosts().get(1).getTimestamp());
-        assertEquals("john", task.getPosts().get(1).getUser());
         assertEquals("Doing #overtime to finish it sooner", task.getPosts().get(1).getText());
     }
 
@@ -434,11 +438,11 @@ public class TaskConversionTest {
                                 new TaskOwner("mary", "Mary Devs", "N2")));
 
         if (!nullPosts) {
-            Post p1 = new Post("john", "Scope changed. No re-scheduling will be necessary",
+            Post p1 = new Post("john", "John The Programmer", "Scope changed. No re-scheduling will be necessary",
                     timestampFormat.parse("2014-01-03 09:15:30.700"));
             t.addPost(p1);
 
-            Post p2 = new Post("john", "Doing #overtime to finish it sooner",
+            Post p2 = new Post("john", "John The Programmer", "Doing #overtime to finish it sooner",
                     timestampFormat.parse("2014-01-08 18:20:49.150"));
             t.addPost(p2);
         }
@@ -480,12 +484,14 @@ public class TaskConversionTest {
         List<BasicDBObject> posts = new ArrayList<>();
         posts.add(new BasicDBObject()
                 .append("timestamp", timestampFormat.parse("2014-01-03 09:15:30.700"))
-                .append("user", "john")
+                .append("login", "john")
+                .append("name", "John The Programmer")
                 .append("text", "Scope changed. No re-scheduling will be necessary")
         );
         posts.add(new BasicDBObject()
                 .append("timestamp", timestampFormat.parse("2014-01-08 18:20:49.150"))
-                .append("user", "john")
+                .append("login", "john")
+                .append("name", "John The Programmer")
                 .append("text", "Doing #overtime to finish it sooner")
         );
         t.append("posts", posts);

@@ -139,7 +139,8 @@ public class Task {
             for (Post post : this.getPosts()) {
                 posts.add(new BasicDBObject()
                         .append("timestamp", post.getTimestamp())
-                        .append("user", post.getUser())
+                        .append("login", post.getLogin())
+                        .append("name", post.getName())
                         .append("text", post.getText()));
             }
         }
@@ -192,7 +193,8 @@ public class Task {
             task.posts = new ArrayList<>();
             for (BasicDBObject dbPost : dbPosts) {
                 Post p = new Post(
-                        dbPost.getString("user"),
+                        dbPost.getString("login"),
+                        dbPost.getString("name"),
                         dbPost.getString("text"),
                         dbPost.getDate("timestamp")
                 );
@@ -418,7 +420,6 @@ public class Task {
     /**
      * Handles Posts that contain worked hours specification.
      * If the post does not report worked hours, no change is made.
-     * @param p
      * @throws ValidationException
      */
     private void handleWorkHoursPost(Post p) throws ValidationException {
@@ -459,10 +460,10 @@ public class Task {
         }
 
         if (hasWorkHoursSpecification) {
-            TaskOwner to = getOwnerByLogin(p.getUser());
+            TaskOwner to = getOwnerByLogin(p.getLogin());
             if (to == null) {
                 throw new ValidationException(
-                        "Post informing work hours by a user that is not on the task [" + p.getUser() + "]",
+                        "Post informing work hours by a user that is not on the task [" + p.getLogin() + "]",
                         Messages.Keys.VALIDATION_TASK_CANNOT_RECORD_WORK_HOURS_USER_NOT_IN_TASK);
             }
             to.addWorkHours(workDay, workHours);
@@ -554,7 +555,8 @@ public class Task {
                 for (Post p : task.getPosts()) {
                     JsonObject post = new JsonObject();
                     post.addProperty("timestamp", timestampFormat.format(p.getTimestamp()));
-                    post.addProperty("user", p.getUser());
+                    post.addProperty("login", p.getLogin());
+                    post.addProperty("name", p.getName());
                     post.addProperty("text", p.getText());
                     posts.add(post);
                 }

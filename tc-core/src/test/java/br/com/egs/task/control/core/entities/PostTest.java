@@ -18,14 +18,16 @@ public class PostTest {
     @Test
     public void fromJson() throws ParseException {
         String json = "{post: " +
-                "{user: 'testusr', " +
+                "{login: 'testusr', " +
+                "name: 'A Test User', " +
                 "text: 'An history event', " +
                 "timestamp: '2013-03-15 09:30:15'}" +
                 "}";
 
         Post p = Post.fromJson(json);
 
-        assertEquals("testusr", p.getUser());
+        assertEquals("testusr", p.getLogin());
+        assertEquals("A Test User", p.getName());
         assertEquals("An history event", p.getText());
         assertEquals(timestampParser.parse("2013-03-15 09:30:15"), p.getTimestamp());
 

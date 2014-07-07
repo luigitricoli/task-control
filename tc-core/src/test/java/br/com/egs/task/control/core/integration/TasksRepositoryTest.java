@@ -210,7 +210,7 @@ public class TasksRepositoryTest {
         for (Post p : task.getPosts()) {
             modified.addPost(p);
         }
-        modified.addPost(new Post("bob", "Posting into a modified task", new Date()));
+        modified.addPost(new Post("bob", "Bob Worker", "Posting into a modified task", new Date()));
 
         /////////////////////////////
         repository.update(modified);
@@ -320,12 +320,14 @@ public class TasksRepositoryTest {
         List<BasicDBObject> posts = new ArrayList<>();
         posts.add(new BasicDBObject()
                 .append("timestamp", timestampFormat.parse("2014-01-03 09:15:30.700"))
-                .append("user", "john")
+                .append("login", "john")
+                .append("name", "John The Programmer")
                 .append("text", "Scope changed. No re-scheduling will be necessary")
         );
         posts.add(new BasicDBObject()
                 .append("timestamp", timestampFormat.parse("2014-01-08 18:20:49.150"))
-                .append("user", "john")
+                .append("login", "john")
+                .append("name", "John The Programmer")
                 .append("text", "Doing #overtime to finish it sooner")
         );
         t.append("posts", posts);
@@ -363,11 +365,13 @@ public class TasksRepositoryTest {
 
         assertEquals(2, task.getPosts().size());
         assertEquals(timestampFormat.parse("2014-01-03 09:15:30.700"), task.getPosts().get(0).getTimestamp());
-        assertEquals("john", task.getPosts().get(0).getUser());
+        assertEquals("john", task.getPosts().get(0).getLogin());
+        assertEquals("John The Programmer", task.getPosts().get(0).getName());
         assertEquals("Scope changed. No re-scheduling will be necessary", task.getPosts().get(0).getText());
 
         assertEquals(timestampFormat.parse("2014-01-08 18:20:49.150"), task.getPosts().get(1).getTimestamp());
-        assertEquals("john", task.getPosts().get(1).getUser());
+        assertEquals("john", task.getPosts().get(0).getLogin());
+        assertEquals("John The Programmer", task.getPosts().get(0).getName());
         assertEquals("Doing #overtime to finish it sooner", task.getPosts().get(1).getText());
     }
 }

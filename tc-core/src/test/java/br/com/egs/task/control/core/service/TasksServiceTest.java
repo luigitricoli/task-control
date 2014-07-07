@@ -15,7 +15,6 @@ import org.skyscreamer.jsonassert.JSONAssert;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 import java.text.DateFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -518,11 +517,11 @@ public class TasksServiceTest {
                                     new TaskOwner("mary", "Mary Developer", "N2")));
 
         if (!excludePosts) {
-            Post p1 = new Post("john", "Scope changed. No re-scheduling will be necessary",
+            Post p1 = new Post("john", "John The Programmer", "Scope changed. No re-scheduling will be necessary",
                     timestampFormat.parse("2014-01-03 09:15:30.700"));
             t.addPost(p1);
 
-            Post p2 = new Post("john", "Doing #overtime to finish it sooner",
+            Post p2 = new Post("john", "John The Programmer", "Doing #overtime to finish it sooner",
                     timestampFormat.parse("2014-01-08 18:20:49.150"));
             t.addPost(p2);
         }

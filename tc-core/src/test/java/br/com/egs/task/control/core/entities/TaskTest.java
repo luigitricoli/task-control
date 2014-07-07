@@ -134,7 +134,7 @@ public class TaskTest {
         Task t = createTestTask("111122223333aaaabbbbcccc", "Test the Task Implementation",
                 "2014-01-02 00:00:00.000", "2014-01-10 23:59:59.999", null, "OLM", true, new TaskOwner("john",
                 "John Foo", "N1"), new TaskOwner("mary", "Mary Baz", "N2"));
-        t.addPost(new Post("testusr", "Some #atraso has occured", new Date()));
+        t.addPost(new Post("testusr", "A Test User", "Some #atraso has occured", new Date()));
 
         Date endDate = timestampFormat.parse("2014-01-20 14:47:48.555");
         t.finish(endDate);
@@ -147,7 +147,7 @@ public class TaskTest {
         Task t = createTestTask("111122223333aaaabbbbcccc", "Test the Task Implementation",
                 "2014-01-02 00:00:00.000", "2014-01-10 23:59:59.999", null, "OLM", true, new TaskOwner("john",
                 "John Foo", "N1"), new TaskOwner("mary", "Mary Baz", "N2"));
-        t.addPost(new Post("testusr", "The task is #atrasado", new Date()));
+        t.addPost(new Post("testusr", "A Test User", "The task is #atrasado", new Date()));
 
         Date endDate = timestampFormat.parse("2014-01-20 14:47:48.555");
         t.finish(endDate);
@@ -160,7 +160,7 @@ public class TaskTest {
         Task t = createTestTask("111122223333aaaabbbbcccc", "Test the Task Implementation",
                 "2014-01-02 00:00:00.000", "2014-01-10 23:59:59.999", null, "OLM", true, new TaskOwner("john",
                 "John Foo", "N1"), new TaskOwner("mary", "Mary Baz", "N2"));
-        t.addPost(new Post("testusr", "The task is #atrasada", new Date()));
+        t.addPost(new Post("testusr", "A Test User", "The task is #atrasada", new Date()));
 
         Date endDate = timestampFormat.parse("2014-01-20 14:47:48.555");
         t.finish(endDate);
@@ -265,7 +265,7 @@ public class TaskTest {
         assertEquals(0, t.getOwners().get(0).getWorkDays().size());
         assertEquals(0, t.getOwners().get(1).getWorkDays().size());
 
-        t.addPost(new Post("john", "5 #horasutilizadas", timestampFormat.parse("2014-01-02 17:48:00.734")));
+        t.addPost(new Post("john", "John The Programmer", "5 #horasutilizadas", timestampFormat.parse("2014-01-02 17:48:00.734")));
 
         // User "john" now has a 5-hours work day
         assertEquals(1, t.getOwners().get(0).getWorkDays().size());
@@ -286,7 +286,7 @@ public class TaskTest {
         assertEquals(0, t.getOwners().get(1).getWorkDays().size());
 
         // Passing the worked date in the message body. Post timestamp will be ignored.
-        t.addPost(new Post("john", "5 #horasutilizadas em 02/01/2014", timestampFormat.parse("2014-01-03 17:48:00.734")));
+        t.addPost(new Post("john", "John The Programmer", "5 #horasutilizadas em 02/01/2014", timestampFormat.parse("2014-01-03 17:48:00.734")));
 
         // User "john" now has a 5-hours work day
         assertEquals(1, t.getOwners().get(0).getWorkDays().size());
@@ -304,7 +304,7 @@ public class TaskTest {
                 new TaskOwner("john", "John Foo", "N1"), new TaskOwner("moe", "Mow Bar", "N1"));
 
         // Invalid date in post body
-        t.addPost(new Post("john", "5 #horasutilizadas em 31/15/2014", timestampFormat.parse("2014-01-03 17:48:00.734")));
+        t.addPost(new Post("john", "John The Programmer", "5 #horasutilizadas em 31/15/2014", timestampFormat.parse("2014-01-03 17:48:00.734")));
     }
 
     private Task createTestTask(
@@ -319,7 +319,7 @@ public class TaskTest {
 
         DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 
-        Task t = null;
+        Task t;
         try {
             t = new Task(id, description,
                     df.parse(start), df.parse(foreseen),
@@ -328,11 +328,11 @@ public class TaskTest {
 
             if (createDefaultPosts) {
                 try {
-                    Post p1 = new Post("john", "Scope changed. No re-scheduling will be necessary",
+                    Post p1 = new Post("john", "John The Programmer", "Scope changed. No re-scheduling will be necessary",
                             df.parse("2014-01-03 09:15:30.700"));
                     t.addPost(p1);
 
-                    Post p2 = new Post("john", "Doing #overtime to finish it sooner",
+                    Post p2 = new Post("john", "John The Programmer", "Doing #overtime to finish it sooner",
                             df.parse("2014-01-08 18:20:49.150"));
                     t.addPost(p2);
                 } catch (ValidationException ve) {
