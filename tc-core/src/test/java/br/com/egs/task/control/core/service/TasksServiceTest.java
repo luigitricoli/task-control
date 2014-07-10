@@ -500,6 +500,36 @@ public class TasksServiceTest {
         }
     }
 
+    @Test
+    public void addPost() throws Exception {
+        Task t1 = createTestTask(DEFAULT_TASK_ID, true, true);
+        Mockito.when(taskRepository.get(DEFAULT_TASK_ID)).thenReturn(t1);
+
+        User owner1 = new User("john");
+        owner1.setName("John Dev1");
+        owner1.setType("N1");
+        Mockito.when(userRepository.get("john")).thenReturn(owner1);
+
+        String body = "{post: {login: 'john', text: 'Something I did', timestamp: '2014-01-03 12:15:30.555'}}";
+        service.addPost(DEFAULT_TASK_ID, body);
+
+        ArgumentCaptor<Task> taskArgumentCaptor = ArgumentCaptor.forClass(Task.class);
+        Mockito.verify(taskRepository).update(taskArgumentCaptor.capture());
+        assertEquals("John Dev1", taskArgumentCaptor.getValue().getPosts().get(0).getName());
+    }
+
+    @Test(expected = WebApplicationException.class)
+    public void addPost_userNotFound() throws Exception {
+        Task t1 = createTestTask(DEFAULT_TASK_ID, true, true);
+        Mockito.when(taskRepository.get(DEFAULT_TASK_ID)).thenReturn(t1);
+
+        Mockito.when(userRepository.get("jimmy")).thenReturn(null);
+
+        String body = "{post: {login: 'jimmy', text: 'Something I did', timestamp: '2014-01-03 12:15:30.555'}}";
+
+        service.addPost(DEFAULT_TASK_ID, body);
+    }
+
     private Task createTestTask(String id, boolean nullEndDate, boolean excludePosts) throws Exception {
         Task t = new Task(
                     id != null ? id : DEFAULT_TASK_ID,

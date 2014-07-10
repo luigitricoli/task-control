@@ -125,8 +125,7 @@ public class TaskRestTest {
         assertEquals(2, ((List)collection.findOne(dbFilter).get("posts")).size());
 
         String jsonString = "{post: {" +
-                "login: 'mary'," +
-                "name: 'Mary Developer'," +
+                "login: 'john'," +
                 "text: 'Using the service to add a post'," +
                 "timestamp: '2014-01-08 15:20:30' }}";
 

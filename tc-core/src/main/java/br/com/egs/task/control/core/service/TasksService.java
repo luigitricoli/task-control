@@ -130,16 +130,17 @@ public class TasksService {
         try {
             post = Post.fromJson(body);
         } catch (JsonParseException jpe) {
-            if (jpe.getCause() instanceof ParseException
-                    || jpe.getCause() instanceof IllegalArgumentException) {
-                // Error generated when parsing a specific field or creating the User object
-                throw responseUtils.buildBadRequestException(
-                        Messages.Keys.VALIDATION_GENERAL_MALFORMED_REQUEST_ARG, jpe.getMessage());
-            } else {
-                // General JSON parse error
-                throw responseUtils.buildBadRequestException(Messages.Keys.VALIDATION_GENERAL_MALFORMED_REQUEST);
-            }
+            throw responseUtils.buildBadRequestException(
+                    Messages.Keys.VALIDATION_GENERAL_MALFORMED_REQUEST_ARG, jpe.getMessage());
         }
+
+        User user = userRepository.get(post.getLogin());
+        if (user == null) {
+            throw responseUtils.buildUnrecoverableBusinessException(
+                    Messages.Keys.VALIDATION_TASK_INVALID_OWNER, post.getLogin()
+            );
+        }
+        post.setName(user.getName());
 
         Task task = retrieveTask(id);
         try {
