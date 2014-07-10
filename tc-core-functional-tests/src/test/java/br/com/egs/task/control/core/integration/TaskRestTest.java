@@ -125,7 +125,8 @@ public class TaskRestTest {
         assertEquals(2, ((List)collection.findOne(dbFilter).get("posts")).size());
 
         String jsonString = "{post: {" +
-                "user: 'mary'," +
+                "login: 'mary'," +
+                "name: 'Mary Developer'," +
                 "text: 'Using the service to add a post'," +
                 "timestamp: '2014-01-08 15:20:30' }}";
 
@@ -203,12 +204,14 @@ public class TaskRestTest {
         List<BasicDBObject> posts = new ArrayList<>();
         posts.add(new BasicDBObject()
                 .append("timestamp", timestampFormat.parse("2014-01-03 09:15:30.700"))
-                .append("user", "john")
+                .append("login", "john")
+                .append("name", "John The Programmer")
                 .append("text", "Scope changed. No re-scheduling will be necessary")
         );
         posts.add(new BasicDBObject()
                 .append("timestamp", timestampFormat.parse("2014-01-08 18:20:49.150"))
-                .append("user", "john")
+                .append("login", "john")
+                .append("name", "John The Programmer")
                 .append("text", "Doing #overtime to finish it sooner")
         );
         t.append("posts", posts);
