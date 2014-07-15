@@ -10,6 +10,10 @@
 *.iml
 **/*.iml
 
+# Netbeans generated files
+**/nb-configuration.xml
+**/nbactions.xml
+
 # Maven target directory
 **/target
 **/.project
