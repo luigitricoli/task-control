@@ -18,7 +18,7 @@ public class CorePostTest {
 	
 	@Test
 	public void unmarshal(){
-		String json = "{\"timestamp\":\"2014-01-08 18:20:49\",\"user\":\"john\",\"text\":\"Doing #overtime to finish it sooner\"}";
+		String json = "{\"timestamp\":\"2014-01-08 18:20:49\",\"login\":\"john\",\"name\":\"John Programmer\",\"text\":\"Doing #overtime to finish it sooner\"}";
 		CorePost post = parse().fromJson(json, CorePost.class);
 		
 		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -30,13 +30,14 @@ public class CorePostTest {
 		}		
 		
 		assertThat(post.getTimestamp(), is(timestamp));
-		assertThat(post.getUser(), is("john"));
+		assertThat(post.getLogin(), is("john"));
+		assertThat(post.getName(), is("John Programmer"));
 		assertThat(post.getText(), is("Doing #overtime to finish it sooner"));
 	}
 	
 	@Test
 	public void unmarshalAList(){
-		String json = "[{\"timestamp\":\"2014-01-03 09:15:30\",\"user\":\"john\",\"text\":\"Scope changed. No re-scheduling will be necessary\"},{\"timestamp\":\"2014-01-08 18:20:49\",\"user\":\"john\",\"text\":\"Doing #overtime to finish it sooner\"}]";
+		String json = "[{\"timestamp\":\"2014-01-03 09:15:30\",\"login\":\"john\",\"name\":\"John Programmer\",\"text\":\"Scope changed. No re-scheduling will be necessary\"},{\"timestamp\":\"2014-01-08 18:20:49\",\"login\":\"john\",\"name\":\"John Programmer\",\"text\":\"Doing #overtime to finish it sooner\"}]";
 		
 		List<CorePost> posts = parse().fromJson(json, new TypeToken<List<CorePost>>() {
 		}.getType());

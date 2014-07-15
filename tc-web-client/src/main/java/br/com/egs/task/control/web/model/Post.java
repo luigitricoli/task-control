@@ -12,14 +12,16 @@ public class Post {
 	public static final String OPEN_TAG = "<span>";
     public static final String CLOSE_TAG = "</span>";
     private Calendar time;
-    private String user;
+    private String login;
+    private String name;
     private String text;
     private transient Set<String> hashtags;
     private transient String html;
 
-    public Post(Calendar time, String user, String text) {
+    public Post(Calendar time, String login, String name, String text) {
         this.time = time;
-        this.user = user;
+        this.login = login;
+        this.name = name;
         this.hashtags = new HashSet<>();
 
         if(text != null){
@@ -57,8 +59,12 @@ public class Post {
         return time;
     }
 
-    public String getUser() {
-        return user;
+    public String getLogin() {
+        return login;
+    }
+
+    public String getName() {
+        return name;
     }
 
     public String getText() {

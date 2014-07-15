@@ -105,7 +105,8 @@ public class TasksController {
 
     @Post("/tarefas/{task}/historico")
     public void addPost(String task, String text) {
-        br.com.egs.task.control.web.model.Post post = new br.com.egs.task.control.web.model.Post(Calendar.getInstance(), session.getUser().getName(), text);
+        br.com.egs.task.control.web.model.Post post = new br.com.egs.task.control.web.model.Post(
+                            Calendar.getInstance(), session.getUser().getNickname(), null, text);
         if (tasks.add(post, task)) {
             result.use(Results.http()).body("success");
         } else {

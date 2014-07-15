@@ -94,7 +94,7 @@ public class TaskClient implements TaskRepository {
 
 		List<Post> posts = new LinkedList<>();
 		for (CorePost post : task.getPosts()) {
-			posts.add(new Post(post.getTimestamp(), post.getUser(), post.getText()));
+			posts.add(new Post(post.getTimestamp(), post.getLogin(), post.getName(), post.getText()));
 		}
 
 		return posts;
@@ -124,7 +124,7 @@ public class TaskClient implements TaskRepository {
 
     @Override
 	public boolean add(Post p, String taskId){
-		CorePost post = new CorePost(p.getTime(), p.getUser(), p.getText());
+		CorePost post = new CorePost(p.getTime(), p.getLogin(), p.getText(), p.getText());
 
         Response response = jsonClient.at(String.format("tasks/%s", taskId)).postAsJson(post.toJson());
         if(response.getCode().equals(SUCCESS_CODE)){
