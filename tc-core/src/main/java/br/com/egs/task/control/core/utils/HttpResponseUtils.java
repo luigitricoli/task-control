@@ -80,8 +80,7 @@ public class HttpResponseUtils {
     /**
      *
      */
-    private WebApplicationException buildWebApplicationException(int st, Messages.Keys key, Object... messageArguments)
-            throws WebApplicationException {
+    private WebApplicationException buildWebApplicationException(int st, Messages.Keys key, Object... messageArguments) {
 
         logger.debug("Building error response. Status: {}, Message: [{}], Args: {}",
                 st, key, messageArguments == null ? "(none)" : Arrays.toString(messageArguments));
