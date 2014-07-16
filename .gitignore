@@ -21,5 +21,8 @@ tomcat.properties
 # Reserved for the developer's custom deploy procedures
 build.xml
 
+# SVN
+**/*.svn
+
 # Others
 **/*.DS_Store
