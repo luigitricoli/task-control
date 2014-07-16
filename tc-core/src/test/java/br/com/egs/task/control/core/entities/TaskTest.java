@@ -79,16 +79,6 @@ public class TaskTest {
         t.prepareForInsert();
     }
 
-    @Test(expected = ValidationException.class)
-    public void validateForInsert_foreseenBeforeCurrentDate() throws Exception {
-        Task.setFixedCurrentDate(timestampFormat.parse("2014-01-15 23:59:59.999"));
-
-        Task t = createTestTask(null, "Test the Task Implementation", "2014-01-02 00:00:00.000",
-                "2014-01-10 23:59:59.999", null, "OLM", false, new TaskOwner("john", "John Foo", "N1"),
-                new TaskOwner("mary", "Mary Baz", "N2"));
-        t.prepareForInsert();
-    }
-
     @Test
     public void finishTask_ontime() throws Exception {
         Task t = createTestTask("111122223333aaaabbbbcccc", "Test the Task Implementation",

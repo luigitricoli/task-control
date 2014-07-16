@@ -273,8 +273,8 @@ public class Task {
         beginOfCurrentDate.set(Calendar.MILLISECOND, 0);
 
         if (beginOfCurrentDate.getTime().after(foreseenEndDate) && endDate == null) {
-            throw new ValidationException("Foreseen End Date cannot be less than the current date",
-                    Messages.Keys.VALIDATION_TASK_FORESEEN_END_IN_THE_PAST_MUST_BE_FINISHED);
+            // Past tasks must be created as Finished. If the endDate was not provided it defaults to the foreseenEndDate
+            endDate = foreseenEndDate;
         }
         
         if (!beginOfCurrentDate.getTime().after(foreseenEndDate) && endDate != null) {
