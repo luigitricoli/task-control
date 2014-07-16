@@ -3,12 +3,12 @@ package br.com.egs.task.control.web.rest.client.task.split;
 import br.com.egs.task.control.web.model.Hashtags;
 import br.com.egs.task.control.web.model.OneWeekTask;
 import br.com.egs.task.control.web.model.Stage;
+import br.com.egs.task.control.web.model.exception.InvalidDateException;
 import br.com.egs.task.control.web.rest.client.task.CoreTask;
 import br.com.egs.task.control.web.rest.client.task.TaskDate;
 import org.junit.Assert;
 import org.junit.Test;
 
-import java.text.ParseException;
 import java.util.HashMap;
 
 import static org.hamcrest.Matchers.equalTo;
@@ -18,7 +18,7 @@ import static org.junit.Assert.assertThat;
 public class DoingSpliterTest {
 
     @Test
-    public void taskOfOneWeek() throws ParseException {
+    public void taskOfOneWeek() throws InvalidDateException {
         String json = "{\"id\":\"52f518377cf06f3be158a352\",\"description\":\"My First CoreTask\",\"startDate\":\"2014-01-06\",\"foreseenEndDate\":\"2014-01-10\",\"source\":\"CCC\",\"application\":\"OLM\",\"owners\":[{\"login\":\"john\"},{\"login\":\"mary\"}],\"posts\":[{\"timestamp\":\"2014-01-03 09:15:30\",\"login\":\"john\",\"name\":\"John Programmer\",\"text\":\"Scope changed. No re-scheduling will be necessary\"},{\"timestamp\":\"2014-01-08 18:20:49\",\"login\":\"john\",\"name\":\"John Programmer\",\"text\":\"Doing #overtime to finish it sooner\"}]}";
 
         TaskSpliter spliter = new DoingSpliter(new TaskDate("2014-01-01"), new TaskDate("2014-01-08"));
@@ -29,7 +29,7 @@ public class DoingSpliterTest {
     }
 
     @Test
-    public void taskOfTwoWeeksTodayInFirstWeek() throws ParseException{
+    public void taskOfTwoWeeksTodayInFirstWeek() throws InvalidDateException{
         String json = "{\"id\":\"52f518377cf06f3be158a352\",\"description\":\"My First CoreTask\",\"startDate\":\"2014-01-06\",\"foreseenEndDate\":\"2014-01-16\",\"source\":\"CCC\",\"application\":\"OLM\",\"owners\":[{\"login\":\"john\"},{\"login\":\"mary\"}],\"posts\":[{\"timestamp\":\"2014-01-03 09:15:30\",\"login\":\"john\",\"name\":\"John Programmer\",\"text\":\"Scope changed. No re-scheduling will be necessary\"},{\"timestamp\":\"2014-01-08 18:20:49\",\"login\":\"john\",\"name\":\"John Programmer\",\"text\":\"Doing #overtime to finish it sooner\"}]}";
 
         TaskSpliter spliter = new DoingSpliter(new TaskDate("2014-01-01"), new TaskDate("2014-01-09"));
@@ -43,7 +43,7 @@ public class DoingSpliterTest {
     }
 
     @Test
-    public void taskOfTwoWeeksTodayInSecondWeek() throws ParseException{
+    public void taskOfTwoWeeksTodayInSecondWeek() throws InvalidDateException{
         String json = "{\"id\":\"52f518377cf06f3be158a352\",\"description\":\"My First CoreTask\",\"startDate\":\"2014-01-06\",\"foreseenEndDate\":\"2014-01-16\",\"source\":\"CCC\",\"application\":\"OLM\",\"owners\":[{\"login\":\"john\"},{\"login\":\"mary\"}],\"posts\":[{\"timestamp\":\"2014-01-03 09:15:30\",\"login\":\"john\",\"name\":\"John Programmer\",\"text\":\"Scope changed. No re-scheduling will be necessary\"},{\"timestamp\":\"2014-01-08 18:20:49\",\"login\":\"john\",\"name\":\"John Programmer\",\"text\":\"Doing #overtime to finish it sooner\"}]}";
 
         TaskSpliter spliter = new DoingSpliter(new TaskDate("2014-01-01"), new TaskDate("2014-01-14"));
@@ -58,7 +58,7 @@ public class DoingSpliterTest {
 
 
     @Test
-    public void taskCrossMonthTodayInFirstMonth() throws ParseException{
+    public void taskCrossMonthTodayInFirstMonth() throws InvalidDateException{
         String json = "{\"id\":\"52f518377cf06f3be158a352\",\"description\":\"My First CoreTask\",\"startDate\":\"2014-02-03\",\"foreseenEndDate\":\"2014-04-25\",\"source\":\"CCC\",\"application\":\"OLM\",\"owners\":[{\"login\":\"john\"},{\"login\":\"mary\"}],\"posts\":[{\"timestamp\":\"2014-01-03 09:15:30\",\"login\":\"john\",\"name\":\"John Programmer\",\"text\":\"Scope changed. No re-scheduling will be necessary\"},{\"timestamp\":\"2014-01-08 18:20:49\",\"login\":\"john\",\"name\":\"John Programmer\",\"text\":\"Doing #overtime to finish it sooner\"}]}";
 
         TaskSpliter spliter = new DoingSpliter(new TaskDate("2014-02-01"), new TaskDate("2014-04-14"));
@@ -76,7 +76,7 @@ public class DoingSpliterTest {
     }
 
     @Test
-    public void taskCrossMonthTodayInSecondMonth() throws ParseException{
+    public void taskCrossMonthTodayInSecondMonth() throws InvalidDateException{
         String json = "{\"id\":\"52f518377cf06f3be158a352\",\"description\":\"My First CoreTask\",\"startDate\":\"2014-02-03\",\"foreseenEndDate\":\"2014-04-25\",\"source\":\"CCC\",\"application\":\"OLM\",\"owners\":[{\"login\":\"john\"},{\"login\":\"mary\"}],\"posts\":[{\"timestamp\":\"2014-01-03 09:15:30\",\"login\":\"john\",\"name\":\"John Programmer\",\"text\":\"Scope changed. No re-scheduling will be necessary\"},{\"timestamp\":\"2014-01-08 18:20:49\",\"login\":\"john\",\"name\":\"John Programmer\",\"text\":\"Doing #overtime to finish it sooner\"}]}";
 
         TaskSpliter spliter = new DoingSpliter(new TaskDate("2014-03-01"), new TaskDate("2014-04-14"));
@@ -93,7 +93,7 @@ public class DoingSpliterTest {
     }
 
     @Test
-    public void taskCrossMonthTodayInLastMonth() throws ParseException{
+    public void taskCrossMonthTodayInLastMonth() throws InvalidDateException{
         String json = "{\"id\":\"52f518377cf06f3be158a352\",\"description\":\"My First CoreTask\",\"startDate\":\"2014-02-03\",\"foreseenEndDate\":\"2014-04-25\",\"source\":\"CCC\",\"application\":\"OLM\",\"owners\":[{\"login\":\"john\"},{\"login\":\"mary\"}],\"posts\":[{\"timestamp\":\"2014-01-03 09:15:30\",\"login\":\"john\",\"name\":\"John Programmer\",\"text\":\"Scope changed. No re-scheduling will be necessary\"},{\"timestamp\":\"2014-01-08 18:20:49\",\"login\":\"john\",\"name\":\"John Programmer\",\"text\":\"Doing #overtime to finish it sooner\"}]}";
 
         TaskSpliter spliter = new DoingSpliter(new TaskDate("2014-04-01"), new TaskDate("2014-04-14"));

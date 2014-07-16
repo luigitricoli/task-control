@@ -2,7 +2,8 @@ package br.com.egs.task.control.web.model.repository;
 
 import br.com.egs.task.control.web.model.Post;
 import br.com.egs.task.control.web.model.Week;
-import br.com.egs.task.control.web.rest.client.task.TaskDate;
+import br.com.egs.task.control.web.model.exception.InvalidDateException;
+import br.com.egs.task.control.web.model.exception.UpdateException;
 
 import java.util.List;
 
@@ -18,5 +19,7 @@ public interface TaskRepository {
     
     public boolean add(Post p, String taskId);
 
-    boolean finish(String taskId, TaskDate date);
+    public void finish(String taskId, String date) throws InvalidDateException, UpdateException;
+
+    public void replan(String taskId, String start, String foreseen) throws InvalidDateException, UpdateException;
 }

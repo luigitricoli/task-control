@@ -187,14 +187,21 @@ function populateTimeline(task) {
 				addPost(task, url);
 			});
 
-			$("#finish").show();
-			$("#finish").click(function() {
-				finish(task);
-			});
-		}
+            $("#finish").click(function() {
+                finish(task);
+            });
+            $("#finish").show();
+        }
 
-		$("#btn-task-history")[0].click();
-	});
+        if(task.find(".stage").hasClass("doing") || task.find(".stage").hasClass("waiting")){
+            $("#replan").click(function() {
+                replan(task);
+            });
+            $("#replan").show();
+        }
+
+        $("#btn-task-history")[0].click();
+    });
 }
 
 function toogleFilterTasks(filter) {
@@ -213,35 +220,55 @@ function toogleFilterTasks(filter) {
 	loadMonth();
 }
 
-function finish(task) {
-	var url = DOMAIN + "tarefas/" + task.data("id") + "/finalizacao";
+function replan(task){
+    var url = DOMAIN + "tarefas/" + task.data("id") + "/planejamento";
 
-	var today = new Date();
-	var month = today.getMonth() + 1;
-	var dateValue = today.getFullYear() + "-" + month + "-" + today.getDate();
+    $.ajax({
+        "url": url,
+        "type": "PUT",
+        "data": { "start" : "15-07-2014", "foreseen" : "17-07-2014"},
+        "success": function(data) {
+                    if("success" === data) {
+                        closePostAlert();
+                        loadMonth();
+                    } else if (undefined !== data.message) {
+                        closePostAlert();
+                        showPostAlert(data);
+                    } else {
+                        closePostAlert();
+                        showPostAlert("Não foi possível replanejar esta tarefa, entre em contato com o Gestor.");
+                    }
 
-	$
-			.ajax({
-				"url" : url,
-				"type" : "PUT",
-				"data" : {
-					"date" : dateValue
-				},
-				"success" : function(data) {
-					if ("success" === data) {
-						closePostAlert();
-						loadMonth();
-					} else if (task.hasClass("late")) {
-						closePostAlert();
-						showPostAlert("É necessário justificar o atraso da tarefa com uma das seguintes hashtag: #atraso ou #atrasado ou #atrasada.")
-					} else {
-						closePostAlert();
-						showPostAlert("Não foi possível finalizar a tarefa.")
-					}
+        }
+    });
 
-				}
-			});
+}
 
+function finish(task){
+    var url = DOMAIN + "tarefas/" + task.data("id") + "/finalizacao";
+
+    var today = new Date();
+    var month = today.getMonth() + 1;
+    var dateValue = today.getFullYear() + "-" + month + "-" + today.getDate();
+
+    $.ajax({
+        "url": url,
+        "type": "PUT",
+        "data": { "date" : dateValue },
+        "success": function(data) {
+                    if("success" === data) {
+                        closePostAlert();
+                        loadMonth();
+                    } else if (task.hasClass("late")) {
+                       closePostAlert();
+                       showPostAlert("É necessário justificar o atraso da tarefa com uma das seguintes hashtag: #atraso ou #atrasado ou #atrasada.")
+                    } else {
+                       closePostAlert();
+                       showPostAlert("Não foi possível finalizar a tarefa.")
+                    }
+
+        }
+    });
 }
 
 function showPostAlert(text) {

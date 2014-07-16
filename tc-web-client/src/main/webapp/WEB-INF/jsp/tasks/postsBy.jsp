@@ -5,7 +5,7 @@
 <p id="task-description"></p>
 <div id="iteraction-menu">
     <a id="finish" class="btn green"><span class="icon add">V</span>Encerrar</a>
-    <a href="#" id="replan" class="btn green"><span class="icon add">R</span>Replanejar</a>
+    <a id="replan" class="btn green"><span class="icon add">R</span>Replanejar</a>
     <a href="#" id="cancel" class="btn red"><span class="icon add">X</span>Cancelar</a>
 </div>
 <div id="iteraction-form">

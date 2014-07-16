@@ -1,5 +1,6 @@
 package br.com.egs.task.control.web.rest.client.task;
 
+import br.com.egs.task.control.web.model.exception.InvalidDateException;
 import com.google.gson.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,8 +13,9 @@ import java.util.Calendar;
 public class TaskDate implements Comparable<TaskDate> {
 
     private static final Logger log = LoggerFactory.getLogger(TaskDate.class);
+    public static final String DEFAULT_PATTERN = "yyyy-MM-dd";
 
-	private Calendar date;
+    private Calendar date;
 	
 	public TaskDate() {
 		this.date = Calendar.getInstance();
@@ -23,14 +25,18 @@ public class TaskDate implements Comparable<TaskDate> {
         this.date = (Calendar) date.clone();
     }
 
-	public TaskDate(String date) throws ParseException {
-		this(date, new SimpleDateFormat("yyyy-MM-dd"));
+	public TaskDate(String date) throws InvalidDateException {
+		this(date, new SimpleDateFormat(DEFAULT_PATTERN));
 	}
 	
-	public TaskDate(String date, SimpleDateFormat format) throws ParseException {
+	public TaskDate(String date, SimpleDateFormat format) throws InvalidDateException {
         this.date = Calendar.getInstance();
-        this.date.setTime(format.parse(date));
-	}
+        try {
+            this.date.setTime(format.parse(date));
+        } catch (ParseException e) {
+            throw new InvalidDateException(date, format.toPattern());
+        }
+    }
 
     public Integer getMonth(){
         return date.get(Calendar.MONTH);
@@ -87,7 +93,7 @@ public class TaskDate implements Comparable<TaskDate> {
         public TaskDate deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
             try {
                 return new TaskDate(jsonElement.getAsString());
-            } catch (ParseException e) {
+            } catch (InvalidDateException e) {
                 throw new JsonParseException(e);
             }
         }

@@ -42,7 +42,8 @@ public class TasckClientTest {
         List<Week> weeks = repo.weeksBy(1);
 
         assertThat(weeks.size(), is(6));
-
     }
+
+
 
 }

@@ -39,6 +39,12 @@ public class CoreTask {
         this.endDate = endDate;
     }
 
+    public CoreTask(String id, TaskDate startDate, TaskDate foreseenEndDate){
+        this.id = id;
+        this.startDate = startDate;
+        this.foreseenEndDate = foreseenEndDate;
+    }
+
     public String getId() {
         return id;
     }

@@ -1,5 +1,6 @@
 package br.com.egs.task.control.web.rest.client.task;
 
+import br.com.egs.task.control.web.model.exception.InvalidDateException;
 import br.com.egs.task.control.web.rest.client.user.CoreUser;
 import org.junit.Test;
 
@@ -15,7 +16,7 @@ import static org.junit.Assert.assertTrue;
 public class CoreTaskTest {
 
 	@Test
-	public void unmarshal() throws ParseException{
+	public void unmarshal() throws InvalidDateException {
 		String json = "{\"id\":\"530e76ef7cf056f2dad8fd32\",\"description\":\"SR1393456879915\",\"startDate\":\"2014-02-20\",\"foreseenEndDate\":\"2014-02-25\",\"source\":\"CCC\",\"application\":\"OLM\",\"owners\":[{\"login\":\"john\"},{\"login\":\"mary\"}],\"posts\":[{\"timestamp\":\"2014-01-03 09:15:30\",\"login\":\"john\",\"name\":\"John Programmer\",\"text\":\"Scope changed. No re-scheduling will be necessary\"},{\"timestamp\":\"2014-01-08 18:20:49\",\"login\":\"john\",\"name\":\"John Programmer\",\"text\":\"Doing #overtime to finish it sooner\"}]}";
 		CoreTask task = CoreTask.unmarshal(json);
 		
@@ -33,7 +34,7 @@ public class CoreTaskTest {
 	}
 
     @Test
-    public void marshal() throws ParseException{
+    public void marshal() throws InvalidDateException {
         TaskDate date = new TaskDate("2014-02-20");
 
         CoreTask task = new CoreTask("530e76ef7cf056f2dad8fd32", date);
@@ -41,7 +42,7 @@ public class CoreTaskTest {
     }
 
     @Test
-    public void marshalUnicode() throws ParseException{
+    public void marshalUnicode() throws InvalidDateException {
         TaskDate date = new TaskDate("2014-02-20");
         List<CoreUser> users = new ArrayList<>();
         users.add(new CoreUser("luigi"));

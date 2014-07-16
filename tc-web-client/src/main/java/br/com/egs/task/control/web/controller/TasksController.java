@@ -4,6 +4,9 @@ import br.com.caelum.vraptor.*;
 import br.com.caelum.vraptor.view.Results;
 import br.com.egs.task.control.web.interceptor.AuthRequired;
 import br.com.egs.task.control.web.model.SessionUser;
+import br.com.egs.task.control.web.model.exception.InvalidDateException;
+import br.com.egs.task.control.web.model.exception.TaskControlWebClientException;
+import br.com.egs.task.control.web.model.exception.UpdateException;
 import br.com.egs.task.control.web.model.repository.TaskRepository;
 import br.com.egs.task.control.web.rest.client.task.TaskDate;
 import org.slf4j.Logger;
@@ -21,6 +24,8 @@ public class TasksController {
 
     private static final Logger log = LoggerFactory.getLogger(TasksController.class);
     public static final String EMPTY = "";
+    private static final String SUCCESS_RESPONSE_CODE = "success";
+    private static final String FAIL_RESPONSE_CODE = "fail";
 
     private Result result;
     private TaskRepository tasks;
@@ -57,9 +62,9 @@ public class TasksController {
 
         log.debug("Description: {}", description);
         if (tasks.add(start, foreseen, type, system, description, owners)) {
-            result.use(Results.http()).body("success");
+            result.use(Results.http()).body(SUCCESS_RESPONSE_CODE);
         } else {
-            result.use(Results.http()).body("fail");
+            result.use(Results.http()).body(FAIL_RESPONSE_CODE);
         }
     }
 
@@ -75,7 +80,7 @@ public class TasksController {
             result.use(Results.http()).body("Descrição inválida");
             return false;
         } else if (type == null || system == null || owners == null) {
-            result.use(Results.http()).body("fail");
+            result.use(Results.http()).body(FAIL_RESPONSE_CODE);
             return false;
         }
         return true;
@@ -84,17 +89,26 @@ public class TasksController {
 
     @Put(value = "/tarefas/{task}/finalizacao")
     public void finish(String task, String date) {
-        log.debug("Value task param: {}", task);
-        log.debug("Value date param: {}", date);
-
         try {
-            if (tasks.finish(task, new TaskDate(date))) {
-                result.use(Results.http()).body("success");
-            } else {
-                result.use(Results.http()).body("fail");
-            }
-        } catch (ParseException e) {
-            log.error(String.format("The value [%s] of date argument is invalid for the format [yyyy-MM-dd]"), date);
+            tasks.finish(task, date);
+            result.use(Results.http()).body(SUCCESS_RESPONSE_CODE);
+        } catch (TaskControlWebClientException e) {
+            log.error(e.getMessage());
+            result.use(Results.http()).body(FAIL_RESPONSE_CODE);
+        }
+    }
+
+    @Put(value = "/tarefas/{task}/planejamento")
+    public void replan(String task, String start, String foreseen) {
+        try {
+            tasks.replan(task, start, foreseen);
+            result.use(Results.http()).body(SUCCESS_RESPONSE_CODE);
+        } catch (UpdateException e){
+            log.error(e.getMessage());
+            result.use(Results.http()).body(e.getMessage());
+        } catch (TaskControlWebClientException e) {
+            log.error(e.getMessage());
+            result.use(Results.http()).body(FAIL_RESPONSE_CODE);
         }
     }
 
@@ -108,9 +122,9 @@ public class TasksController {
         br.com.egs.task.control.web.model.Post post = new br.com.egs.task.control.web.model.Post(
                             Calendar.getInstance(), session.getUser().getNickname(), null, text);
         if (tasks.add(post, task)) {
-            result.use(Results.http()).body("success");
+            result.use(Results.http()).body(SUCCESS_RESPONSE_CODE);
         } else {
-            result.use(Results.http()).body("fail");
+            result.use(Results.http()).body(FAIL_RESPONSE_CODE);
         }
     }
 
