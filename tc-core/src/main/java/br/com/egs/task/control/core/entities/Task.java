@@ -306,12 +306,14 @@ public class Task {
 
         if (date.after(this.foreseenEndDate)) {
             boolean atrasoCommentExists = false;
-            for (Post post : posts) {
-                String text = post.getText().toLowerCase();
-                String latePostExpression = messages.get(Messages.Keys.PARAMETER_TASK_LATE_POST_EXPRESSION);
-                if (text.matches(latePostExpression)) {
-                    atrasoCommentExists = true;
-                    break;
+            if (posts != null) {
+                for (Post post : posts) {
+                    String text = post.getText().toLowerCase();
+                    String latePostExpression = messages.get(Messages.Keys.PARAMETER_TASK_LATE_POST_EXPRESSION);
+                    if (text.matches(latePostExpression)) {
+                        atrasoCommentExists = true;
+                        break;
+                    }
                 }
             }
 
