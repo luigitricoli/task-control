@@ -330,13 +330,14 @@ public class Task {
      * @throws ValidationException
      */
     public void changeStartDate(Date startDate) throws ValidationException {
-        if (startDate.before(getCurrentDate())) {
-            throw new ValidationException("Cannot change the start date. The task is already started",
+        if (this.startDate.before(getCurrentDate())) {
+            throw new ValidationException("Cannot change the start date. The task is already started. Start date: " 
+                        + this.startDate,
                     Messages.Keys.VALIDATION_TASK_CANNOT_CHANGE_START_ALREADY_STARTED);
         }
 
         if (this.endDate != null) {
-            throw new ValidationException("Task already finished",
+            throw new ValidationException("Task already finished. End date: " + this.endDate,
                     Messages.Keys.VALIDATION_TASK_CANNOT_MODIFY_FINISHED);
         }
 
@@ -349,7 +350,7 @@ public class Task {
      */
     public void changeForeseenEndDate(Date foreseen) throws ValidationException {
         if (this.endDate != null) {
-            throw new ValidationException("Task already finished",
+            throw new ValidationException("Task already finished. End date: " + this.endDate,
                     Messages.Keys.VALIDATION_TASK_CANNOT_MODIFY_FINISHED);
         }
 
@@ -576,8 +577,13 @@ public class Task {
 
     public static class TaskDeserializer implements JsonDeserializer<Task> {
 
-        private static final DateFormat dateParser = new SimpleDateFormat("yyyy-MM-dd");
+        private DateFormat dateParser;
 
+        TaskDeserializer() {
+            dateParser = new SimpleDateFormat("yyyy-MM-dd");
+            dateParser.setLenient(false);
+        }
+        
         @Override
         public Task deserialize(JsonElement jsonElement, Type type,
                                 JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
