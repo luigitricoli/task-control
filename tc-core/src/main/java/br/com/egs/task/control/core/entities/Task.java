@@ -204,8 +204,8 @@ public class Task {
 
         return task;
     }
-
-    public void validateForInsert() throws ValidationException {
+    
+    public void prepareForInsert() throws ValidationException {
         if (id != null) {
             throw new ValidationException(
                     "The id field must not be set for a new Task",
@@ -225,11 +225,6 @@ public class Task {
         if (foreseenEndDate == null) {
             throw new ValidationException("The foreseenEndDate is required",
                     Messages.Keys.VALIDATION_TASK_FORESEEN_REQUIRED);
-        }
-
-        if (endDate != null) {
-            throw new ValidationException("The endDate must not be set for a new Task",
-                    Messages.Keys.VALIDATION_TASK_END_MUST_NOT_BE_SET_ON_CREATE);
         }
 
         if (StringUtils.isBlank(source)) {
@@ -277,9 +272,19 @@ public class Task {
         beginOfCurrentDate.set(Calendar.SECOND, 0);
         beginOfCurrentDate.set(Calendar.MILLISECOND, 0);
 
-        if (beginOfCurrentDate.getTime().after(foreseenEndDate)) {
+        if (beginOfCurrentDate.getTime().after(foreseenEndDate) && endDate == null) {
             throw new ValidationException("Foreseen End Date cannot be less than the current date",
-                    Messages.Keys.VALIDATION_TASK_FORESEEN_END_IN_THE_PAST);
+                    Messages.Keys.VALIDATION_TASK_FORESEEN_END_IN_THE_PAST_MUST_BE_FINISHED);
+        }
+        
+        if (!beginOfCurrentDate.getTime().after(foreseenEndDate) && endDate != null) {
+            // If the foreseen end date is in the future, do not allow the task to be automatically finished
+            endDate = null;
+        }
+        
+        if (this.getForeseenWorkHours() == null || this.getForeseenWorkHours() == 0) {
+            // If not provided, calculates automatically
+            this.calculateForeseenWorkHours();
         }
     }
 

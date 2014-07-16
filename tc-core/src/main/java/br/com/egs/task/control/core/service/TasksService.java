@@ -89,14 +89,9 @@ public class TasksService {
         Task task = jsonToTask(body);
 
         try {
-            task.validateForInsert();
+            task.prepareForInsert();
         } catch (ValidationException ve) {
             throw responseUtils.buildUnrecoverableBusinessException(ve.getUserMessageKey());
-        }
-
-        if (task.getForeseenWorkHours() == null || task.getForeseenWorkHours() == 0) {
-            // If not provided, calculates automatically
-            task.calculateForeseenWorkHours();
         }
 
         List<TaskOwner> ownersWithData = new ArrayList<>();

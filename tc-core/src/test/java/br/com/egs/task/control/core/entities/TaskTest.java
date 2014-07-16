@@ -30,7 +30,7 @@ public class TaskTest {
         Task t = createTestTask(null, "Test the Task Implementation", "2014-01-02 00:00:00.000",
                 "2014-01-10 23:59:59.999", null, "OLM", false, new TaskOwner("john", "John Foo", "N1"),
                 new TaskOwner("mary", "Mary Baz", "N2"));
-        t.validateForInsert();
+        t.prepareForInsert();
     }
 
     @Test
@@ -42,7 +42,7 @@ public class TaskTest {
         Task t = createTestTask(null, "Test the Task Implementation", "2014-01-02 00:00:00.000",
                 "2014-01-10 23:59:59.999", null, "OLM", false, new TaskOwner("john", "John Foo", "N1"),
                 new TaskOwner("mary", "Mary Baz", "N2"));
-        t.validateForInsert();
+        t.prepareForInsert();
     }
 
     @Test(expected = ValidationException.class)
@@ -50,15 +50,7 @@ public class TaskTest {
         Task t = createTestTask("111122223333aaaabbbbcccc", "Test the Task Implementation",
                 "2014-01-02 00:00:00.000", "2014-01-10 23:59:59.999", null, "OLM", false, new TaskOwner("john",
                 "John Foo", "N1"), new TaskOwner("mary", "Mary Baz", "N2"));
-        t.validateForInsert();
-    }
-
-    @Test(expected = ValidationException.class)
-    public void validateForInsert_nonNullEndDate() throws Exception {
-        Task t = createTestTask(null, "Test the Task Implementation", "2014-01-02 00:00:00.000",
-                "2014-01-10 23:59:59.999", "2014-01-09 23:59:59.999", "OLM", false, new TaskOwner("john", "John Foo",
-                "N1"), new TaskOwner("mary", "Mary Baz", "N2"));
-        t.validateForInsert();
+        t.prepareForInsert();
     }
 
     @Test(expected = ValidationException.class)
@@ -66,7 +58,7 @@ public class TaskTest {
         Task t = createTestTask(null, "Test the Task Implementation", "2014-01-02 00:00:00.000",
                 "2014-01-10 23:59:59.999", null, "OLM", true, new TaskOwner("john", "John Foo", "N1"),
                 new TaskOwner("mary", "Mary Baz", "N2"));
-        t.validateForInsert();
+        t.prepareForInsert();
     }
 
     @Test(expected = ValidationException.class)
@@ -84,7 +76,7 @@ public class TaskTest {
                 new Application("OLM"),
                 Arrays.asList(new TaskOwner("bob", "Bob Programmer", "N1")));
 
-        t.validateForInsert();
+        t.prepareForInsert();
     }
 
     @Test(expected = ValidationException.class)
@@ -94,7 +86,7 @@ public class TaskTest {
         Task t = createTestTask(null, "Test the Task Implementation", "2014-01-02 00:00:00.000",
                 "2014-01-10 23:59:59.999", null, "OLM", false, new TaskOwner("john", "John Foo", "N1"),
                 new TaskOwner("mary", "Mary Baz", "N2"));
-        t.validateForInsert();
+        t.prepareForInsert();
     }
 
     @Test
