@@ -10,6 +10,7 @@
     <script src="<c:url value="/resources/jquery.mask.min.js"/>"></script>
     <script src="<c:url value="/resources/user.js"/>"></script>
     <script src="<c:url value="/resources/calendar.js"/>"></script>
+    <script src="<c:url value="/resources/saveUser.js"/>"></script>
     <c:if test="${sessionUser.admin}">
         <script src="<c:url value="/resources/adminFilters.js"/>"></script>
     </c:if>
@@ -124,6 +125,7 @@
         <div id="block-screen">
             <jsp:include page="_addTask.jsp"/>
             <jsp:include page="_changePass.jsp"/>
+            <jsp:include page="_newUser.jsp"/>
         </div>
         <!-- 
         <script type="text/javascript">

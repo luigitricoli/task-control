@@ -56,9 +56,34 @@ public class UserClient implements UserRepository {
 	}
     
     @Override
+  	public boolean newUser(User cadUser){
+    	
+    	String apps="";
+        for ( String s : cadUser.getSystems())
+        {
+      	  apps += "{name:'"+s+"'},";
+      	  
+        }
+        apps = apps.substring (0, apps.length() - 1);  
+        
+          String json = String.format("{login:'%s', name: '%s', email: '%s', type: '%s', password: '%s',applications: [%s]}",
+        		  cadUser.getNickname(),cadUser.getName(),cadUser.getEmail(),cadUser.getType(),cadUser.getpass(),apps);
+
+          log.debug("UserCliente JSON [{}]", json);
+          Response response = jsonClient.at("users/").postAsJson(json);
+          
+          if(response.getCode().equals(SUCCESS_CODE)){
+             // CoreUser coreUser = CoreUser.unmarshal(response.getContent());
+             // user.login(coreUser.getName(), coreUser.getLogin(), coreUser.getEmail(), coreUser.getApplications());
+              return true;
+          }
+
+          return false;
+  	}
+    
+    @Override
     public List<User> getAll(){
         Response response = jsonClient.at("users").getAsJson();
-
         List<User> users = new ArrayList<>();
         if(response.getCode().equals(SUCCESS_CODE)){
             for(CoreUser user : CoreUser.unmarshalList(response.getContent())){

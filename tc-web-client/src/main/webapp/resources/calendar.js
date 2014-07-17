@@ -302,6 +302,7 @@ function successBallon(msg){
 
 function changePass() {
 	var url = DOMAIN + "changePass";
+	console.log(url);
 	var formData = $("#change-pass-form").serialize();
 	var successFunction = function(data) {
 		if ("sucess" == data) {
@@ -309,24 +310,15 @@ function changePass() {
 			
 			successBallon("Senha atualizada com sucesso!");
 			
-		} else if ("fail" == data) {
-			// senha nova est· incorreta
-			console.log("senha nova est· incorreta");
+		} else{
 			closeAddAlertPass();
-			showAddAlertPass("Senha nova n√£o confere!");
-		} else if ("passFail" == data) {
-			// senha antiga est· incorreta
-			console.log("senha antiga est· incorreta");
-			closeAddAlertPass();
-			showAddAlertPass("Senha antiga incorreta!");
-		}
+			showAddAlertPass(data);
+		} 
 	};
 	$.post(url, formData, successFunction);
 }
 
-
 function showAddAlertPass(text) {
-	console.log("showAddAlertPass");
 	$("#add-changePass-container").height("280px");
 	$("#change-pass-form .alert p").text(text);
 	$("#change-pass-form .alert").show();
@@ -334,7 +326,6 @@ function showAddAlertPass(text) {
 }
 
 function closeAddAlertPass() {
-	console.log("closeAddAlertPass");
 	$("#add-changePass-container").height("245px");
 	$("#change-pass-form .alert").hide();
 	$("#change-pass-form .alert").switchClass("end", "begin", 0);

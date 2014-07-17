@@ -10,4 +10,6 @@ public interface UserRepository {
     public List<User> getAll();
     
     public boolean changePassword(String login, String newPass);
+    
+    public boolean newUser(User user);
 }

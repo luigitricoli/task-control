@@ -6,6 +6,10 @@ function userInfoActions(selected){
     	    $("#block-screen").show();
     	    $("#add-changePass-container").show();
     }
+    if("newUser" == selected.value){
+	    $("#block-screen").show();
+	    $("#add-newUser-container").show();
+    }
     
     resetUserNick();
     event.preventDefault();

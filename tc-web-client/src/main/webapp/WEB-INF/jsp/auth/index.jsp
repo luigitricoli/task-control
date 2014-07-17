@@ -4,8 +4,6 @@
 <head>
     <script src="<c:url value="/resources/jquery-1.10.2.min.js"/>"></script>
     <script src="<c:url value="/resources/jquery.cookie.js"/>"></script>
-    <script src="<c:url value="/resources/jquery-ui.js"/>"></script>
-    <script src="<c:url value="/resources/jquery.easydropdown.min.js"/>"></script>
     <script src="<c:url value="/resources/user.js"/>"></script>
     <script type="text/javascript">
         var DOMAIN='<c:url value="/"/>';

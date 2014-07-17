@@ -12,6 +12,8 @@ public class CoreUser {
     private String name;
     private String login;
     private String email;
+    //private String type;
+    //private String pass;
     private List<String> applications;
 
     public CoreUser(String login) {
@@ -29,7 +31,15 @@ public class CoreUser {
     public String getEmail() {
         return email;
     }
-
+    
+    /*public String getType() {
+        return type;
+    }
+    
+    public String getPass() {
+        return pass;
+    }*/
+    
     public List<String> getApplications() {
         return applications;
     }

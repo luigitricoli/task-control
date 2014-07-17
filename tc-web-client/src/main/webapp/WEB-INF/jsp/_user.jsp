@@ -8,6 +8,7 @@
             <option value="help">Ajuda</option>
             -->
             <option value="changePass">Alterar Senha</option>
+            <c:if test="${sessionUser.user.systems.contains('task_control')}"><option value="newUser">Novo Usuário</option></c:if>
             <option value="logout">Logout</option>
         </select>
     </div>

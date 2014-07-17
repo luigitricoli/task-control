@@ -306,6 +306,15 @@ h1{
     margin-left: -150px;
 }
 
+.newUserWindow{
+    width: 500px;
+    height: 360px;
+    top: 50%;
+    margin-top: -200px;
+    left: 50%;
+    margin-left: -250px;
+}
+
 .buttonOKWindow{
     width: 250px;
     height: 240px;
@@ -344,6 +353,51 @@ h1{
     margin-left: 3px;
 }
 
+.newUser-input{
+	width: 203px;
+}
+
+.newUser-login{
+	width: 100px;
+}
+
+.userbox{
+    width: 449px;
+    height: 10px;
+    top: 103%;
+    margin-top: -200px;
+    left: 48%;
+    margin-left: -250px;
+	text-align: justify;
+	
+}
+
+.userbox fieldset{
+	
+	padding: 5px;
+}
+.userbox legend{
+	font-size: 14px;
+    margin-bottom: 3px;
+}
+
+.userBottom{
+	width: 440px;
+	margin-left: 210px;
+	padding-top: 15px;
+	float: right !important;
+}
+.userbox-inside{
+ float: left;
+ width: 145px;
+
+}
+
+.checkbox-label{
+	display: inline !important;
+	padding-left: 3px;
+}
+
 .float-window select{
     width: 214px;
 }
@@ -378,6 +432,10 @@ h1{
     margin-left: 20px;
 }
 
+#cancel-register-user{
+    margin-left: 20px;
+}
+
 .float-window .half-center{
     float: center;
     width: 240px;
@@ -388,6 +446,10 @@ h1{
 }
 
 #add-changePass-container{
+    display:none;
+}
+
+#add-newUser-container{
     display:none;
 }
 

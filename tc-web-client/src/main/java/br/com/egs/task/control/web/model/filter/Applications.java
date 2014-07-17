@@ -28,7 +28,7 @@ public class Applications {
     private String selected;
 
     public Applications() {
-        labels = new HashMap<>();
+        labels = new TreeMap<>();
         labels.put(GERAL, "Geral");
         labels.put(ADMINISTRATIVO, "Administrativo");
         labels.put(EMA, "EMA");
