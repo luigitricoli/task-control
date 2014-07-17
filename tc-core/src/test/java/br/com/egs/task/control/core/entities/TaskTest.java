@@ -12,6 +12,8 @@ import java.util.Arrays;
 import java.util.Date;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertNotNull;
 
 /**
  *
@@ -238,6 +240,28 @@ public class TaskTest {
         assertEquals(48, t.getForeseenWorkHours().intValue());
     }
 
+    @Test
+    public void pastTask_generateEndDateAutomatically() throws ValidationException {
+        Task t = createTestTask(null, "Test the Task Implementation", "2013-12-23 00:00:00.000",
+                "2013-12-25 23:59:59.999", null, "OLM", false, new TaskOwner("john", "John Foo", "N1"),
+                new TaskOwner("mary", "Mary Baz", "N2"));
+        t.prepareForInsert();
+        
+        assertNotNull(t.getEndDate());
+        assertEquals("2013-12-25 23:59:59.999", timestampFormat.format(t.getEndDate()));
+    }
+    
+    @Test
+    public void nonPastTask_ignoreEndDate() throws ValidationException {
+        Task t = createTestTask(null, "Test the Task Implementation", "2014-01-03 00:00:00.000",
+                "2014-01-03 23:59:59.999", "2014-01-03 23:59:59.999", 
+                "OLM", false, new TaskOwner("john", "John Foo", "N1"),
+                new TaskOwner("mary", "Mary Baz", "N2"));
+        t.prepareForInsert();
+        
+        assertNull(t.getEndDate());
+    }
+    
     @Test
     public void post_notifyWorkedHours() throws Exception {
         Task t = createTestTask("111122223333aaaabbbbcccc", "Test the Task Implementation",
