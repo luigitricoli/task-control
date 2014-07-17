@@ -163,7 +163,7 @@ public class TaskTest {
                 "John Foo", "N1"), new TaskOwner("mary", "Mary Baz", "N2"));
 
         Date startDate = timestampFormat.parse("2014-01-05 14:47:48.555");
-        t.changeStartDate(startDate);
+        t.reschedule(startDate, null);
 
         assertEquals(timestampFormat.parse("2014-01-05 00:00:00.000"), t.getStartDate());
     }
@@ -178,7 +178,20 @@ public class TaskTest {
 
         Date startDate = timestampFormat.parse("2014-01-05 14:47:48.555");
 
-        t.changeStartDate(startDate);  // ValidationException expected
+        t.reschedule(startDate, null);  // ValidationException expected
+    }
+
+    @Test(expected = ValidationException.class)
+    public void changeStartDate_errorAfterForeseenEndDate() throws Exception {
+        Task.setFixedCurrentDate(timestampFormat.parse("2014-01-01 12:00:00.000"));
+        
+        Task t = createTestTask("111122223333aaaabbbbcccc", "Test the Task Implementation",
+                "2014-01-02 00:00:00.000", "2014-01-10 23:59:59.999", null, "OLM", true, new TaskOwner("john",
+                "John Foo", "N1"), new TaskOwner("mary", "Mary Baz", "N2"));
+
+        Date startDate = timestampFormat.parse("2014-01-11 14:47:48.555");
+
+        t.reschedule(startDate, null);  // ValidationException expected
     }
 
     @Test
@@ -188,7 +201,7 @@ public class TaskTest {
                 "John Foo", "N1"), new TaskOwner("mary", "Mary Baz", "N2"));
 
         Date foreseen = timestampFormat.parse("2014-01-17 16:28:49.179");
-        t.changeForeseenEndDate(foreseen);
+        t.reschedule(null, foreseen);
 
         assertEquals(timestampFormat.parse("2014-01-17 23:59:59.999"), t.getForeseenEndDate());
     }

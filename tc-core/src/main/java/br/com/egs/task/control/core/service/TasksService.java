@@ -177,25 +177,14 @@ public class TasksService {
 
         } else if (changedAttributes.getStartDate() != null || changedAttributes.getForeseenEndDate() != null) {
             log.debug(
-                "TasksService::modifyTask(). ID: [ {} ]. Requested has startDate and/or foreseenEndDate, rescheduling",
-                    id);
+                "TasksService::modifyTask(). ID: [ {} ]. Requested has startDate and/or foreseenEndDate, rescheduling."
+                        + " New startDate=[{}], new foreseenEndDate=[{}]", 
+                    id, changedAttributes.getStartDate(), changedAttributes.getForeseenEndDate());
 
-            if (changedAttributes.getStartDate() != null) {
-                log.debug("TasksService::modifyTask(). ID: [ {} ]. Changing starting date", id);
-                try {
-                    task.changeStartDate(changedAttributes.getStartDate());
-                } catch (ValidationException e) {
-                    throw responseUtils.buildUnrecoverableBusinessException(e.getUserMessageKey());
-                }
-
-            }
-            if (changedAttributes.getForeseenEndDate() != null) {
-                log.debug("TasksService::modifyTask(). ID: [ {} ]. Changing foreseenEndDate", id);
-                try {
-                    task.changeForeseenEndDate(changedAttributes.getForeseenEndDate());
-                } catch (ValidationException e) {
-                    throw responseUtils.buildUnrecoverableBusinessException(e.getUserMessageKey());
-                }
+            try {
+                task.reschedule(changedAttributes.getStartDate(), changedAttributes.getForeseenEndDate());
+            } catch (ValidationException e) {
+                throw responseUtils.buildUnrecoverableBusinessException(e.getUserMessageKey());
             }
 
             if (changedAttributes.getForeseenWorkHours() == null || changedAttributes.getForeseenWorkHours() == 0) {

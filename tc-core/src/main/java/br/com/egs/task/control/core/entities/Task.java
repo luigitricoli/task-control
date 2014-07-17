@@ -329,32 +329,31 @@ public class Task {
      *
      * @throws ValidationException
      */
-    public void changeStartDate(Date startDate) throws ValidationException {
-        if (this.startDate.before(getCurrentDate())) {
-            throw new ValidationException("Cannot change the start date. The task is already started. Start date: " 
-                        + this.startDate,
-                    Messages.Keys.VALIDATION_TASK_CANNOT_CHANGE_START_ALREADY_STARTED);
-        }
-
+    public void reschedule(Date newStartDate, Date newForeseenEndDate) throws ValidationException {
         if (this.endDate != null) {
-            throw new ValidationException("Task already finished. End date: " + this.endDate,
+            throw new ValidationException("Cannot reschedule, task already finished. End date: " + this.endDate,
                     Messages.Keys.VALIDATION_TASK_CANNOT_MODIFY_FINISHED);
         }
+        
+        if (newStartDate != null && !newStartDate.equals(this.startDate)) {
+            if (this.startDate.before(getCurrentDate())) {
+                throw new ValidationException("Cannot change dates. The task is already started. Start date: " 
+                            + this.startDate,
+                        Messages.Keys.VALIDATION_TASK_CANNOT_CHANGE_START_ALREADY_STARTED);
+            }
 
-        this.startDate = toZeroHourDate(startDate);
-    }
-
-    /**
-     *
-     * @throws ValidationException
-     */
-    public void changeForeseenEndDate(Date foreseen) throws ValidationException {
-        if (this.endDate != null) {
-            throw new ValidationException("Task already finished. End date: " + this.endDate,
-                    Messages.Keys.VALIDATION_TASK_CANNOT_MODIFY_FINISHED);
+            this.startDate = toZeroHourDate(newStartDate);
         }
-
-        this.foreseenEndDate = toMaxHourDate(foreseen);
+        
+        if (newForeseenEndDate != null) {
+            this.foreseenEndDate = toMaxHourDate(newForeseenEndDate);
+        }
+        
+        // Checks consistency after the change
+        if (foreseenEndDate.before(startDate)) {
+            throw new ValidationException("Start Date cannot be greater than Foreseen End Date",
+                    Messages.Keys.VALIDATION_TASK_START_AFTER_END);
+        }
     }
 
     /**
