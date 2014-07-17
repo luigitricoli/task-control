@@ -14,7 +14,6 @@ function getUsers(){
 
 function filterRadio(filter){
     appFilter = filter.data("filter");
-    console.log(appFilter);
     loadMonth();
 }
 
@@ -31,7 +30,6 @@ function toogleUserFilterTasks(filter){
         users = users.replace(name+",", "");
         users = users.replace(name, "");
     }
-    console.log(users);
     loadMonth();
 }
 

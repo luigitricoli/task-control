@@ -16,13 +16,11 @@
 		</div>
 		<div class="field half-left">
 			<label>Login</label> <input type="text" name="login"
-				class="newUser-login" id="login" required> <span
-				class="format">mínimo 8 caracteres</span>
+				class="newUser-login" id="login" required>
 		</div>
 		<div class="field half-left">
 			<label>Senha</label> <input type="password" name="pass"
-				class="newUser-login" id="pass" required> <span
-				class="format">mínimo 8 caracteres</span>
+				class="newUser-login" id="pass" required>
 		</div>
 		<div class="field half-left">
 			<label class="fieldUser">Tipo</label>

@@ -279,58 +279,6 @@ function addTask() {
 	});
 }
 
-function defaultBallonAlert(msg, type){
-	new noty({
-		text: msg,
-		type: type,
-		theme:'task_control',
-		timeout: 5000,
-		animation: {
-	        open: {height: 'toggle'},
-	        close: {height: 'toggle'},
-	        easing: 'swing',
-	        speed: 250
-	    },
-		layout:'topLeft',
-		template: '<div class="noty_message"><span class="noty_text" style="font-family: arial, sans-serif; color: #ffffff; font-size: 14px;"></span></div>'
-			});
-}
-
-function successBallon(msg){
-	defaultBallonAlert(msg, 'success');
-}
-
-function changePass() {
-	var url = DOMAIN + "changePass";
-	console.log(url);
-	var formData = $("#change-pass-form").serialize();
-	var successFunction = function(data) {
-		if ("sucess" == data) {
-			$("#cancel-register-pass")[0].click();
-			
-			successBallon("Senha atualizada com sucesso!");
-			
-		} else{
-			closeAddAlertPass();
-			showAddAlertPass(data);
-		} 
-	};
-	$.post(url, formData, successFunction);
-}
-
-function showAddAlertPass(text) {
-	$("#add-changePass-container").height("280px");
-	$("#change-pass-form .alert p").text(text);
-	$("#change-pass-form .alert").show();
-	$("#change-pass-form .alert").switchClass("begin", "end", 1500);
-}
-
-function closeAddAlertPass() {
-	$("#add-changePass-container").height("245px");
-	$("#change-pass-form .alert").hide();
-	$("#change-pass-form .alert").switchClass("end", "begin", 0);
-}
-
 function showAddAlert(text) {
 	$("#add-task-container").height("355px");
 	$("#add-task-form .alert p").text(text);
@@ -348,12 +296,6 @@ function closeFloatWindow() {
 	$("#block-screen").hide();
 	$("#add-task-container").hide();
 	closeAddAlert();
-}
-
-function closeFloatWindowPass() {
-	$("#block-screen").hide();
-	$("#add-changePass-container").hide();
-	closeAddAlertPass();
 }
 
 
@@ -376,16 +318,9 @@ $(document).ready(function() {
 		closeFloatWindow();
 	});
 
-	$("#cancel-register-pass").click(function(event) {
-		closeFloatWindowPass();
-	});
 
 	$("#salve-register-btn").click(function(event) {
 		addTask();
-	});
-
-	$("#salve-register-pass").click(function(event) {
-		changePass();
 	});
 
 	$("#startDay").mask('00/00/00');
