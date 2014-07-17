@@ -4,6 +4,7 @@ import br.com.egs.task.control.core.entities.User;
 import br.com.egs.task.control.core.exception.ValidationException;
 import br.com.egs.task.control.core.repository.UsersRepository;
 import br.com.egs.task.control.core.utils.HttpResponseUtils;
+import br.com.egs.task.control.core.utils.Messages;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSyntaxException;
@@ -13,7 +14,6 @@ import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import javax.ws.rs.*;
-import javax.ws.rs.core.MediaType;
 import java.util.List;
 
 /**
@@ -26,13 +26,16 @@ public class UsersService {
 
     private UsersRepository repository;
 
+    private HttpResponseUtils responseUtils;
+
     @Inject
     public UsersService(UsersRepository repository) {
         this.repository = repository;
+        this.responseUtils = new HttpResponseUtils();
     }
 
     @GET
-    @Produces(MediaType.APPLICATION_JSON)
+    @Produces("application/json;charset=UTF-8")
     public String listUsers(
             @QueryParam("application") String application) {
 
@@ -51,43 +54,44 @@ public class UsersService {
 
     @GET
     @Path("{login}")
-    @Produces(MediaType.APPLICATION_JSON)
+    @Produces("application/json;charset=UTF-8")
     public String findUser(@PathParam("login") String login) {
         User user = repository.get(login);
 
         if (user == null) {
-            HttpResponseUtils.throwNotFoundException("User [" + login + "] not found");
+            throw responseUtils.buildNotFoundException(Messages.Keys.VALIDATION_USER_UNKNOWN_LOGIN, login);
         }
 
         return user.toJson();
     }
 
     @POST
-    @Produces(MediaType.APPLICATION_JSON)
+    @Produces("application/json;charset=UTF-8")
     public String create(String body) {
+        log.debug("UsersService::create. Request body:\n{}", body);
+
         if (StringUtils.isBlank(body)) {
-            HttpResponseUtils.throwBadRequestException("Request body cannot by null");
+            throw responseUtils.buildBadRequestException(Messages.Keys.VALIDATION_GENERAL_REQUEST_BODY_CANNOT_BE_NULL);
         }
 
-        User user = null;
+        User user;
         try {
             user = User.fromJson(body);
-        } catch (JsonSyntaxException e) {
-            HttpResponseUtils.throwBadRequestException("Invalid request data: " + e.getMessage());
-        } catch (IllegalArgumentException e) {
-            HttpResponseUtils.throwBadRequestException("Invalid request data:" + e.getMessage());
+        } catch (JsonSyntaxException | IllegalArgumentException e) {
+            throw responseUtils.buildBadRequestException(
+                    Messages.Keys.VALIDATION_GENERAL_MALFORMED_REQUEST_ARG, e.getMessage());
         }
-
 
         try {
             user.validate();
         } catch (ValidationException ve) {
-            HttpResponseUtils.throwBadRequestException("Error validating user: " + ve.getMessage());
+            throw responseUtils.buildBadRequestException(ve.getUserMessageKey());
         }
 
         User existingUser = repository.get(user.getLogin());
         if (existingUser != null) {
-            HttpResponseUtils.throwUnrecoverableBusinessException("User already exists: " + existingUser.getLogin());
+            throw responseUtils.buildUnrecoverableBusinessException(
+                    Messages.Keys.VALIDATION_USER_ALREADY_EXISTS, existingUser.getLogin());
         }
 
         repository.add(user);
@@ -97,22 +101,24 @@ public class UsersService {
 
     @PUT
     @Path("{login}")
-    @Produces(MediaType.APPLICATION_JSON)
+    @Produces("application/json;charset=UTF-8")
     public String update(@PathParam("login") String login, String body) {
+        log.debug("UsersService::update. Login=[ {} ] Request body:\n{}", login, body);
+
         if (StringUtils.isBlank(body)) {
-            HttpResponseUtils.throwBadRequestException("Request body cannot by null");
+            throw responseUtils.buildBadRequestException(Messages.Keys.VALIDATION_GENERAL_REQUEST_BODY_CANNOT_BE_NULL);
         }
 
-        User newUserData = null;
+        User newUserData;
         try {
             newUserData = User.fromJson(body, login);
         } catch (JsonSyntaxException e) {
-            HttpResponseUtils.throwBadRequestException("Invalid request data");
+            throw responseUtils.buildBadRequestException(Messages.Keys.VALIDATION_GENERAL_MALFORMED_REQUEST);
         }
 
         User currentlySavedUser = repository.get(login);
         if (currentlySavedUser == null) {
-            HttpResponseUtils.throwNotFoundException("User does no exist: " + login);
+            throw responseUtils.buildNotFoundException(Messages.Keys.VALIDATION_USER_UNKNOWN_LOGIN, login);
         }
 
         boolean newPasswordInformed = StringUtils.isNotBlank(newUserData.getPasswordHash());
@@ -135,7 +141,7 @@ public class UsersService {
         try {
             currentlySavedUser.validate();
         } catch (ValidationException ve) {
-            HttpResponseUtils.throwBadRequestException("Error validating user: " + ve.getMessage());
+            throw responseUtils.buildBadRequestException(ve.getUserMessageKey());
         }
 
         repository.update(currentlySavedUser);

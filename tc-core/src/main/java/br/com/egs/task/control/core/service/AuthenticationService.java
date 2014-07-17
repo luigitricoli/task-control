@@ -3,17 +3,16 @@ package br.com.egs.task.control.core.service;
 import br.com.egs.task.control.core.entities.User;
 import br.com.egs.task.control.core.repository.UsersRepository;
 import br.com.egs.task.control.core.utils.HttpResponseUtils;
+import br.com.egs.task.control.core.utils.Messages;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
 
 /**
  *
@@ -21,44 +20,45 @@ import javax.ws.rs.core.MediaType;
 @Path("authentication")
 public class AuthenticationService {
 
-    private static final Logger log = LoggerFactory.getLogger(AuthenticationService.class);
-
     private UsersRepository repository;
+    private HttpResponseUtils responseUtils;
 
     @Inject
     public AuthenticationService(UsersRepository repository) {
         this.repository = repository;
+        this.responseUtils = new HttpResponseUtils();
     }
 
     @POST
-    @Produces(MediaType.APPLICATION_JSON)
+    @Produces("application/json;charset=UTF-8")
+    @Consumes("application/json;charset=UTF-8")
     public String authenticate(String body) {
         if (StringUtils.isBlank(body)) {
-            HttpResponseUtils.throwBadRequestException("Request body cannot by null");
+            throw responseUtils.buildBadRequestException(Messages.Keys.VALIDATION_GENERAL_REQUEST_BODY_CANNOT_BE_NULL);
         }
 
-        AuthenticationData authData = null;
+        AuthenticationData authData;
         try {
             authData = new Gson().fromJson(body, AuthenticationData.class);
         } catch (JsonSyntaxException e) {
-            HttpResponseUtils.throwBadRequestException("Malformed authentication data");
+            throw responseUtils.buildBadRequestException(Messages.Keys.VALIDATION_GENERAL_MALFORMED_REQUEST);
         }
 
         if (StringUtils.isBlank(authData.username)) {
-            HttpResponseUtils.throwBadRequestException("The 'username' attribute is missing");
+            throw responseUtils.buildBadRequestException(Messages.Keys.VALIDATION_LOGIN_MISSING_USERNAME);
         }
         if (StringUtils.isBlank(authData.password)) {
-            HttpResponseUtils.throwBadRequestException("The 'password' attribute is missing");
+            throw responseUtils.buildBadRequestException(Messages.Keys.VALIDATION_LOGIN_MISSING_PASSWORD);
         }
 
         User user = repository.get(authData.username);
 
         if (user == null) {
-            HttpResponseUtils.throwRecoverableBusinessException("Invalid username and/or password");
+            throw responseUtils.buildRecoverableBusinessException(Messages.Keys.VALIDATION_LOGIN_INVALID_CREDENTIALS);
         }
 
         if (!user.checkPassword(authData.password)) {
-            HttpResponseUtils.throwRecoverableBusinessException("Invalid username and/or password");
+            throw responseUtils.buildRecoverableBusinessException(Messages.Keys.VALIDATION_LOGIN_INVALID_CREDENTIALS);
         }
 
         return user.toJson();

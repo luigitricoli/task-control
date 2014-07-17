@@ -11,6 +11,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static org.junit.Assert.*;
@@ -33,23 +34,33 @@ public class TaskConversionTest {
                 "description: 'Test the Task Implementation'," +
                 "startDate: '2014-01-02'," +
                 "foreseenEndDate: '2014-01-10'," +
+                "foreseenWorkHours: 50," +
                 "endDate: '2014-01-09'," +
                 "source: 'Sup.Producao'," +
                 "application: 'OLM'," +
                 "owners: [" +
                 "           {login: 'john'," +
                 "            name: 'John Programmer'," +
-                "            type: 'N1'}," +
+                "            type: 'N1'," +
+                "            workDays: [" +
+                "                {" +
+                "                   day: '2014-01-03'," +
+                "                   hours: 8" +
+                "                }" +
+                "            ]}," +
                 "           {login: 'mary'," +
                 "            name: 'Mary Devs'," +
-                "            type: 'N2'}" +
+                "            type: 'N2'," +
+                "            workDays: []}" +
                 "]," +
                 "posts: [" +
                 "           {timestamp: '2014-01-03 09:15:30'," +
-                "            user: 'john'," +
+                "            login: 'john'," +
+                "            name: 'John The Programmer'," +
                 "            text: 'Scope changed. No re-scheduling will be necessary'}," +
                 "           {timestamp: '2014-01-08 18:20:49'," +
-                "            user: 'john'," +
+                "            login: 'john'," +
+                "            name: 'John The Programmer'," +
                 "            text: 'Doing #overtime to finish it sooner'}" +
                 "]" +
                 "}";
@@ -68,16 +79,24 @@ public class TaskConversionTest {
                 "description: 'Test the Task Implementation'," +
                 "startDate: '2014-01-02'," +
                 "foreseenEndDate: '2014-01-10'," +
+                "foreseenWorkHours: 50," +
                 "endDate: '2014-01-09'," +
                 "source: 'Sup.Producao'," +
                 "application: 'OLM'," +
                 "owners: [" +
                 "           {login: 'john'," +
                 "            name: 'John Programmer'," +
-                "            type: 'N1'}," +
+                "            type: 'N1'," +
+                "            workDays: [" +
+                "                {" +
+                "                   day: '2014-01-03'," +
+                "                   hours: 8" +
+                "                }" +
+                "            ]}," +
                 "           {login: 'mary'," +
                 "            name: 'Mary Devs'," +
-                "            type: 'N2'}" +
+                "            type: 'N2'," +
+                "            workDays: []}" +
                 "]" +
                 "}";
 
@@ -91,16 +110,24 @@ public class TaskConversionTest {
                 "description: 'Test the Task Implementation'," +
                 "startDate: '2014-01-02'," +
                 "foreseenEndDate: '2014-01-10'," +
+                "foreseenWorkHours: 50," +
                 "endDate: '2014-01-09'," +
                 "source: 'Sup.Producao'," +
                 "application: 'OLM'," +
                 "owners: [" +
                 "           {login: 'john'," +
                 "            name: 'John Programmer'," +
-                "            type: 'N1'}," +
+                "            type: 'N1'," +
+                "            workDays: [" +
+                "                {" +
+                "                   day: '2014-01-03'," +
+                "                   hours: 8" +
+                "                }" +
+                "            ]}," +
                 "           {login: 'mary'," +
                 "            name: 'Mary Devs'," +
-                "            type: 'N2'}" +
+                "            type: 'N2'," +
+                "            workDays: []}" +
                 "]" +
                 "}}";
 
@@ -110,16 +137,23 @@ public class TaskConversionTest {
         assertEquals(timestampFormat.parse("2014-01-02 00:00:00.000"), t.getStartDate());
         assertEquals(timestampFormat.parse("2014-01-10 23:59:59.999"), t.getForeseenEndDate());
         assertEquals(timestampFormat.parse("2014-01-09 23:59:59.999"), t.getEndDate());
+        assertEquals(50, t.getForeseenWorkHours().intValue());
         assertEquals("Sup.Producao", t.getSource());
         assertEquals("OLM", t.getApplication().getName());
 
         assertEquals(2, t.getOwners().size());
+
         assertEquals("john", t.getOwners().get(0).getLogin());
         assertEquals("John Programmer", t.getOwners().get(0).getName());
         assertEquals("N1", t.getOwners().get(0).getType());
+        assertEquals(1, t.getOwners().get(0).getWorkDays().size());
+        assertEquals("2014-01-03", t.getOwners().get(0).getWorkDays().get(0).getDay());
+        assertEquals(8, t.getOwners().get(0).getWorkDays().get(0).getHours());
+
         assertEquals("mary", t.getOwners().get(1).getLogin());
         assertEquals("Mary Devs", t.getOwners().get(1).getName());
         assertEquals("N2", t.getOwners().get(1).getType());
+        assertEquals(0, t.getOwners().get(1).getWorkDays().size());
     }
 
     @Test
@@ -131,6 +165,7 @@ public class TaskConversionTest {
         assertNull(t.getDescription());
         assertNull(t.getStartDate());
         assertNull(t.getForeseenEndDate());
+        assertNull(t.getForeseenWorkHours());
         assertNull(t.getEndDate());
         assertNull(t.getSource());
         assertNull(t.getApplication());
@@ -188,6 +223,14 @@ public class TaskConversionTest {
     }
 
     @Test
+    public void fromTaskToDbObject_foreseenWorkHours() throws Exception {
+        Task t = createTestTask(false, false, false);
+        BasicDBObject dbTask = t.toDbObject();
+
+        assertEquals(50, dbTask.get("foreseenWorkHours"));
+    }
+
+    @Test
     public void fromTaskToDbObject_endDate() throws Exception {
         Task t = createTestTask(false, false, false);
         BasicDBObject dbTask = t.toDbObject();
@@ -229,9 +272,18 @@ public class TaskConversionTest {
         assertEquals("john", owners.get(0).get("login"));
         assertEquals("John Programmer", owners.get(0).get("name"));
         assertEquals("N1", owners.get(0).get("type"));
+
+        List<BasicDBObject> owner1Workdays = (List<BasicDBObject>) owners.get(0).get("workDays");
+        assertEquals(1, owner1Workdays.size());
+        assertEquals("2014-01-03", owner1Workdays.get(0).get("day"));
+        assertEquals(8, owner1Workdays.get(0).get("hours"));
+
         assertEquals("mary", owners.get(1).get("login"));
         assertEquals("Mary Devs", owners.get(1).get("name"));
         assertEquals("N2", owners.get(1).get("type"));
+
+        List<BasicDBObject> owner2Workdays = (List<BasicDBObject>) owners.get(1).get("workDays");
+        assertEquals(0, owner2Workdays.size());
     }
 
     @Test
@@ -244,11 +296,13 @@ public class TaskConversionTest {
         assertEquals(2, posts.size());
 
         assertEquals(timestampFormat.parse("2014-01-03 09:15:30.700"), posts.get(0).get("timestamp"));
-        assertEquals("john", posts.get(0).get("user"));
+        assertEquals("john", posts.get(0).get("login"));
+        assertEquals("John The Programmer", posts.get(0).get("name"));
         assertEquals("Scope changed. No re-scheduling will be necessary", posts.get(0).get("text"));
 
         assertEquals(timestampFormat.parse("2014-01-08 18:20:49.150"), posts.get(1).get("timestamp"));
-        assertEquals("john", posts.get(1).get("user"));
+        assertEquals("john", posts.get(1).get("login"));
+        assertEquals("John The Programmer", posts.get(1).get("name"));
         assertEquals("Doing #overtime to finish it sooner", posts.get(1).get("text"));
 
     }
@@ -293,6 +347,13 @@ public class TaskConversionTest {
     }
 
     @Test
+    public void fromDbObjectToTask_foreseenWorkHours() throws Exception {
+        BasicDBObject dbTask = createTestTaskAsDbObject();
+        Task task = Task.fromDbObject(dbTask);
+        assertEquals(50, task.getForeseenWorkHours().intValue());
+    }
+
+    @Test
     public void fromDbObjectToTask_endDate() throws Exception {
         BasicDBObject dbTask = createTestTaskAsDbObject();
         Task task = Task.fromDbObject(dbTask);
@@ -325,11 +386,21 @@ public class TaskConversionTest {
     @Test
     public void fromDbObjectToTask_owners() throws Exception {
         BasicDBObject dbTask = createTestTaskAsDbObject();
-        Task task = Task.fromDbObject(dbTask);
+        Task t = Task.fromDbObject(dbTask);
 
-        assertEquals(2, task.getOwners().size());
-        assertEquals(new TaskOwner("john", "John Programmer", "N1"), task.getOwners().get(0));
-        assertEquals(new TaskOwner("mary", "Mary Devs", "N2"), task.getOwners().get(1));
+        assertEquals(2, t.getOwners().size());
+
+        assertEquals("john", t.getOwners().get(0).getLogin());
+        assertEquals("John Programmer", t.getOwners().get(0).getName());
+        assertEquals("N1", t.getOwners().get(0).getType());
+        assertEquals(1, t.getOwners().get(0).getWorkDays().size());
+        assertEquals("2014-01-03", t.getOwners().get(0).getWorkDays().get(0).getDay());
+        assertEquals(8, t.getOwners().get(0).getWorkDays().get(0).getHours());
+
+        assertEquals("mary", t.getOwners().get(1).getLogin());
+        assertEquals("Mary Devs", t.getOwners().get(1).getName());
+        assertEquals("N2", t.getOwners().get(1).getType());
+        assertEquals(0, t.getOwners().get(1).getWorkDays().size());
     }
 
     @Test
@@ -340,15 +411,15 @@ public class TaskConversionTest {
         assertEquals(2, task.getPosts().size());
 
         assertEquals(timestampFormat.parse("2014-01-03 09:15:30.700"), task.getPosts().get(0).getTimestamp());
-        assertEquals("john", task.getPosts().get(0).getUser());
+        assertEquals("john", task.getPosts().get(0).getLogin());
+        assertEquals("John The Programmer", task.getPosts().get(0).getName());
         assertEquals("Scope changed. No re-scheduling will be necessary", task.getPosts().get(0).getText());
 
         assertEquals(timestampFormat.parse("2014-01-08 18:20:49.150"), task.getPosts().get(1).getTimestamp());
-        assertEquals("john", task.getPosts().get(1).getUser());
         assertEquals("Doing #overtime to finish it sooner", task.getPosts().get(1).getText());
     }
 
-    private Task createTestTask(boolean nullId, boolean nullEndDate, boolean nullPosts) throws ParseException {
+    private Task createTestTask(boolean nullId, boolean nullEndDate, boolean nullPosts) throws Exception {
         DateFormat timestampFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 
         Task t = new Task(
@@ -358,19 +429,20 @@ public class TaskConversionTest {
                 timestampFormat.parse("2014-01-02 00:00:00.000"),
                 timestampFormat.parse("2014-01-10 23:59:59.999"),
                 nullEndDate ? null : timestampFormat.parse("2014-01-09 23:59:59.999"),
+                50,
 
                 "Sup.Producao",
                 new Application("OLM"),
 
-                Arrays.asList(new TaskOwner("john", "John Programmer", "N1"),
+                Arrays.asList(new TaskOwner("john", "John Programmer", "N1").addWorkHours("2014-01-03", 8),
                                 new TaskOwner("mary", "Mary Devs", "N2")));
 
         if (!nullPosts) {
-            Post p1 = new Post("john", "Scope changed. No re-scheduling will be necessary",
+            Post p1 = new Post("john", "John The Programmer", "Scope changed. No re-scheduling will be necessary",
                     timestampFormat.parse("2014-01-03 09:15:30.700"));
             t.addPost(p1);
 
-            Post p2 = new Post("john", "Doing #overtime to finish it sooner",
+            Post p2 = new Post("john", "John The Programmer", "Doing #overtime to finish it sooner",
                     timestampFormat.parse("2014-01-08 18:20:49.150"));
             t.addPost(p2);
         }
@@ -386,6 +458,7 @@ public class TaskConversionTest {
 
         t.append("startDate", timestampFormat.parse("2014-01-02 00:00:00.000"));
         t.append("foreseenEndDate", timestampFormat.parse("2014-01-10 23:59:59.999"));
+        t.append("foreseenWorkHours", 50);
         t.append("endDate", timestampFormat.parse("2014-01-09 23:59:59.999"));
 
         t.append("source", "Sup.Producao");
@@ -395,22 +468,30 @@ public class TaskConversionTest {
         owners.add(new BasicDBObject()
                 .append("login", "john")
                 .append("name", "John Programmer")
-                .append("type", "N1"));
+                .append("type", "N1")
+                .append("workDays", Arrays.asList(
+                        new BasicDBObject()
+                                .append("day", "2014-01-03")
+                                .append("hours", 8)
+                )));
         owners.add(new BasicDBObject()
                 .append("login", "mary")
                 .append("name", "Mary Devs")
-                .append("type", "N2"));
+                .append("type", "N2")
+                .append("workDays", Collections.emptyList()));
         t.append("owners", owners);
 
         List<BasicDBObject> posts = new ArrayList<>();
         posts.add(new BasicDBObject()
                 .append("timestamp", timestampFormat.parse("2014-01-03 09:15:30.700"))
-                .append("user", "john")
+                .append("login", "john")
+                .append("name", "John The Programmer")
                 .append("text", "Scope changed. No re-scheduling will be necessary")
         );
         posts.add(new BasicDBObject()
                 .append("timestamp", timestampFormat.parse("2014-01-08 18:20:49.150"))
-                .append("user", "john")
+                .append("login", "john")
+                .append("name", "John The Programmer")
                 .append("text", "Doing #overtime to finish it sooner")
         );
         t.append("posts", posts);

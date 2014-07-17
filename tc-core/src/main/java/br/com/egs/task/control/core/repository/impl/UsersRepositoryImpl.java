@@ -45,6 +45,7 @@ public class UsersRepositoryImpl implements UsersRepository {
     public List<User> getAll() {
         DBCollection collection = conn.getCollection("users");
         DBCursor cursor = collection.find();
+        cursor.sort(new BasicDBObject("name", 1));
 
         List<User> results = new ArrayList<>();
         while (cursor.hasNext()) {

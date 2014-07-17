@@ -2,6 +2,8 @@ package br.com.egs.task.control.core.injection;
 
 import br.com.egs.task.control.core.database.DbConfiguration;
 import br.com.egs.task.control.core.database.MongoDbConnection;
+import br.com.egs.task.control.core.reports.TaskReportGenerator;
+import br.com.egs.task.control.core.reports.TaskReportGeneratorImpl;
 import br.com.egs.task.control.core.repository.TasksRepository;
 import br.com.egs.task.control.core.repository.UsersRepository;
 import br.com.egs.task.control.core.repository.impl.TasksRepositoryImpl;
@@ -20,5 +22,7 @@ public class Binder extends AbstractBinder {
 
        bind(DbConfiguration.class).to(DbConfiguration.class);
        bind(MongoDbConnection.class).to(MongoDbConnection.class);
+
+       bind(TaskReportGeneratorImpl.class).to(TaskReportGenerator.class);
     }
 }

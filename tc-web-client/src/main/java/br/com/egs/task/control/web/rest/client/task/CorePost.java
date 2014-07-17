@@ -9,15 +9,17 @@ import java.util.Calendar;
 
 public class CorePost {
 
-	private Calendar timestamp;
-    private String user;
+    private Calendar timestamp;
+    private String login;
+    private String name;
     private String text;
 
     private Boolean added;
 
-	public CorePost(Calendar timestamp, String user, String text) {
+	public CorePost(Calendar timestamp, String login, String name, String text) {
 		this.timestamp = timestamp;
-		this.user = user;
+		this.login = login;
+                this.name = name;
 		this.text = text;
 
         this.added = false;
@@ -54,10 +56,11 @@ public class CorePost {
 				throw new JsonParseException(e);
 			}
 
-			String user = jsonElement.getAsJsonObject().get("user").getAsString();
+			String login = jsonElement.getAsJsonObject().get("login").getAsString();
+			String name = jsonElement.getAsJsonObject().get("name").getAsString();
 			String text = jsonElement.getAsJsonObject().get("text").getAsString();
 
-			return new CorePost(timestamp, user, text);
+			return new CorePost(timestamp, login, name, text);
 		}
 	}
 
@@ -65,8 +68,12 @@ public class CorePost {
         return timestamp;
     }
 
-    public String getUser() {
-        return user;
+    public String getLogin() {
+        return login;
+    }
+
+    public String getName() {
+        return name;
     }
 
     public String getText() {

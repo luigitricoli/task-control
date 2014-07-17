@@ -28,7 +28,7 @@
                 <div class="dot"></div>
                 <div class="speak_ballon">
                     <div class="arrow"></div>
-                    <p class="speaker">${post.user}:</p>
+                    <p class="speaker">${post.name}:</p>
                     <p class="message">${post.textHtml}</p>
                 </div>
             </div>

@@ -2,6 +2,7 @@ package br.com.egs.task.control.core.entities;
 
 import br.com.egs.task.control.core.exception.LateTaskException;
 import br.com.egs.task.control.core.exception.ValidationException;
+import br.com.egs.task.control.core.utils.Messages;
 import com.google.gson.*;
 import com.mongodb.BasicDBObject;
 import org.apache.commons.lang.StringUtils;
@@ -15,11 +16,16 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  *
  */
 public class Task {
+
+    public static final int WORKDAY_DURATION_IN_HOURS = 8;
+    public static final String WORKDAY_DATE_FORMAT = "yyyy-MM-dd";
 
 	private String id;
     private String description;
@@ -27,6 +33,7 @@ public class Task {
     private Date startDate;
     private Date foreseenEndDate;
     private Date endDate;
+    private Integer foreseenWorkHours;
 
     private String source;
     private Application application;
@@ -34,6 +41,8 @@ public class Task {
     private List<TaskOwner> owners;
 
     private List<Post> posts;
+
+    private Messages messages;
 
     /**
      * This must be changed only in testing code, when a precise control over the variables is required.
@@ -45,6 +54,7 @@ public class Task {
                 Date startDate,
                 Date foreseenEndDate,
                 Date endDate,
+                Integer foreseenWorkHours,
                 String source,
                 Application application,
                 List<TaskOwner> owners) {
@@ -54,18 +64,20 @@ public class Task {
         this.startDate = startDate;
         this.foreseenEndDate = foreseenEndDate;
         this.endDate = endDate;
+        this.foreseenWorkHours = foreseenWorkHours;
         this.source = source;
         this.application = application;
         this.owners = owners;
+
+        this.messages = new Messages();
     }
 
     private Task() {
-
+        this.messages = new Messages();
     }
 
     /**
      * Serialize this object to the presentation JSON format.
-     * @return
      */
     public String toJson() {
         return new GsonBuilder().registerTypeAdapter(Task.class, new TaskSerializer())
@@ -82,7 +94,6 @@ public class Task {
 
     /**
      * Converts to the MongoDB Object representation
-     * @return
      */
     public BasicDBObject toDbObject() {
         BasicDBObject obj = new BasicDBObject();
@@ -99,15 +110,27 @@ public class Task {
             obj.append("endDate", toMaxHourDate(this.getEndDate()));
         }
 
+        obj.append("foreseenWorkHours", this.getForeseenWorkHours());
+
         obj.append("source", this.getSource());
         obj.append("application", new BasicDBObject("name", this.getApplication().getName()));
 
         List<BasicDBObject> owners = new ArrayList<>();
         for (TaskOwner owner : this.getOwners()) {
-            owners.add(new BasicDBObject()
+            BasicDBObject dbOwner = new BasicDBObject()
                     .append("login", owner.getLogin())
                     .append("name", owner.getName())
-                    .append("type", owner.getType()));
+                    .append("type", owner.getType());
+
+            List<BasicDBObject> dbWorkdays = new ArrayList<>();
+            for (TaskOwner.WorkDay wd : owner.getWorkDays()) {
+                dbWorkdays.add(new BasicDBObject()
+                            .append("day", wd.getDay())
+                            .append("hours", wd.getHours()));
+            }
+            dbOwner.append("workDays", dbWorkdays);
+
+            owners.add(dbOwner);
         }
         obj.append("owners", owners);
 
@@ -116,7 +139,8 @@ public class Task {
             for (Post post : this.getPosts()) {
                 posts.add(new BasicDBObject()
                         .append("timestamp", post.getTimestamp())
-                        .append("user", post.getUser())
+                        .append("login", post.getLogin())
+                        .append("name", post.getName())
                         .append("text", post.getText()));
             }
         }
@@ -127,8 +151,6 @@ public class Task {
 
     /**
      * Converts a MongoDB object representation to a Task instance
-     * @param dbTask
-     * @return
      */
     public static Task fromDbObject(BasicDBObject dbTask) {
         Task task = new Task();
@@ -140,83 +162,107 @@ public class Task {
         task.foreseenEndDate = (dbTask.getDate("foreseenEndDate"));
         task.endDate = (dbTask.getDate("endDate"));
 
+        task.foreseenWorkHours = (dbTask.getInt("foreseenWorkHours"));
+
         task.source = (dbTask.getString("source"));
         task.application = (new Application(((BasicDBObject) dbTask.get("application")).getString("name")));
 
         List<TaskOwner> owners = new ArrayList<>();
+        @SuppressWarnings("unchecked")
         List<BasicDBObject> dbOwners = (List<BasicDBObject>) dbTask.get("owners");
         for (BasicDBObject dbOwner : dbOwners) {
-            owners.add(new TaskOwner(dbOwner.getString("login"),
-                                    dbOwner.getString("name"),
-                                    dbOwner.getString("type")));
+            TaskOwner owner = new TaskOwner(dbOwner.getString("login"),
+                    dbOwner.getString("name"),
+                    dbOwner.getString("type"));
+
+            @SuppressWarnings("unchecked")
+            List<BasicDBObject> dbWorkdays = (List<BasicDBObject>) dbOwner.get("workDays");
+            for (BasicDBObject dbWorkday : dbWorkdays) {
+                String day = (String) dbWorkday.get("day");
+                int hours = (int) dbWorkday.get("hours");
+                owner.addWorkHours(day, hours);
+            }
+
+            owners.add(owner);
         }
         task.owners = (owners);
 
+        @SuppressWarnings("unchecked")
         List<BasicDBObject> dbPosts = (List<BasicDBObject>) dbTask.get("posts");
         if (dbPosts != null) {
+            task.posts = new ArrayList<>();
             for (BasicDBObject dbPost : dbPosts) {
                 Post p = new Post(
-                        dbPost.getString("user"),
+                        dbPost.getString("login"),
+                        dbPost.getString("name"),
                         dbPost.getString("text"),
                         dbPost.getDate("timestamp")
                 );
-                task.addPost(p);
+                task.posts.add(p);
             }
         }
 
         return task;
     }
-
-    public void validateForInsert() throws ValidationException {
+    
+    public void prepareForInsert() throws ValidationException {
         if (id != null) {
-            throw new ValidationException("The id field must not be set for a new Task");
+            throw new ValidationException(
+                    "The id field must not be set for a new Task",
+                    Messages.Keys.VALIDATION_TASK_ID_MUST_NOT_BE_SET_ON_CREATE);
         }
 
         if (StringUtils.isBlank(description)) {
-            throw new ValidationException("The description is required");
+            throw new ValidationException("The description is required",
+                    Messages.Keys.VALIDATION_TASK_DESCRIPTION_REQUIRED);
         }
 
         if (startDate == null) {
-            throw new ValidationException("The startDate is required");
+            throw new ValidationException("The startDate is required",
+                    Messages.Keys.VALIDATION_TASK_START_REQUIRED);
         }
 
         if (foreseenEndDate == null) {
-            throw new ValidationException("The foreseenEndDate is required");
-        }
-
-        if (endDate != null) {
-            throw new ValidationException("The endDate must not be set for a new Task");
+            throw new ValidationException("The foreseenEndDate is required",
+                    Messages.Keys.VALIDATION_TASK_FORESEEN_REQUIRED);
         }
 
         if (StringUtils.isBlank(source)) {
-            throw new ValidationException("The source is required");
+            throw new ValidationException("The source is required",
+                    Messages.Keys.VALIDATION_TASK_SOURCE_REQUIRED);
         }
 
         if (application == null || StringUtils.isBlank(application.getName())) {
-            throw new ValidationException("The application is required");
+            throw new ValidationException("The application is required",
+                    Messages.Keys.VALIDATION_TASK_APPLICATION_REQUIRED);
         }
 
         if (owners == null || owners.isEmpty()) {
-            throw new ValidationException("At least one owner is required");
+            throw new ValidationException("At least one owner is required",
+                    Messages.Keys.VALIDATION_TASK_OWNER_REQUIRED_AT_LEAST_ONE);
         }
         for (TaskOwner owner : owners) {
             if (StringUtils.isBlank(owner.getLogin())) {
-                throw new ValidationException("Owner login is required");
+                throw new ValidationException("Owner login is required",
+                        Messages.Keys.VALIDATION_TASK_OWNER_LOGIN_REQUIRED);
             }
             if (owner.getLogin().contains(",")) {
                 // The comma can be used as a separator in inputs that require a list of users.
                 // e.g.  /tasks/searchTasks?userFilter=user1,user2
                 // Do not let it be part of the login itself.
-                throw new ValidationException("Owner login contains invalid character: [,]");
+                throw new ValidationException("Owner login contains invalid character: [,]",
+                        Messages.Keys.VALIDATION_TASK_OWNER_LOGIN_CONTAINS_SEPARATOR_CHAR);
             }
         }
 
         if (posts != null) {
-            throw new ValidationException("Posts are not allowed for a new Task");
+            throw new ValidationException("Posts are not allowed for a new Task",
+                    Messages.Keys.VALIDATION_TASK_POSTS_MUST_NOT_BE_SET_ON_CREATE);
         }
 
         if (foreseenEndDate.before(startDate)) {
-            throw new ValidationException("Start Date cannot be greater than Foreseen End Date");
+            throw new ValidationException("Start Date cannot be greater than Foreseen End Date",
+                    Messages.Keys.VALIDATION_TASK_START_AFTER_END);
         }
 
         Calendar beginOfCurrentDate = Calendar.getInstance();
@@ -226,41 +272,53 @@ public class Task {
         beginOfCurrentDate.set(Calendar.SECOND, 0);
         beginOfCurrentDate.set(Calendar.MILLISECOND, 0);
 
-        if (beginOfCurrentDate.getTime().after(foreseenEndDate)) {
-            throw new ValidationException("Foreseen End Date cannot be less than the current date");
+        if (beginOfCurrentDate.getTime().after(foreseenEndDate) && endDate == null) {
+            // Past tasks must be created as Finished. If the endDate was not provided it defaults to the foreseenEndDate
+            endDate = foreseenEndDate;
+        }
+        
+        if (!beginOfCurrentDate.getTime().after(foreseenEndDate) && endDate != null) {
+            // If the foreseen end date is in the future, do not allow the task to be automatically finished
+            endDate = null;
+        }
+        
+        if (this.getForeseenWorkHours() == null || this.getForeseenWorkHours() == 0) {
+            // If not provided, calculates automatically
+            this.calculateForeseenWorkHours();
         }
     }
 
     /**
      *
-     * @param date
      * @throws ValidationException
      */
     public void finish(Date date) throws ValidationException {
         if (date == null) {
-            throw new IllegalArgumentException("End date cannot be null");
+            throw new ValidationException("End date cannot be null",
+                    Messages.Keys.VALIDATION_TASK_END_REQUIRED);
         }
 
         if (this.endDate != null) {
-            throw new ValidationException("Task already finished");
+            throw new ValidationException("Task already finished",
+                    Messages.Keys.VALIDATION_TASK_CANNOT_MODIFY_FINISHED);
         }
         date = toMaxHourDate(date);
 
         if (date.after(this.foreseenEndDate)) {
             boolean atrasoCommentExists = false;
-            for (Post post : posts) {
-                String text = post.getText().toLowerCase();
-                if (text.contains("#atraso")
-                        || text.contains("#atrasado")
-                        || text.contains("#atrasada")) {
-                    atrasoCommentExists = true;
-                    break;
+            if (posts != null) {
+                for (Post post : posts) {
+                    String text = post.getText().toLowerCase();
+                    String latePostExpression = messages.get(Messages.Keys.PARAMETER_TASK_LATE_POST_EXPRESSION);
+                    if (text.matches(latePostExpression)) {
+                        atrasoCommentExists = true;
+                        break;
+                    }
                 }
             }
 
             if (!atrasoCommentExists) {
-                throw new LateTaskException(
-                        "A late task can only be finished if a #atraso message is present in the posts");
+                throw new LateTaskException();
             }
         }
 
@@ -269,32 +327,55 @@ public class Task {
 
     /**
      *
-     * @param startDate
      * @throws ValidationException
      */
-    public void changeStartDate(Date startDate) throws ValidationException {
-        if (startDate.before(getCurrentDate())) {
-            throw new ValidationException("Cannot change the start date. The task is already started");
-        }
-
+    public void reschedule(Date newStartDate, Date newForeseenEndDate) throws ValidationException {
         if (this.endDate != null) {
-            throw new ValidationException("Task already finished");
+            throw new ValidationException("Cannot reschedule, task already finished. End date: " + this.endDate,
+                    Messages.Keys.VALIDATION_TASK_CANNOT_MODIFY_FINISHED);
         }
+        
+        if (newStartDate != null && !newStartDate.equals(this.startDate)) {
+            if (this.startDate.before(getCurrentDate())) {
+                throw new ValidationException("Cannot change dates. The task is already started. Start date: " 
+                            + this.startDate,
+                        Messages.Keys.VALIDATION_TASK_CANNOT_CHANGE_START_ALREADY_STARTED);
+            }
 
-        this.startDate = toZeroHourDate(startDate);
+            this.startDate = toZeroHourDate(newStartDate);
+        }
+        
+        if (newForeseenEndDate != null) {
+            this.foreseenEndDate = toMaxHourDate(newForeseenEndDate);
+        }
+        
+        // Checks consistency after the change
+        if (foreseenEndDate.before(startDate)) {
+            throw new ValidationException("Start Date cannot be greater than Foreseen End Date",
+                    Messages.Keys.VALIDATION_TASK_START_AFTER_END);
+        }
     }
 
     /**
-     *
-     * @param foreseen
-     * @throws ValidationException
+     * Calculates the foreseenWorkHours automatically, based on start/foreseen dates,
+     * and on the number of workers.
      */
-    public void changeForeseenEndDate(Date foreseen) throws ValidationException {
-        if (this.endDate != null) {
-            throw new ValidationException("Task already finished");
+    public void calculateForeseenWorkHours() {
+        Calendar dt = Calendar.getInstance();
+        dt.setTime(this.startDate);
+
+        int numberOfWorkDays = 0;
+
+        while (dt.getTime().before(this.foreseenEndDate)) {
+            int dayOfWeek = dt.get(Calendar.DAY_OF_WEEK);
+            if (dayOfWeek != Calendar.SATURDAY
+                    && dayOfWeek != Calendar.SUNDAY) {
+                numberOfWorkDays++;
+            }
+            dt.add(Calendar.DAY_OF_MONTH, 1);
         }
 
-        this.foreseenEndDate = toMaxHourDate(foreseen);
+        this.foreseenWorkHours = (numberOfWorkDays * WORKDAY_DURATION_IN_HOURS) * owners.size();
     }
 
     public String getId() {
@@ -313,6 +394,10 @@ public class Task {
         return foreseenEndDate;
     }
 
+    public Integer getForeseenWorkHours() {
+        return foreseenWorkHours;
+    }
+
     public Date getEndDate() {
         return endDate;
     }
@@ -329,11 +414,76 @@ public class Task {
         return posts;
     }
 
-    public void addPost(Post p) {
+    public void addPost(Post p) throws ValidationException {
         if (this.posts == null) {
             this.posts = new ArrayList<>();
         }
+
+        handleWorkHoursPost(p);
+
         this.posts.add(p);
+    }
+
+    /**
+     * Handles Posts that contain worked hours specification.
+     * If the post does not report worked hours, no change is made.
+     * @throws ValidationException
+     */
+    private void handleWorkHoursPost(Post p) throws ValidationException {
+        Pattern workedHoursExpression = Pattern.compile(
+                messages.get(Messages.Keys.PARAMETER_TASK_WORKED_HOURS_POST_EXPRESSION));
+        Pattern workedHoursWithDateExpression = Pattern.compile(
+                messages.get(Messages.Keys.PARAMETER_TASK_WORKED_HOURS_POST_EXPRESSION_WITH_DATE));
+
+        boolean hasWorkHoursSpecification = false;
+        int workHours = 0;
+        String workDay = null;
+
+        Matcher matcher = workedHoursWithDateExpression.matcher(p.getText());
+        if (matcher.find()) {
+            hasWorkHoursSpecification = true;
+            workHours = Integer.parseInt(matcher.group(1));
+
+            DateFormat userDateFormat = new SimpleDateFormat(
+                    messages.get(Messages.Keys.PARAMETER_USER_DATE_PATTERN));
+            userDateFormat.setLenient(false);
+            Date workDayTimestamp;
+            String postBodyDate = matcher.group(2);
+            try {
+                workDayTimestamp = userDateFormat.parse(postBodyDate);
+            } catch (ParseException e) {
+                throw new ValidationException("Invalid workDay date informed in Post: " + postBodyDate,
+                        Messages.Keys.VALIDATION_TASK_POST_BODY_DATE_INVALID, postBodyDate);
+            }
+            workDay = new SimpleDateFormat(WORKDAY_DATE_FORMAT).format(workDayTimestamp);
+
+        } else {
+            matcher = workedHoursExpression.matcher(p.getText());
+            if (matcher.find()) {
+                hasWorkHoursSpecification = true;
+                workHours = Integer.parseInt(matcher.group(1));
+                workDay = new SimpleDateFormat(WORKDAY_DATE_FORMAT).format(p.getTimestamp());
+            }
+        }
+
+        if (hasWorkHoursSpecification) {
+            TaskOwner to = getOwnerByLogin(p.getLogin());
+            if (to == null) {
+                throw new ValidationException(
+                        "Post informing work hours by a user that is not on the task [" + p.getLogin() + "]",
+                        Messages.Keys.VALIDATION_TASK_CANNOT_RECORD_WORK_HOURS_USER_NOT_IN_TASK);
+            }
+            to.addWorkHours(workDay, workHours);
+        }
+    }
+
+    private TaskOwner getOwnerByLogin(String login) {
+        for (TaskOwner to : owners) {
+            if (to.getLogin().equals(login)) {
+                return to;
+            }
+        }
+        return null;
     }
 
     public String getSource() {
@@ -381,6 +531,8 @@ public class Task {
                 json.addProperty("endDate", dateFormat.format(task.getEndDate()));
             }
 
+            json.addProperty("foreseenWorkHours", task.getForeseenWorkHours());
+
             json.addProperty("source", task.getSource());
             json.addProperty("application", task.getApplication().getName());
 
@@ -390,6 +542,17 @@ public class Task {
                 owner.addProperty("login", to.getLogin());
                 owner.addProperty("name", to.getName());
                 owner.addProperty("type", to.getType());
+
+                JsonArray workDays = new JsonArray();
+                for (TaskOwner.WorkDay workDay : to.getWorkDays()) {
+                    JsonObject workDayJson = new JsonObject();
+                    workDayJson.addProperty("day", workDay.getDay());
+                    workDayJson.addProperty("hours", workDay.getHours());
+                    workDays.add(workDayJson);
+                }
+
+                owner.add("workDays", workDays);
+
                 owners.add(owner);
             }
             json.add("owners", owners);
@@ -399,7 +562,8 @@ public class Task {
                 for (Post p : task.getPosts()) {
                     JsonObject post = new JsonObject();
                     post.addProperty("timestamp", timestampFormat.format(p.getTimestamp()));
-                    post.addProperty("user", p.getUser());
+                    post.addProperty("login", p.getLogin());
+                    post.addProperty("name", p.getName());
                     post.addProperty("text", p.getText());
                     posts.add(post);
                 }
@@ -412,8 +576,13 @@ public class Task {
 
     public static class TaskDeserializer implements JsonDeserializer<Task> {
 
-        private static final DateFormat dateParser = new SimpleDateFormat("yyyy-MM-dd");
+        private DateFormat dateParser;
 
+        TaskDeserializer() {
+            dateParser = new SimpleDateFormat("yyyy-MM-dd");
+            dateParser.setLenient(false);
+        }
+        
         @Override
         public Task deserialize(JsonElement jsonElement, Type type,
                                 JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
@@ -437,6 +606,7 @@ public class Task {
             t.description = (obj.get("description") == null ? null : obj.get("description").getAsString());
             t.startDate = (obj.get("startDate") == null ? null : parseDate(obj.get("startDate").getAsString(), false));
             t.foreseenEndDate = (obj.get("foreseenEndDate") == null ? null : parseDate(obj.get("foreseenEndDate").getAsString(), true));
+            t.foreseenWorkHours = (obj.get("foreseenWorkHours") == null ? null : obj.get("foreseenWorkHours").getAsInt());
             t.endDate = (obj.get("endDate") == null ? null : parseDate(obj.get("endDate").getAsString(), true));
             t.source = (obj.get("source") == null ? null : obj.get("source").getAsString());
             t.application = (obj.get("application") == null ? null : new Application(obj.get("application").getAsString()));
@@ -451,7 +621,19 @@ public class Task {
                             ? null : jsonOwnerObject.get("name").getAsString();
                     String usrType = jsonOwnerObject.get("type") == null
                             ? null : jsonOwnerObject.get("type").getAsString();
+
                     TaskOwner o = new TaskOwner(login, name, usrType);
+
+                    if (jsonOwnerObject.get("workDays") != null) {
+                        for (JsonElement jsonWorkDay : jsonOwnerObject.get("workDays").getAsJsonArray()) {
+                            JsonObject jsonDayObject = jsonWorkDay.getAsJsonObject();
+                            String day = jsonDayObject.get("day").getAsString();
+                            int hours = jsonDayObject.get("hours").getAsInt();
+
+                            o.addWorkHours(day, hours);
+                        }
+                    }
+
                     owners.add(o);
                 }
                 t.owners = owners;
@@ -491,7 +673,6 @@ public class Task {
 
     /**
      *
-     * @return
      */
     private Date getCurrentDate() {
          if (fixedCurrentDate != null) {
@@ -509,38 +690,4 @@ public class Task {
         fixedCurrentDate = dt;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        Task task = (Task) o;
-
-        if (application != null ? !application.equals(task.application) : task.application != null) return false;
-        if (description != null ? !description.equals(task.description) : task.description != null) return false;
-        if (endDate != null ? !endDate.equals(task.endDate) : task.endDate != null) return false;
-        if (foreseenEndDate != null ? !foreseenEndDate.equals(task.foreseenEndDate) : task.foreseenEndDate != null)
-            return false;
-        if (id != null ? !id.equals(task.id) : task.id != null) return false;
-        if (owners != null ? !owners.equals(task.owners) : task.owners != null) return false;
-        if (posts != null ? !posts.equals(task.posts) : task.posts != null) return false;
-        if (source != null ? !source.equals(task.source) : task.source != null) return false;
-        if (startDate != null ? !startDate.equals(task.startDate) : task.startDate != null) return false;
-
-        return true;
-    }
-
-    @Override
-    public int hashCode() {
-        int result = id != null ? id.hashCode() : 0;
-        result = 31 * result + (description != null ? description.hashCode() : 0);
-        result = 31 * result + (startDate != null ? startDate.hashCode() : 0);
-        result = 31 * result + (foreseenEndDate != null ? foreseenEndDate.hashCode() : 0);
-        result = 31 * result + (endDate != null ? endDate.hashCode() : 0);
-        result = 31 * result + (source != null ? source.hashCode() : 0);
-        result = 31 * result + (application != null ? application.hashCode() : 0);
-        result = 31 * result + (owners != null ? owners.hashCode() : 0);
-        result = 31 * result + (posts != null ? posts.hashCode() : 0);
-        return result;
-    }
 }

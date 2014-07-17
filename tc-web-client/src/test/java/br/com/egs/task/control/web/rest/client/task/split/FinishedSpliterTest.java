@@ -21,7 +21,7 @@ public class FinishedSpliterTest {
 
     @Test
     public void moreThaOneWeekTaskFinishedEarlyInSecondWeek() throws ParseException {
-        String json = "{\"id\":\"52f518377cf06f3be158a352\",\"description\":\"My First CoreTask\",\"startDate\":\"2014-02-03\",\"endDate\":\"2014-02-10\",\"foreseenEndDate\":\"2014-02-12\",\"source\":\"CCC\",\"application\":\"OLM\",\"owners\":[{\"login\":\"john\"},{\"login\":\"mary\"}],\"posts\":[{\"timestamp\":\"2014-01-03 09:15:30\",\"user\":\"john\",\"text\":\"Scope changed. No re-scheduling will be necessary\"},{\"timestamp\":\"2014-01-08 18:20:49\",\"user\":\"john\",\"text\":\"Doing #overtime to finish it sooner\"}]}";
+        String json = "{\"id\":\"52f518377cf06f3be158a352\",\"description\":\"My First CoreTask\",\"startDate\":\"2014-02-03\",\"endDate\":\"2014-02-10\",\"foreseenEndDate\":\"2014-02-12\",\"source\":\"CCC\",\"application\":\"OLM\",\"owners\":[{\"login\":\"john\"},{\"login\":\"mary\"}],\"posts\":[{\"timestamp\":\"2014-01-03 09:15:30\",\"login\":\"john\",\"name\":\"John Programmer\",\"text\":\"Scope changed. No re-scheduling will be necessary\"},{\"timestamp\":\"2014-01-08 18:20:49\",\"login\":\"john\",\"name\":\"John Programmer\",\"text\":\"Doing #overtime to finish it sooner\"}]}";
 
         TaskSpliter spliter = new FinishedSpliter(new TaskDate("2014-02-01"));
         spliter.split(CoreTask.unmarshal(json));
@@ -35,7 +35,7 @@ public class FinishedSpliterTest {
 
     @Test
     public void oneWeekTaskFinishedEarly() throws ParseException {
-        String json = "{\"id\":\"52f518377cf06f3be158a352\",\"description\":\"My First CoreTask\",\"startDate\":\"2014-01-06\",\"endDate\":\"2014-01-09\",\"foreseenEndDate\":\"2014-01-10\",\"source\":\"CCC\",\"application\":\"OLM\",\"owners\":[{\"login\":\"john\"},{\"login\":\"mary\"}],\"posts\":[{\"timestamp\":\"2014-01-03 09:15:30\",\"user\":\"john\",\"text\":\"Scope changed. No re-scheduling will be necessary\"},{\"timestamp\":\"2014-01-08 18:20:49\",\"user\":\"john\",\"text\":\"Doing #overtime to finish it sooner\"}]}";
+        String json = "{\"id\":\"52f518377cf06f3be158a352\",\"description\":\"My First CoreTask\",\"startDate\":\"2014-01-06\",\"endDate\":\"2014-01-09\",\"foreseenEndDate\":\"2014-01-10\",\"source\":\"CCC\",\"application\":\"OLM\",\"owners\":[{\"login\":\"john\"},{\"login\":\"mary\"}],\"posts\":[{\"timestamp\":\"2014-01-03 09:15:30\",\"login\":\"john\",\"name\":\"John Programmer\",\"text\":\"Scope changed. No re-scheduling will be necessary\"},{\"timestamp\":\"2014-01-08 18:20:49\",\"login\":\"john\",\"name\":\"John Programmer\",\"text\":\"Doing #overtime to finish it sooner\"}]}";
 
         TaskSpliter spliter = new FinishedSpliter(new TaskDate("2014-01-01"));
         spliter.split(CoreTask.unmarshal(json));
@@ -46,7 +46,7 @@ public class FinishedSpliterTest {
 
     @Test
     public void moreThaOneWeekTaskFinishedEarlyInFirstWeek() throws ParseException{
-        String json = "{\"id\":\"52f518377cf06f3be158a352\",\"description\":\"My First CoreTask\",\"startDate\":\"2014-02-03\",\"endDate\":\"2014-02-06\",\"foreseenEndDate\":\"2014-02-12\",\"source\":\"CCC\",\"application\":\"OLM\",\"owners\":[{\"login\":\"john\"},{\"login\":\"mary\"}],\"posts\":[{\"timestamp\":\"2014-01-03 09:15:30\",\"user\":\"john\",\"text\":\"Scope changed. No re-scheduling will be necessary\"},{\"timestamp\":\"2014-01-08 18:20:49\",\"user\":\"john\",\"text\":\"Doing #overtime to finish it sooner\"}]}";
+        String json = "{\"id\":\"52f518377cf06f3be158a352\",\"description\":\"My First CoreTask\",\"startDate\":\"2014-02-03\",\"endDate\":\"2014-02-06\",\"foreseenEndDate\":\"2014-02-12\",\"source\":\"CCC\",\"application\":\"OLM\",\"owners\":[{\"login\":\"john\"},{\"login\":\"mary\"}],\"posts\":[{\"timestamp\":\"2014-01-03 09:15:30\",\"login\":\"john\",\"name\":\"John Programmer\",\"text\":\"Scope changed. No re-scheduling will be necessary\"},{\"timestamp\":\"2014-01-08 18:20:49\",\"login\":\"john\",\"name\":\"John Programmer\",\"text\":\"Doing #overtime to finish it sooner\"}]}";
 
         TaskSpliter spliter = new FinishedSpliter(new TaskDate("2014-02-01"));
         spliter.split(CoreTask.unmarshal(json));
@@ -60,7 +60,7 @@ public class FinishedSpliterTest {
 
     @Test
     public void oneWeekTaskFinishedLate() throws ParseException {
-        String json = "{\"id\":\"52f518377cf06f3be158a352\",\"description\":\"My First CoreTask\",\"startDate\":\"2014-03-10\",\"endDate\":\"2014-03-12\",\"foreseenEndDate\":\"2014-03-11\",\"source\":\"CCC\",\"application\":\"OLM\",\"owners\":[{\"login\":\"john\"},{\"login\":\"mary\"}],\"posts\":[{\"timestamp\":\"2014-01-03 09:15:30\",\"user\":\"john\",\"text\":\"Scope changed. No re-scheduling will be necessary\"},{\"timestamp\":\"2014-01-08 18:20:49\",\"user\":\"john\",\"text\":\"Doing #overtime to finish it sooner\"}]}";
+        String json = "{\"id\":\"52f518377cf06f3be158a352\",\"description\":\"My First CoreTask\",\"startDate\":\"2014-03-10\",\"endDate\":\"2014-03-12\",\"foreseenEndDate\":\"2014-03-11\",\"source\":\"CCC\",\"application\":\"OLM\",\"owners\":[{\"login\":\"john\"},{\"login\":\"mary\"}],\"posts\":[{\"timestamp\":\"2014-01-03 09:15:30\",\"login\":\"john\",\"name\":\"John Programmer\",\"text\":\"Scope changed. No re-scheduling will be necessary\"},{\"timestamp\":\"2014-01-08 18:20:49\",\"login\":\"john\",\"name\":\"John Programmer\",\"text\":\"Doing #overtime to finish it sooner\"}]}";
 
         TaskSpliter spliter = new FinishedSpliter(new TaskDate("2014-03-12"));
         spliter.split(CoreTask.unmarshal(json));
@@ -71,7 +71,7 @@ public class FinishedSpliterTest {
 
     @Test
     public void moreThaOneWeekTaskFinishedLate() throws ParseException{
-        String json = "{\"id\":\"52f518377cf06f3be158a352\",\"description\":\"My First CoreTask\",\"startDate\":\"2014-02-19\",\"endDate\":\"2014-02-25\",\"foreseenEndDate\":\"2014-02-20\",\"source\":\"CCC\",\"application\":\"OLM\",\"owners\":[{\"login\":\"john\"},{\"login\":\"mary\"}],\"posts\":[{\"timestamp\":\"2014-01-03 09:15:30\",\"user\":\"john\",\"text\":\"Scope changed. No re-scheduling will be necessary\"},{\"timestamp\":\"2014-01-08 18:20:49\",\"user\":\"john\",\"text\":\"Doing #overtime to finish it sooner\"}]}";
+        String json = "{\"id\":\"52f518377cf06f3be158a352\",\"description\":\"My First CoreTask\",\"startDate\":\"2014-02-19\",\"endDate\":\"2014-02-25\",\"foreseenEndDate\":\"2014-02-20\",\"source\":\"CCC\",\"application\":\"OLM\",\"owners\":[{\"login\":\"john\"},{\"login\":\"mary\"}],\"posts\":[{\"timestamp\":\"2014-01-03 09:15:30\",\"login\":\"john\",\"name\":\"John Programmer\",\"text\":\"Scope changed. No re-scheduling will be necessary\"},{\"timestamp\":\"2014-01-08 18:20:49\",\"login\":\"john\",\"name\":\"John Programmer\",\"text\":\"Doing #overtime to finish it sooner\"}]}";
 
         TaskSpliter spliter = new FinishedSpliter(new TaskDate("2014-02-01"));
         spliter.split(CoreTask.unmarshal(json));
@@ -85,7 +85,7 @@ public class FinishedSpliterTest {
 
     //@Test
     public void overTimeHashtagOneWeek() throws ParseException {
-        String json = "{\"id\":\"52f518377cf06f3be158a352\",\"description\":\"My First CoreTask\",\"startDate\":\"2014-01-06\",\"endDate\":\"2014-01-10\",\"foreseenEndDate\":\"2014-01-10\",\"source\":\"CCC\",\"application\":\"OLM\",\"owners\":[{\"login\":\"john\"},{\"login\":\"mary\"}],\"posts\":[{\"timestamp\":\"2014-01-07 09:15:30\",\"user\":\"john\",\"text\":\"Scope changed. No re-scheduling will be necessary\"},{\"timestamp\":\"2014-01-07 18:20:49\",\"user\":\"john\",\"text\":\"Doing #horaextra to finish it sooner\"}]}";
+        String json = "{\"id\":\"52f518377cf06f3be158a352\",\"description\":\"My First CoreTask\",\"startDate\":\"2014-01-06\",\"endDate\":\"2014-01-10\",\"foreseenEndDate\":\"2014-01-10\",\"source\":\"CCC\",\"application\":\"OLM\",\"owners\":[{\"login\":\"john\"},{\"login\":\"mary\"}],\"posts\":[{\"timestamp\":\"2014-01-07 09:15:30\",\"login\":\"john\",\"name\":\"John Programmer\",\"text\":\"Scope changed. No re-scheduling will be necessary\"},{\"timestamp\":\"2014-01-07 18:20:49\",\"login\":\"john\",\"name\":\"John Programmer\",\"text\":\"Doing #horaextra to finish it sooner\"}]}";
 
         TaskSpliter spliter = new FinishedSpliter(new TaskDate("2014-01-01"));
         spliter.split(CoreTask.unmarshal(json));
@@ -100,7 +100,7 @@ public class FinishedSpliterTest {
 
     //@Test
     public void lateHashtagOneWeek() throws ParseException {
-        String json = "{\"id\":\"52f518377cf06f3be158a352\",\"description\":\"My First CoreTask\",\"startDate\":\"2014-01-06\",\"endDate\":\"2014-01-10\",\"foreseenEndDate\":\"2014-01-10\",\"source\":\"CCC\",\"application\":\"OLM\",\"owners\":[{\"login\":\"john\"},{\"login\":\"mary\"}],\"posts\":[{\"timestamp\":\"2014-01-07 09:15:30\",\"user\":\"john\",\"text\":\"Scope changed. No re-scheduling will be necessary\"},{\"timestamp\":\"2014-01-07 18:20:49\",\"user\":\"john\",\"text\":\"Doing #atraso to finish it sooner\"}]}";
+        String json = "{\"id\":\"52f518377cf06f3be158a352\",\"description\":\"My First CoreTask\",\"startDate\":\"2014-01-06\",\"endDate\":\"2014-01-10\",\"foreseenEndDate\":\"2014-01-10\",\"source\":\"CCC\",\"application\":\"OLM\",\"owners\":[{\"login\":\"john\"},{\"login\":\"mary\"}],\"posts\":[{\"timestamp\":\"2014-01-07 09:15:30\",\"login\":\"john\",\"name\":\"John Programmer\",\"text\":\"Scope changed. No re-scheduling will be necessary\"},{\"timestamp\":\"2014-01-07 18:20:49\",\"login\":\"john\",\"name\":\"John Programmer\",\"text\":\"Doing #atraso to finish it sooner\"}]}";
 
         TaskSpliter spliter = new FinishedSpliter(new TaskDate("2014-01-01"));
         spliter.split(CoreTask.unmarshal(json));
@@ -115,7 +115,7 @@ public class FinishedSpliterTest {
 
     //@Test
     public void hashtagsTwoWeek() throws ParseException {
-        String json = "{\"id\":\"52f518377cf06f3be158a352\",\"description\":\"My First CoreTask\",\"startDate\":\"2014-01-06\",\"endDate\":\"2014-01-14\",\"foreseenEndDate\":\"2014-01-14\",\"source\":\"CCC\",\"application\":\"OLM\",\"owners\":[{\"login\":\"john\"},{\"login\":\"mary\"}],\"posts\":[{\"timestamp\":\"2014-01-07 09:15:30\",\"user\":\"john\",\"text\":\"Scope changed. No re-scheduling will be necessary\"},{\"timestamp\":\"2014-01-07 18:20:49\",\"user\":\"john\",\"text\":\"Doing #atraso to finish it sooner\"},{\"timestamp\":\"2014-01-13 18:20:49\",\"user\":\"john\",\"text\":\"Doing #horaextra to finish it sooner\"}]}";
+        String json = "{\"id\":\"52f518377cf06f3be158a352\",\"description\":\"My First CoreTask\",\"startDate\":\"2014-01-06\",\"endDate\":\"2014-01-14\",\"foreseenEndDate\":\"2014-01-14\",\"source\":\"CCC\",\"application\":\"OLM\",\"owners\":[{\"login\":\"john\"},{\"login\":\"mary\"}],\"posts\":[{\"timestamp\":\"2014-01-07 09:15:30\",\"login\":\"john\",\"name\":\"John Programmer\",\"text\":\"Scope changed. No re-scheduling will be necessary\"},{\"timestamp\":\"2014-01-07 18:20:49\",\"login\":\"john\",\"name\":\"John Programmer\",\"text\":\"Doing #atraso to finish it sooner\"},{\"timestamp\":\"2014-01-13 18:20:49\",\"login\":\"john\",\"name\":\"John Programmer\",\"text\":\"Doing #horaextra to finish it sooner\"}]}";
 
         TaskSpliter spliter = new FinishedSpliter(new TaskDate("2014-01-01"));
         spliter.split(CoreTask.unmarshal(json));
@@ -134,7 +134,7 @@ public class FinishedSpliterTest {
 
     //@Test
     public void threeWeeksTaskHashtagInLast() throws ParseException {
-        String json = "{\"id\":\"52f518377cf06f3be158a352\",\"description\":\"My First CoreTask\",\"startDate\":\"2014-03-20\",\"endDate\":\"2014-03-31\",\"foreseenEndDate\":\"2014-03-31\",\"source\":\"CCC\",\"application\":\"OLM\",\"owners\":[{\"login\":\"john\"},{\"login\":\"mary\"}],\"posts\":[{\"timestamp\":\"2014-03-23 09:15:30\",\"user\":\"john\",\"text\":\"Scope changed. No re-scheduling will be necessary\"},{\"timestamp\":\"2014-03-31 18:20:49\",\"user\":\"john\",\"text\":\"Doing #atraso to finish it sooner\"},{\"timestamp\":\"2014-03-31 18:20:49\",\"user\":\"john\",\"text\":\"Doing #horaextra to finish it sooner\"}]}";
+        String json = "{\"id\":\"52f518377cf06f3be158a352\",\"description\":\"My First CoreTask\",\"startDate\":\"2014-03-20\",\"endDate\":\"2014-03-31\",\"foreseenEndDate\":\"2014-03-31\",\"source\":\"CCC\",\"application\":\"OLM\",\"owners\":[{\"login\":\"john\"},{\"login\":\"mary\"}],\"posts\":[{\"timestamp\":\"2014-03-23 09:15:30\",\"login\":\"john\",\"name\":\"John Programmer\",\"text\":\"Scope changed. No re-scheduling will be necessary\"},{\"timestamp\":\"2014-03-31 18:20:49\",\"login\":\"john\",\"name\":\"John Programmer\",\"text\":\"Doing #atraso to finish it sooner\"},{\"timestamp\":\"2014-03-31 18:20:49\",\"login\":\"john\",\"name\":\"John Programmer\",\"text\":\"Doing #horaextra to finish it sooner\"}]}";
 
         TaskSpliter spliter = new FinishedSpliter(new TaskDate("2014-03-31"));
         spliter.split(CoreTask.unmarshal(json));
@@ -149,7 +149,7 @@ public class FinishedSpliterTest {
 
     @Test
     public void taskCrossMonthTodayInFirstMonth() throws ParseException{
-        String json = "{\"id\":\"52f518377cf06f3be158a352\",\"description\":\"My First CoreTask\",\"startDate\":\"2014-02-03\",\"foreseenEndDate\":\"2014-02-25\",\"endDate\":\"2014-04-14\",\"source\":\"CCC\",\"application\":\"OLM\",\"owners\":[{\"login\":\"john\"},{\"login\":\"mary\"}],\"posts\":[{\"timestamp\":\"2014-01-03 09:15:30\",\"user\":\"john\",\"text\":\"Scope changed. No re-scheduling will be necessary\"},{\"timestamp\":\"2014-01-08 18:20:49\",\"user\":\"john\",\"text\":\"Doing #overtime to finish it sooner\"}]}";
+        String json = "{\"id\":\"52f518377cf06f3be158a352\",\"description\":\"My First CoreTask\",\"startDate\":\"2014-02-03\",\"foreseenEndDate\":\"2014-02-25\",\"endDate\":\"2014-04-14\",\"source\":\"CCC\",\"application\":\"OLM\",\"owners\":[{\"login\":\"john\"},{\"login\":\"mary\"}],\"posts\":[{\"timestamp\":\"2014-01-03 09:15:30\",\"login\":\"john\",\"name\":\"John Programmer\",\"text\":\"Scope changed. No re-scheduling will be necessary\"},{\"timestamp\":\"2014-01-08 18:20:49\",\"login\":\"john\",\"name\":\"John Programmer\",\"text\":\"Doing #overtime to finish it sooner\"}]}";
 
         TaskSpliter spliter = new FinishedSpliter(new TaskDate("2014-02-01"));
         spliter.split(CoreTask.unmarshal(json));
@@ -167,7 +167,7 @@ public class FinishedSpliterTest {
 
     @Test
     public void taskCrossMonthTodayInSecondMonth() throws ParseException{
-        String json = "{\"id\":\"52f518377cf06f3be158a352\",\"description\":\"My First CoreTask\",\"startDate\":\"2014-02-03\",\"foreseenEndDate\":\"2014-02-25\",\"endDate\":\"2014-04-14\",\"source\":\"CCC\",\"application\":\"OLM\",\"owners\":[{\"login\":\"john\"},{\"login\":\"mary\"}],\"posts\":[{\"timestamp\":\"2014-01-03 09:15:30\",\"user\":\"john\",\"text\":\"Scope changed. No re-scheduling will be necessary\"},{\"timestamp\":\"2014-01-08 18:20:49\",\"user\":\"john\",\"text\":\"Doing #overtime to finish it sooner\"}]}";
+        String json = "{\"id\":\"52f518377cf06f3be158a352\",\"description\":\"My First CoreTask\",\"startDate\":\"2014-02-03\",\"foreseenEndDate\":\"2014-02-25\",\"endDate\":\"2014-04-14\",\"source\":\"CCC\",\"application\":\"OLM\",\"owners\":[{\"login\":\"john\"},{\"login\":\"mary\"}],\"posts\":[{\"timestamp\":\"2014-01-03 09:15:30\",\"login\":\"john\",\"name\":\"John Programmer\",\"text\":\"Scope changed. No re-scheduling will be necessary\"},{\"timestamp\":\"2014-01-08 18:20:49\",\"login\":\"john\",\"name\":\"John Programmer\",\"text\":\"Doing #overtime to finish it sooner\"}]}";
 
         TaskSpliter spliter = new FinishedSpliter(new TaskDate("2014-03-01"));
         spliter.split(CoreTask.unmarshal(json));
@@ -184,7 +184,7 @@ public class FinishedSpliterTest {
 
     @Test
     public void taskCrossMonthTodayInLastMonth() throws ParseException{
-        String json = "{\"id\":\"52f518377cf06f3be158a352\",\"description\":\"My First CoreTask\",\"startDate\":\"2014-02-03\",\"foreseenEndDate\":\"2014-02-25\",\"endDate\":\"2014-04-14\",\"source\":\"CCC\",\"application\":\"OLM\",\"owners\":[{\"login\":\"john\"},{\"login\":\"mary\"}],\"posts\":[{\"timestamp\":\"2014-01-03 09:15:30\",\"user\":\"john\",\"text\":\"Scope changed. No re-scheduling will be necessary\"},{\"timestamp\":\"2014-01-08 18:20:49\",\"user\":\"john\",\"text\":\"Doing #overtime to finish it sooner\"}]}";
+        String json = "{\"id\":\"52f518377cf06f3be158a352\",\"description\":\"My First CoreTask\",\"startDate\":\"2014-02-03\",\"foreseenEndDate\":\"2014-02-25\",\"endDate\":\"2014-04-14\",\"source\":\"CCC\",\"application\":\"OLM\",\"owners\":[{\"login\":\"john\"},{\"login\":\"mary\"}],\"posts\":[{\"timestamp\":\"2014-01-03 09:15:30\",\"login\":\"john\",\"name\":\"John Programmer\",\"text\":\"Scope changed. No re-scheduling will be necessary\"},{\"timestamp\":\"2014-01-08 18:20:49\",\"login\":\"john\",\"name\":\"John Programmer\",\"text\":\"Doing #overtime to finish it sooner\"}]}";
 
         TaskSpliter spliter = new FinishedSpliter(new TaskDate("2014-04-01"));
         spliter.split(CoreTask.unmarshal(json));

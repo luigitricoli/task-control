@@ -5,6 +5,7 @@ import br.com.egs.task.control.core.entities.Application;
 import br.com.egs.task.control.core.entities.Post;
 import br.com.egs.task.control.core.entities.Task;
 import br.com.egs.task.control.core.entities.TaskOwner;
+import br.com.egs.task.control.core.exception.ValidationException;
 import br.com.egs.task.control.core.repository.TaskSearchCriteria;
 import br.com.egs.task.control.core.repository.TasksRepository;
 import br.com.egs.task.control.core.repository.impl.TasksRepositoryImpl;
@@ -176,6 +177,7 @@ public class TasksRepositoryTest {
                 new Date(),
                 new Date(),
                 null,
+                30,
                 "CCC",
                 new Application("OLM"),
                 Arrays.asList(new TaskOwner("joe", "Joe The Programmer", "N1")));
@@ -187,7 +189,7 @@ public class TasksRepositoryTest {
     }
 
     @Test
-    public void updateTask() throws ParseException {
+    public void updateTask() throws ParseException, ValidationException {
         DBCollection collection = conn.getCollection("tasks");
 
         // Assume that the object returned by createTestTask() was persisted during test SetUp
@@ -200,6 +202,7 @@ public class TasksRepositoryTest {
                 task.getStartDate(),
                 task.getForeseenEndDate(),
                 task.getEndDate(),
+                30,
                 task.getSource(),
                 task.getApplication(),
                 task.getOwners()
@@ -207,7 +210,7 @@ public class TasksRepositoryTest {
         for (Post p : task.getPosts()) {
             modified.addPost(p);
         }
-        modified.addPost(new Post("bob", "Posting into a modified task", new Date()));
+        modified.addPost(new Post("bob", "Bob Worker", "Posting into a modified task", new Date()));
 
         /////////////////////////////
         repository.update(modified);
@@ -224,7 +227,7 @@ public class TasksRepositoryTest {
 
     @Test
     public void removeTask() {
-        Task t = new Task("111122223333aaaabbbbccc1", null, null, null, null, null, null, null);
+        Task t = new Task("111122223333aaaabbbbccc1", null, null, null, null, 0, null, null, null);
 
         // Precondition
         assertNotNull(conn.getCollection("tasks").findOne(new BasicDBObject("_id", new ObjectId(t.getId()))));
@@ -253,8 +256,16 @@ public class TasksRepositoryTest {
             .append("foreseenEndDate", timestampFormat.parse("2013-12-20 23:59:59.999"))
             .append("endDate", timestampFormat.parse("2013-12-21 23:59:59.999"))
             .append("owners", Arrays.asList(
-                    new BasicDBObject("login", "bob"),
-                    new BasicDBObject("login", "buzz")))
+                    new BasicDBObject()
+                            .append("login", "bob")
+                            .append("name", "Bob")
+                            .append("type", "N1")
+                            .append("workDays", new ArrayList<>()),
+                    new BasicDBObject()
+                            .append("login", "buzz")
+                            .append("name", "Buzz")
+                            .append("type", "N2")
+                            .append("workDays", new ArrayList<>())))
         ;
         conn.getCollection("tasks").insert(t);
 
@@ -263,7 +274,11 @@ public class TasksRepositoryTest {
             .append("startDate", timestampFormat.parse("2014-02-01 00:00:00.000"))
             .append("foreseenEndDate", timestampFormat.parse("2014-02-07 23:59:59.999"))
             .append("owners", Arrays.asList(
-                    new BasicDBObject("login", "bob")))
+                    new BasicDBObject()
+                            .append("login", "bob")
+                            .append("name", "Bob")
+                            .append("type", "N1")
+                            .append("workDays", new ArrayList<>())))
         ;
         t.remove("endDate");
 
@@ -280,6 +295,8 @@ public class TasksRepositoryTest {
         t.append("foreseenEndDate", timestampFormat.parse("2014-01-10 23:59:59.999"));
         t.append("endDate", timestampFormat.parse("2014-01-09 23:59:59.999"));
 
+        t.append("foreseenWorkHours", 8);
+
         t.append("source", "Sup.Producao");
         t.append("application", new BasicDBObject("name", "OLM"));
 
@@ -287,22 +304,30 @@ public class TasksRepositoryTest {
         owners.add(new BasicDBObject()
                 .append("login", "john")
                 .append("name", "Joe The Programmer")
-                .append("type", "N1"));
+                .append("type", "N1")
+                .append("workDays", Arrays.asList(
+                        new BasicDBObject()
+                        .append("day", "2014-01-02")
+                        .append("hours", 8)
+                )));
         owners.add(new BasicDBObject()
                 .append("login", "mary")
                 .append("name", "Mary Developer")
-                .append("type", "N2"));
+                .append("type", "N2")
+                .append("workDays", new ArrayList<>()));
         t.append("owners", owners);
 
         List<BasicDBObject> posts = new ArrayList<>();
         posts.add(new BasicDBObject()
                 .append("timestamp", timestampFormat.parse("2014-01-03 09:15:30.700"))
-                .append("user", "john")
+                .append("login", "john")
+                .append("name", "John The Programmer")
                 .append("text", "Scope changed. No re-scheduling will be necessary")
         );
         posts.add(new BasicDBObject()
                 .append("timestamp", timestampFormat.parse("2014-01-08 18:20:49.150"))
-                .append("user", "john")
+                .append("login", "john")
+                .append("name", "John The Programmer")
                 .append("text", "Doing #overtime to finish it sooner")
         );
         t.append("posts", posts);
@@ -327,16 +352,26 @@ public class TasksRepositoryTest {
         assertEquals(new Application("OLM"), task.getApplication());
 
         assertEquals(2, task.getOwners().size());
-        assertEquals(new TaskOwner("john", "Joe The Programmer", "N1"), task.getOwners().get(0));
-        assertEquals(new TaskOwner("mary", "Mary Developer", "N2"), task.getOwners().get(1));
+        assertEquals("john", task.getOwners().get(0).getLogin());
+        assertEquals("Joe The Programmer", task.getOwners().get(0).getName());
+        assertEquals("N1", task.getOwners().get(0).getType());
+        assertEquals(1, task.getOwners().get(0).getWorkDays().size());
+        assertEquals("2014-01-02", task.getOwners().get(0).getWorkDays().get(0).getDay());
+        assertEquals(8, task.getOwners().get(0).getWorkDays().get(0).getHours());
+
+        assertEquals("mary", task.getOwners().get(1).getLogin());
+        assertEquals("Mary Developer", task.getOwners().get(1).getName());
+        assertEquals("N2", task.getOwners().get(1).getType());
 
         assertEquals(2, task.getPosts().size());
         assertEquals(timestampFormat.parse("2014-01-03 09:15:30.700"), task.getPosts().get(0).getTimestamp());
-        assertEquals("john", task.getPosts().get(0).getUser());
+        assertEquals("john", task.getPosts().get(0).getLogin());
+        assertEquals("John The Programmer", task.getPosts().get(0).getName());
         assertEquals("Scope changed. No re-scheduling will be necessary", task.getPosts().get(0).getText());
 
         assertEquals(timestampFormat.parse("2014-01-08 18:20:49.150"), task.getPosts().get(1).getTimestamp());
-        assertEquals("john", task.getPosts().get(1).getUser());
+        assertEquals("john", task.getPosts().get(0).getLogin());
+        assertEquals("John The Programmer", task.getPosts().get(0).getName());
         assertEquals("Doing #overtime to finish it sooner", task.getPosts().get(1).getText());
     }
 }

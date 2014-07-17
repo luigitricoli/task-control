@@ -1,5 +1,6 @@
 package br.com.egs.task.control.core.service;
 
+import br.com.egs.task.control.core.builder.TestTaskBuilder;
 import br.com.egs.task.control.core.entities.*;
 import br.com.egs.task.control.core.repository.TaskSearchCriteria;
 import br.com.egs.task.control.core.repository.TasksRepository;
@@ -15,11 +16,11 @@ import org.skyscreamer.jsonassert.JSONAssert;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 import java.text.DateFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -55,25 +56,13 @@ public class TasksServiceTest {
         owner2.setName("Mary Dev2");
         owner2.setType("N2");
 
-        Task taskBeforeInsert = new Task(
-                null,
-                "Test the Task Implementation",
-                timestampFormat.parse("2014-01-02 00:00:00.000"),
-                timestampFormat.parse("2014-01-10 23:59:59.999"),
-                null,
-                "Sup.Producao",
-                new Application("OLM"),
-                Arrays.asList(
-                        new TaskOwner("john", "John Dev1", "N1"),
-                        new TaskOwner("mary", "Mary Dev2", "N2")
-                )
-        );
-        Task taskAfterInsert = new Task(
+        Task generatedTask = new Task(
                 DEFAULT_TASK_ID,
                 "Test the Task Implementation",
                 timestampFormat.parse("2014-01-02 00:00:00.000"),
                 timestampFormat.parse("2014-01-10 23:59:59.999"),
                 null,
+                50,
                 "Sup.Producao",
                 new Application("OLM"),
                 Arrays.asList(
@@ -84,13 +73,14 @@ public class TasksServiceTest {
 
         Mockito.when(userRepository.get("john")).thenReturn(owner1);
         Mockito.when(userRepository.get("mary")).thenReturn(owner2);
-        Mockito.when(taskRepository.add(taskBeforeInsert))
-                .thenReturn(taskAfterInsert);
+        Mockito.when(taskRepository.add(Mockito.any(Task.class)))
+                .thenReturn(generatedTask);
 
         String inputString = "{task: {" +
                 "description: 'Test the Task Implementation'," +
                 "startDate: '2014-01-02'," +
                 "foreseenEndDate: '2014-01-10'," +
+                "foreseenWorkHours: 50," +
                 "source: 'Sup.Producao'," +
                 "application: 'OLM'," +
                 "owners: [" +
@@ -101,26 +91,70 @@ public class TasksServiceTest {
 
         String result = service.create(inputString);
 
-        Mockito.verify(taskRepository).add(taskBeforeInsert);
-
         String expectedReturn = "{" +
                 "id: '" + DEFAULT_TASK_ID + "'," +
                 "description: 'Test the Task Implementation'," +
                 "startDate: '2014-01-02'," +
                 "foreseenEndDate: '2014-01-10'," +
+                "foreseenWorkHours: 50," +
                 "source: 'Sup.Producao'," +
                 "application: 'OLM'," +
                 "owners: [" +
-                "           {login: 'john', name: 'John Dev1', type='N1'}," +
-                "           {login: 'mary', name: 'Mary Dev2', type='N2'}" +
+                "           {login: 'john', name: 'John Dev1', type:'N1', workDays: []}," +
+                "           {login: 'mary', name: 'Mary Dev2', type:'N2', workDays: []}" +
                 "]" +
                 "}";
 
         JSONAssert.assertEquals(expectedReturn, result, true);
     }
+    
+    @Test
+    public void createTask_calculateWorkHoursAutomatically() throws Exception {
+        Task.setFixedCurrentDate(timestampFormat.parse("2014-01-02 00:00:00.000"));
+
+        User owner1 = new User("john");
+        owner1.setName("John Dev1");
+        owner1.setType("N1");
+
+        Task returnedTask = new Task(
+                DEFAULT_TASK_ID,
+                "Test the Task Implementation",
+                timestampFormat.parse("2014-01-02 00:00:00.000"),
+                timestampFormat.parse("2014-01-03 23:59:59.999"),
+                null,
+                16,
+                "Sup.Producao",
+                new Application("OLM"),
+                Arrays.asList(
+                        new TaskOwner("john", "John Dev1", "N1"),
+                        new TaskOwner("mary", "Mary Dev2", "N2")
+                )
+        );
+
+        Mockito.when(userRepository.get("john")).thenReturn(owner1);
+
+        ArgumentCaptor<Task> savedTask = ArgumentCaptor.forClass(Task.class);
+        Mockito.when(taskRepository.add(savedTask.capture()))
+                .thenReturn(returnedTask);
+
+        String inputString = "{task: {" +
+                "description: 'Test the Task Implementation'," +
+                "startDate: '2014-01-02'," +
+                "foreseenEndDate: '2014-01-03'," +
+                "source: 'Sup.Producao'," +
+                "application: 'OLM'," +
+                "owners: [" +
+                "           {login: 'john'}" +
+                "]" +
+                "}}";
+
+        service.create(inputString);
+
+        assertEquals(16, savedTask.getValue().getForeseenWorkHours().intValue());
+    }
 
     @Test
-    public void createTask_unknownOwner() throws Exception {
+    public void createTask_unknownUser() throws Exception {
         Task.setFixedCurrentDate(timestampFormat.parse("2014-01-02 00:00:00.000"));
 
         Mockito.when(userRepository.get("the_non-existing_user")).thenReturn(null);
@@ -209,9 +243,39 @@ public class TasksServiceTest {
     public void searchTasks_byMonthAndYear_success() throws Exception {
         TaskSearchCriteria generatedCriteria = new TaskSearchCriteria().month(2014, 1);
 
-        Task t1 = createTestTask(null, false, false);
+        Task t1 = new TestTaskBuilder()
+                    .id(null)
+                    .description("Test the Task Implementation")
+                    .startDate("2014-01-02 00:00:00.000")
+                    .foreseenEndDate("2014-01-10 23:59:59.000")
+                    .endDate("2014-01-09 23:59:59.000")
+                    .foreseenWorkHours(50)
+                    .source("Sup.Producao")
+                    .application("OLM")
+                    .owners(new TaskOwner("john", "John The Programmer", "N1"),
+                            new TaskOwner("mary", "Mary Developer", "N2"))
+                    .addPost(new Post("john", "John The Programmer", "Scope changed. No re-scheduling will be necessary",
+                        timestampFormat.parse("2014-01-03 09:15:30.700")))
+                    .addPost(new Post("john", "John The Programmer", "Doing #overtime to finish it sooner",
+                        timestampFormat.parse("2014-01-08 18:20:49.150")))
+                    .build();
 
-        Task t2 = createTestTask("111122223333aaaabbbbXXXX", false, false);
+        Task t2 = new TestTaskBuilder()
+                    .id("111122223333aaaabbbbXXXX")
+                    .description("Test the Task Implementation")
+                    .startDate("2014-01-02 00:00:00.000")
+                    .foreseenEndDate("2014-01-10 23:59:59.000")
+                    .endDate("2014-01-09 23:59:59.000")
+                    .foreseenWorkHours(50)
+                    .source("Sup.Producao")
+                    .application("OLM")
+                    .owners(new TaskOwner("john", "John The Programmer", "N1"),
+                            new TaskOwner("mary", "Mary Developer", "N2"))
+                    .addPost(new Post("john", "John The Programmer", "Scope changed. No re-scheduling will be necessary",
+                        timestampFormat.parse("2014-01-03 09:15:30.700")))
+                    .addPost(new Post("john", "John The Programmer", "Doing #overtime to finish it sooner",
+                        timestampFormat.parse("2014-01-08 18:20:49.150")))
+                    .build();
 
         List<Task> taskList = Arrays.asList(t1, t2);
         Mockito.when(taskRepository.searchTasks(generatedCriteria)).thenReturn(taskList);
@@ -229,9 +293,31 @@ public class TasksServiceTest {
                 .month(2014, 1)
                 .ownerLogins("john");
 
-        Task t1 = createTestTask(DEFAULT_TASK_ID, false, false);
-
-        Task t2 = createTestTask("111122223333aaaabbbbXXXX", false, false);
+        Task t1 = new TestTaskBuilder()
+                    .id(DEFAULT_TASK_ID)
+                    .description("Test the Task Implementation")
+                    .startDate("2014-01-02 00:00:00.000")
+                    .foreseenEndDate("2014-01-10 23:59:59.000")
+                    .endDate("2014-01-09 23:59:59.000")
+                    .foreseenWorkHours(50)
+                    .source("Sup.Producao")
+                    .application("OLM")
+                    .owners(new TaskOwner("john", "John The Programmer", "N1"),
+                            new TaskOwner("mary", "Mary Developer", "N2"))
+                    .build();
+        
+        Task t2 = new TestTaskBuilder()
+                    .id("111122223333aaaabbbbXXXX")
+                    .description("Test the Task Implementation")
+                    .startDate("2014-01-02 00:00:00.000")
+                    .foreseenEndDate("2014-01-10 23:59:59.000")
+                    .endDate("2014-01-09 23:59:59.000")
+                    .foreseenWorkHours(50)
+                    .source("Sup.Producao")
+                    .application("OLM")
+                    .owners(new TaskOwner("john", "John The Programmer", "N1"),
+                            new TaskOwner("mary", "Mary Developer", "N2"))
+                    .build();
 
         List<Task> taskList = Arrays.asList(t1, t2);
         Mockito.when(taskRepository.searchTasks(generatedCriteria)).thenReturn(taskList);
@@ -360,9 +446,19 @@ public class TasksServiceTest {
 
     @Test
     public void modifyTask_badRequest() throws Exception {
-        Task testTask = createTestTask(DEFAULT_TASK_ID, true, false);
-        Mockito.when(taskRepository.get(DEFAULT_TASK_ID)).thenReturn(testTask);
-
+        Task t = new TestTaskBuilder()
+                    .id(DEFAULT_TASK_ID)
+                    .description("Test the Task Implementation")
+                    .startDate("2014-01-02 00:00:00.000")
+                    .foreseenEndDate("2014-01-10 23:59:59.000")
+                    .nullEndDate()
+                    .foreseenWorkHours(50)
+                    .source("Sup.Producao")
+                    .application("OLM")
+                    .owners(new TaskOwner("john", "John The Programmer", "N1"),
+                            new TaskOwner("mary", "Mary Developer", "N2"))
+                    .build();
+        Mockito.when(taskRepository.get(DEFAULT_TASK_ID)).thenReturn(t);
         try {
             service.modifyTask(DEFAULT_TASK_ID, "{}");
             fail("Exception was expected");
@@ -373,7 +469,18 @@ public class TasksServiceTest {
 
     @Test
     public void modifyTask_finish_ok() throws Exception {
-        Task storedTask = createTestTask(DEFAULT_TASK_ID, true, false);
+        Task storedTask = new TestTaskBuilder()
+                    .id(DEFAULT_TASK_ID)
+                    .description("Test the Task Implementation")
+                    .startDate("2014-01-02 00:00:00.000")
+                    .foreseenEndDate("2014-01-10 23:59:59.000")
+                    .nullEndDate()
+                    .foreseenWorkHours(50)
+                    .source("Sup.Producao")
+                    .application("OLM")
+                    .owners(new TaskOwner("john", "John The Programmer", "N1"),
+                            new TaskOwner("mary", "Mary Developer", "N2"))
+                    .build();
 
         Mockito.when(taskRepository.get(DEFAULT_TASK_ID)).thenReturn(storedTask);
 
@@ -387,7 +494,18 @@ public class TasksServiceTest {
 
     @Test
     public void modifyTask_finish_lateTaskError() throws Exception {
-        Task storedTask = createTestTask(DEFAULT_TASK_ID, true, false);
+        Task storedTask = new TestTaskBuilder()
+                    .id(DEFAULT_TASK_ID)
+                    .description("Test the Task Implementation")
+                    .startDate("2014-01-02 00:00:00.000")
+                    .foreseenEndDate("2014-01-10 23:59:59.000")
+                    .nullEndDate()
+                    .foreseenWorkHours(50)
+                    .source("Sup.Producao")
+                    .application("OLM")
+                    .owners(new TaskOwner("john", "John The Programmer", "N1"),
+                            new TaskOwner("mary", "Mary Developer", "N2"))
+                    .build();
 
         Mockito.when(taskRepository.get(DEFAULT_TASK_ID)).thenReturn(storedTask);
 
@@ -401,7 +519,18 @@ public class TasksServiceTest {
 
     @Test
     public void modifyTask_finish_alreadyFinished() throws Exception {
-        Task storedTask = createTestTask(DEFAULT_TASK_ID, false, false);
+        Task storedTask = new TestTaskBuilder()
+                    .id(DEFAULT_TASK_ID)
+                    .description("Test the Task Implementation")
+                    .startDate("2014-01-02 00:00:00.000")
+                    .foreseenEndDate("2014-01-10 23:59:59.000")
+                    .endDate("2014-01-09 23:59:59.000")
+                    .foreseenWorkHours(50)
+                    .source("Sup.Producao")
+                    .application("OLM")
+                    .owners(new TaskOwner("john", "John The Programmer", "N1"),
+                            new TaskOwner("mary", "Mary Developer", "N2"))
+                    .build();
 
         Mockito.when(taskRepository.get(DEFAULT_TASK_ID)).thenReturn(storedTask);
 
@@ -418,7 +547,18 @@ public class TasksServiceTest {
 
         Task.setFixedCurrentDate(timestampFormat.parse("2014-01-02 00:00:00.000"));
 
-        Task storedTask = createTestTask(DEFAULT_TASK_ID, true, false);
+        Task storedTask = new TestTaskBuilder()
+                    .id(DEFAULT_TASK_ID)
+                    .description("Test the Task Implementation")
+                    .startDate("2014-01-02 00:00:00.000")
+                    .foreseenEndDate("2014-01-10 23:59:59.000")
+                    .nullEndDate()
+                    .foreseenWorkHours(50)
+                    .source("Sup.Producao")
+                    .application("OLM")
+                    .owners(new TaskOwner("john", "John The Programmer", "N1"),
+                            new TaskOwner("mary", "Mary Developer", "N2"))
+                    .build();
 
         Mockito.when(taskRepository.get(DEFAULT_TASK_ID)).thenReturn(storedTask);
 
@@ -433,7 +573,18 @@ public class TasksServiceTest {
 
     @Test
     public void modifyTask_changeForeseenEndDate() throws Exception {
-        Task storedTask = createTestTask(null, true, false);
+        Task storedTask = new TestTaskBuilder()
+                    .id(DEFAULT_TASK_ID)
+                    .description("Test the Task Implementation")
+                    .startDate("2014-01-02 00:00:00.000")
+                    .foreseenEndDate("2014-01-10 23:59:59.000")
+                    .nullEndDate()
+                    .foreseenWorkHours(50)
+                    .source("Sup.Producao")
+                    .application("OLM")
+                    .owners(new TaskOwner("john", "John The Programmer", "N1"),
+                            new TaskOwner("mary", "Mary Developer", "N2"))
+                    .build();
 
         Mockito.when(taskRepository.get(DEFAULT_TASK_ID)).thenReturn(storedTask);
 
@@ -445,31 +596,90 @@ public class TasksServiceTest {
         assertEquals(timestampFormat.parse("2014-01-12 23:59:59.999"), argument.getValue().getForeseenEndDate());
     }
 
-    private Task createTestTask(String id, boolean nullEndDate, boolean excludePosts) throws ParseException {
-        Task t = new Task(
-                    id != null ? id : DEFAULT_TASK_ID,
-                    "Test the Task Implementation",
+    @Test
+    public void findById() throws Exception {
+        Task t1 = new TestTaskBuilder()
+                    .id(DEFAULT_TASK_ID)
+                    .description("Test the Task Implementation")
+                    .startDate("2014-01-02 00:00:00.000")
+                    .foreseenEndDate("2014-01-10 23:59:59.000")
+                    .endDate("2014-01-09 23:59:59.000")
+                    .foreseenWorkHours(50)
+                    .source("Sup.Producao")
+                    .application("OLM")
+                    .owners(new TaskOwner("john", "John The Programmer", "N1"),
+                            new TaskOwner("mary", "Mary Developer", "N2"))
+                    .build();
 
-                    timestampFormat.parse("2014-01-02 00:00:00.000"),
-                    timestampFormat.parse("2014-01-10 23:59:59.000"),
-                    nullEndDate ? null : timestampFormat.parse("2014-01-09 23:59:59.000"),
+        Mockito.when(taskRepository.get(DEFAULT_TASK_ID)).thenReturn(t1);
 
-                    "Sup.Producao",
-                    new Application("OLM"),
+        String result = service.findById(DEFAULT_TASK_ID);
 
-                    Arrays.asList(new TaskOwner("john", "John The Programmer", "N1"),
-                                    new TaskOwner("mary", "Mary Developer", "N2")));
+        JSONAssert.assertEquals(t1.toJson(), result, true);
+    }
 
-        if (!excludePosts) {
-            Post p1 = new Post("john", "Scope changed. No re-scheduling will be necessary",
-                    timestampFormat.parse("2014-01-03 09:15:30.700"));
-            t.addPost(p1);
+    @Test
+    public void findById_notFound() throws Exception {
+        Mockito.when(taskRepository.get(DEFAULT_TASK_ID)).thenReturn(null);
 
-            Post p2 = new Post("john", "Doing #overtime to finish it sooner",
-                    timestampFormat.parse("2014-01-08 18:20:49.150"));
-            t.addPost(p2);
+        try {
+            service.findById(DEFAULT_TASK_ID);
+            fail("Exception expected");
+        } catch (WebApplicationException e) {
+            assertEquals(404, e.getResponse().getStatus());
         }
+    }
 
-        return t;
+    @Test
+    public void addPost() throws Exception {
+        Task t1 = new TestTaskBuilder()
+                    .id(DEFAULT_TASK_ID)
+                    .description("Test the Task Implementation")
+                    .startDate("2014-01-02 00:00:00.000")
+                    .foreseenEndDate("2014-01-10 23:59:59.000")
+                    .nullEndDate()
+                    .foreseenWorkHours(50)
+                    .source("Sup.Producao")
+                    .application("OLM")
+                    .owners(new TaskOwner("john", "John The Programmer", "N1"),
+                            new TaskOwner("mary", "Mary Developer", "N2"))
+                    .build();
+        Mockito.when(taskRepository.get(DEFAULT_TASK_ID)).thenReturn(t1);
+
+        User owner1 = new User("john");
+        owner1.setName("John Dev1");
+        owner1.setType("N1");
+        Mockito.when(userRepository.get("john")).thenReturn(owner1);
+
+        String body = "{post: {login: 'john', text: 'Something I did', timestamp: '2014-01-03 12:15:30.555'}}";
+        service.addPost(DEFAULT_TASK_ID, body);
+
+        ArgumentCaptor<Task> taskArgumentCaptor = ArgumentCaptor.forClass(Task.class);
+        Mockito.verify(taskRepository).update(taskArgumentCaptor.capture());
+        assertEquals("John Dev1", taskArgumentCaptor.getValue().getPosts().get(0).getName());
+    }
+
+    @Test(expected = WebApplicationException.class)
+    public void addPost_userNotFound() throws Exception {
+        Task t1 = new TestTaskBuilder()
+                    .id(DEFAULT_TASK_ID)
+                    .description("Test the Task Implementation")
+                    .startDate("2014-01-02 00:00:00.000")
+                    .foreseenEndDate("2014-01-10 23:59:59.000")
+                    .nullEndDate()
+                    .foreseenWorkHours(50)
+                    .source("Sup.Producao")
+                    .application("OLM")
+                    .owners(new TaskOwner("john", "John The Programmer", "N1"),
+                            new TaskOwner("mary", "Mary Developer", "N2"))
+                    .build();
+        
+        Mockito.when(taskRepository.get(DEFAULT_TASK_ID)).thenReturn(t1);
+
+        Mockito.when(userRepository.get("jimmy")).thenReturn(null);
+
+        String body = "{post: {login: 'jimmy', text: 'Something I did', timestamp: '2014-01-03 12:15:30.555'}}";
+
+        service.addPost(DEFAULT_TASK_ID, body);
     }
 }

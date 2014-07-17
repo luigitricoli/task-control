@@ -88,14 +88,16 @@ public class UsersRepositoryTest {
     @Test
     public void getAll() {
         BasicDBObject user1 = createTestUserAsDbObject();
-        BasicDBObject user2 = createTestUserAsDbObject().append("_id", "testusr2");
+        BasicDBObject user2 = createTestUserAsDbObject()
+                                .append("_id", "testusr2")
+                                .append("name", "A Atest User"); // Comes first when sorted
         conn.getCollection("users").insert(user1, user2);
 
         List<User> users = repository.getAll();
 
         assertEquals(2, users.size());
-        assertEquals("testusr", users.get(0).getLogin());
-        assertEquals("testusr2", users.get(1).getLogin());
+        assertEquals("testusr2", users.get(0).getLogin());
+        assertEquals("testusr", users.get(1).getLogin());
     }
 
     @Test

@@ -1,5 +1,5 @@
 # tomcat.version property value should be: 
-# http://ftp.unicamp.br/pub/apache/tomcat/tomcat-7/v7.0.50/bin/apache-tomcat-7.0.50-windows-x86.zip if your system is 32bits 		
+# http://mirror.nbtelecom.com.br/apache/tomcat/tomcat-7/v7.0.54/bin/apache-tomcat-7.0.54-windows-x86.zip if your system is 32bits
 # or 			
-# http://ftp.unicamp.br/pub/apache/tomcat/tomcat-7/v7.0.50/bin/apache-tomcat-7.0.50-windows-x64.zip if your system is 64bits 
-tomcat.url.version=http://ftp.unicamp.br/pub/apache/tomcat/tomcat-7/v7.0.54/bin/apache-tomcat-7.0.54-windows-x86.zip
+# http://mirror.nbtelecom.com.br/apache/tomcat/tomcat-7/v7.0.54/bin/apache-tomcat-7.0.54-windows-x64.zip if your system is 64bits
+tomcat.url.version=http://mirror.nbtelecom.com.br/apache/tomcat/tomcat-7/v7.0.54/bin/apache-tomcat-7.0.54-windows-x64.zip
