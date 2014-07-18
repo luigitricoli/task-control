@@ -4,15 +4,12 @@ import br.com.caelum.vraptor.*;
 import br.com.caelum.vraptor.view.Results;
 import br.com.egs.task.control.web.interceptor.AuthRequired;
 import br.com.egs.task.control.web.model.SessionUser;
-import br.com.egs.task.control.web.model.exception.InvalidDateException;
 import br.com.egs.task.control.web.model.exception.TaskControlWebClientException;
 import br.com.egs.task.control.web.model.exception.UpdateException;
 import br.com.egs.task.control.web.model.repository.TaskRepository;
-import br.com.egs.task.control.web.rest.client.task.TaskDate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.text.ParseException;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
@@ -26,6 +23,7 @@ public class TasksController {
     public static final String EMPTY = "";
     private static final String SUCCESS_RESPONSE_CODE = "success";
     private static final String FAIL_RESPONSE_CODE = "fail";
+    private static final String BRAZILIAN_DATE_FORMAT = "dd/MM/yy";
 
     private Result result;
     private TaskRepository tasks;
@@ -101,7 +99,7 @@ public class TasksController {
     @Put(value = "/tarefas/{task}/planejamento")
     public void replan(String task, String start, String foreseen) {
         try {
-            tasks.replan(task, start, foreseen);
+            tasks.replan(task, BRAZILIAN_DATE_FORMAT, start, foreseen);
             result.use(Results.http()).body(SUCCESS_RESPONSE_CODE);
         } catch (UpdateException e){
             log.error(e.getMessage());
@@ -114,7 +112,7 @@ public class TasksController {
 
     @Get("/tarefas/{task}/historico")
     public void postsBy(String task) {
-        result.include("posts", tasks.postsBy(task));
+        result.include("task", tasks.get(task));
     }
 
     @Post("/tarefas/{task}/historico")

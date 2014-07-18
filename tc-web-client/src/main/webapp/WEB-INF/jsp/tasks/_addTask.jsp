@@ -7,12 +7,12 @@
         </div>
         <div class="field half-left">
             <label>In&iacute;cio</label>
-            <input type="text" name="start" id="startDay" required>
+            <input type="text" name="start" id="startDay" class="startDay" required>
             <span class="format">dd/mm/aa</span>
         </div>
         <div class="field half-right">
             <label>Fim</label>
-            <input type="text" name="foreseen" id="foreseenDay" required>
+            <input type="text" name="foreseen" id="foreseenDay" class="foreseenDay" required>
             <span class="format">dd/mm/aa</span>
         </div>
         <div class="field half-left">
@@ -45,7 +45,7 @@
             <span>${sessionUser.user.nickname}</span>
             <input type="text" name="owners[]" value="${sessionUser.user.nickname}" style="display:none" >
         </div>
-        <div class="field">
+        <div class="field btn-container">
             <button type="reset" id="cancel-register-btn" class="btn red"><span class="icon add">X</span>Cancelar</button>
             <button type="button" id="salve-register-btn" class="btn green"><span class="icon add">V</span>Salvar</button>
         </div>

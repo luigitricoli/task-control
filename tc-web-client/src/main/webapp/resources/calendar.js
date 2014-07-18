@@ -3,7 +3,15 @@ var activeFilters = "";
 var appFilter = "";
 var users = "";
 
-function getIntCookie(name) {
+function isAdmin(){
+    try {
+        return ADMIN;
+    } catch(error) {
+        return false;
+    }
+}
+
+function getIntCookie(name){
 	return parseInt($.cookie(name));
 }
 function setMonthCookie(value) {
@@ -193,55 +201,141 @@ function populateTimeline(task) {
             $("#finish").show();
         }
 
-        if(task.find(".stage").hasClass("doing") || task.find(".stage").hasClass("waiting")){
-            $("#replan").click(function() {
-                replan(task);
-            });
-            $("#replan").show();
-        }
+        activeReplan(task);
 
         $("#btn-task-history")[0].click();
     });
 }
 
-function toogleFilterTasks(filter) {
-	var name = filter.data("filter");
-	if (activeFilters.indexOf(name) < 0) {
-		if (activeFilters === "" || activeFilters === undefined) {
-			activeFilters = name;
-		} else {
-			activeFilters = activeFilters + "," + name;
-		}
-	} else {
-		activeFilters = activeFilters.replace("," + name, "");
-		activeFilters = activeFilters.replace(name + ",", "");
-		activeFilters = activeFilters.replace(name, "");
-	}
-	loadMonth();
+function activeReplan(task){
+        if(!isAdmin() && (task.find(".stage").hasClass("finished") || task.hasClass("late"))){
+            return;
+        }
+
+        if(isAdmin() || task.find(".stage").hasClass("waiting")){
+            $("#replan-task-form .startDay").val("");
+            $("#replan-task-form .startDay").removeAttr("disabled");
+        }
+
+        $("#replan").click(function() {
+            $("#replan-block-screen").show();
+            $("#replan-task-container").show();
+        });
+        $("#cancel-replan-btn").click(function(event){
+            closeFloatWindow("#replan-task-container");
+        });
+        $("#salve-replan-btn").click(function(event){
+            replan();
+            event.preventDefault();
+        });
+        $(".startDay").mask('00/00/00');
+        $(".foreseenDay").mask('00/00/00');
+        $("#replan").show();
+
 }
 
-function replan(task){
-    var url = DOMAIN + "tarefas/" + task.data("id") + "/planejamento";
+function toogleFilterTasks(filter){
+    var name = filter.data("filter");
+    if(activeFilters.indexOf(name) < 0){
+        if(activeFilters === "" || activeFilters === undefined){
+            activeFilters = name;
+        } else {
+            activeFilters = activeFilters + "," + name;
+        }
+    } else {
+        activeFilters = activeFilters.replace(","+name, "");
+        activeFilters = activeFilters.replace(name+",", "");
+        activeFilters = activeFilters.replace(name, "");
+    }
+    loadMonth();
+}
+
+function replan(){
+    var url = DOMAIN + "tarefas/" + $("#replan-id").val() + "/planejamento";
+
+    var startValue = $("#replan-start").val();
+    var foreseenValue = $("#replan-foreseen").val();
+
+    if("" === startValue){
+        showFloatWindowAlert("#replan-task-container", "Data de Início não pode estar vazia.");
+        return;
+    }
+
+    if("" === foreseenValue){
+        showFloatWindowAlert("#replan-task-container", "Data de Fim não pode estar vazia.");
+        return;
+    }
+
+    var start = new BrazilianDate(startValue);
+    var foreseen = new BrazilianDate(foreseenValue);
+
+    if(foreseen.compare(start) < 0){
+        showFloatWindowAlert("#replan-task-container", "A data Fim não pode ser menor que a data de Início.");
+        return;
+    }
+
+    var data = {"foreseen" : foreseen.sDate}
+    if(!$("#replan-start").is(":disabled")){
+        data.start = start.sDate;
+    }
 
     $.ajax({
         "url": url,
         "type": "PUT",
-        "data": { "start" : "15-07-2014", "foreseen" : "17-07-2014"},
+        "data": data,
         "success": function(data) {
                     if("success" === data) {
-                        closePostAlert();
+                        closeFloatWindowAlert("#replan-task-container");
                         loadMonth();
-                    } else if (undefined !== data.message) {
-                        closePostAlert();
-                        showPostAlert(data);
+                    } else if (data.message) {
+                        showFloatWindowAlert("#replan-task-container", data.message);
                     } else {
-                        closePostAlert();
-                        showPostAlert("Não foi possível replanejar esta tarefa, entre em contato com o Gestor.");
+                        showFloatWindowAlert("#replan-task-container", "Não foi possível replanejar esta tarefa, entre em contato com o Gestor.");
                     }
 
         }
     });
 
+}
+
+function showPostAlert(text){
+    showAlert("#iteraction-form", text);
+}
+
+function closePostAlert(){
+    closeAlert("#iteraction-form");
+}
+
+function showAlert(idElement, text) {
+        $(idElement + " .alert p").text(text);
+        $(idElement + " .alert").show();
+        $(idElement + " .alert").switchClass( "begin", "end", 1500 );
+}
+
+function closeAlert(){
+        $(".alert").hide();
+        $(".alert").switchClass( "end", "begin", 0 );
+}
+
+function showFloatWindowAlert(idElement, text){
+        closeFloatWindowAlert(idElement);
+
+        var root = $(idElement);
+        var height = root.height();
+        root.height(height+35);
+        root.find(".alert p").text(text);
+        root.find(".alert").show();
+        root.find(".alert").switchClass( "begin", "end", 1500 );
+}
+
+function closeFloatWindowAlert(idElement){
+        var root = $(idElement);
+        var alert = root.find(".alert");
+        if(alert.is(":visible")){
+            root.height(root.height()-35);
+            alert.hide();
+            alert.switchClass( "end", "begin", 0 );
+        }
 }
 
 function finish(task){
@@ -290,39 +384,28 @@ function addPost(task, url) {
 	});
 }
 
-function addTask() {
-	var url = DOMAIN + "tarefas";
-	$.post(url, $("#add-task-form").serialize(), function(data) {
-		if ("success" === data) {
-			loadMonth();
-			$("#cancel-register-btn")[0].click();
-		} else if ("fail" !== data) {
-			closeAddAlert();
-			showAddAlert(data);
-		} else {
-			closeAddAlert();
-			showAddAlert("Campos preenchidos incorretametne.");
-		}
+function addTask(){
+    var url = DOMAIN + "tarefas";
+	$.post(url, $("#add-task-form").serialize(), function(data){
+	    if("success" === data) {
+            loadMonth();
+            $("#cancel-register-btn")[0].click();
+	    }else if(data.message) {
+            showFloatWindowAlert("#add-task-container", data.message);
+        } else {
+            showFloatWindowAlert("#add-task-container", "Campos preenchidos incorretametne.");
+	    }
 	});
 }
 
-function showAddAlert(text) {
-	$("#add-task-container").height("355px");
-	$("#add-task-form .alert p").text(text);
-	$("#add-task-form .alert").show();
-	$("#add-task-form .alert").switchClass("begin", "end", 1500);
-}
+function closeFloatWindow(){
+    closeFloatWindowAlert("#add-task-container");
+    $("#add-task-container").hide();
 
-function closeAddAlert() {
-	$("#add-task-container").height("320px");
-	$("#add-task-form .alert").hide();
-	$("#add-task-form .alert").switchClass("end", "begin", 0);
-}
+    closeFloatWindowAlert("#replan-task-container");
+    $("#replan-task-container").hide();
 
-function closeFloatWindow() {
-	$("#block-screen").hide();
-	$("#add-task-container").hide();
-	closeAddAlert();
+    $(".block-screen").hide();
 }
 
 
@@ -336,22 +419,21 @@ $(document).ready(function() {
 	$("#previous-month").click(function() {
 		prevMonth();
 	});
-	$("#btn_new").click(function(event) {
-		$("#block-screen").show();
-		$("#add-task-container").show();
-		event.preventDefault();
+	$("#btn_new").click(function(event){
+	    $("#task-block-screen").show();
+	    $("#add-task-container").show();
+	    event.preventDefault();
 	});
 	$("#cancel-register-btn").click(function(event) {
 		closeFloatWindow();
 	});
+	$("#salve-register-btn").click(function(event){
+        addTask();
+        event.preventDefault();
+    });
 
-
-	$("#salve-register-btn").click(function(event) {
-		addTask();
-	});
-
-	$("#startDay").mask('00/00/00');
-	$("#foreseenDay").mask('00/00/00');
+    $(".startDay").mask('00/00/00');
+    $(".foreseenDay").mask('00/00/00');
 
 	loadMonth();
 });

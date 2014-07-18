@@ -1,4 +1,5 @@
 var appFilter="task_control";
+var ADMIN = true;
 
 function getUsers(){
 	var url = DOMAIN + "filtros/usuarios";

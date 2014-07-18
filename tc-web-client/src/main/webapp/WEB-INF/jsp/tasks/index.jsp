@@ -8,6 +8,8 @@
     <script src="<c:url value="/resources/jquery.easydropdown.min.js"/>"></script>
     <script src="<c:url value="/resources/jquery.noty.packaged.min.js"/>"></script>
     <script src="<c:url value="/resources/jquery.mask.min.js"/>"></script>
+    <script src="<c:url value="/resources/stringUtils.js"/>"></script>
+    <script src="<c:url value="/resources/dateUtils.js"/>"></script>
     <script src="<c:url value="/resources/user.js"/>"></script>
     <script src="<c:url value="/resources/calendar.js"/>"></script>
 
@@ -122,7 +124,7 @@
             <div id="task-history">
             </div>
         </div>
-        <div id="block-screen">
+        <div id="task-block-screen" class="block-screen">
             <jsp:include page="_addTask.jsp"/>
             <jsp:include page="_changePass.jsp"/>
             <jsp:include page="_newUser.jsp"/>

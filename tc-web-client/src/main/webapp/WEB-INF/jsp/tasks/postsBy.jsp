@@ -1,8 +1,11 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+
 <h3>Hist&oacute;rico de Itera&ccedil;&otilde;es</h3>
-<p id="task-description"></p>
+<p id="task-description">${task.description}</p>
+<p class="detail-label">Dura&ccedil;&atilde;o prevista de <span>${task.startDateAsString}</span> &agrave; <span>${task.foreseenEndDateAsString}</span></p>
+<p class="detail-label">Respons&aacute;veis: <span></span></p>
 <div id="iteraction-menu">
     <a id="finish" class="btn green"><span class="icon add">V</span>Encerrar</a>
     <a id="replan" class="btn green"><span class="icon add">R</span>Replanejar</a>
@@ -20,7 +23,7 @@
     </form>
 </div>
 <div id="timeline">
-    <c:forEach var="post" items="${posts}" varStatus="status">
+    <c:forEach var="post" items="${task.posts}" varStatus="status">
         <div class="post">
             <span class="datetime"><fmt:formatDate value="${post.time.time}" pattern="dd/MM/yyyy HH:mm:ss" /></span>
 
@@ -34,4 +37,7 @@
             </div>
         </div>
     </c:forEach>
+</div>
+<div id="replan-block-screen" class="block-screen">
+    <jsp:include page="_replan.jsp"/>
 </div>

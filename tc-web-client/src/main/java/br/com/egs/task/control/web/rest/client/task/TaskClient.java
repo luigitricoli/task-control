@@ -4,6 +4,7 @@ import br.com.caelum.vraptor.ioc.Component;
 import br.com.caelum.vraptor.ioc.RequestScoped;
 import br.com.egs.task.control.web.model.Post;
 import br.com.egs.task.control.web.model.SessionUser;
+import br.com.egs.task.control.web.model.Task;
 import br.com.egs.task.control.web.model.Week;
 import br.com.egs.task.control.web.model.exception.InvalidDateException;
 import br.com.egs.task.control.web.model.exception.UpdateException;
@@ -19,6 +20,7 @@ import org.slf4j.LoggerFactory;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.Map.Entry;
+import java.util.logging.SimpleFormatter;
 
 @Component
 @RequestScoped
@@ -89,7 +91,7 @@ public class TaskClient implements TaskRepository {
     }
 
     @Override
-    public List<Post> postsBy(String taskId) {
+    public Task get(String taskId) {
         Response response = jsonClient.at(String.format("tasks/%s", taskId)).getAsJson();
         CoreTask task = CoreTask.unmarshal(response.getContent());
 
@@ -98,7 +100,12 @@ public class TaskClient implements TaskRepository {
             posts.add(new Post(post.getTimestamp(), post.getLogin(), post.getName(), post.getText()));
         }
 
-        return posts;
+        return new Task(task.getId(),task.getDescription(),task.getStartDate().toCalendar(),task.getForeseenEndDate().toCalendar(),task.getSource(),task.getApplication(),posts);
+    }
+
+    @Override
+    public List<Post> postsBy(String taskId) {
+        return get(taskId).getPosts();
     }
 
     @Override
@@ -147,8 +154,18 @@ public class TaskClient implements TaskRepository {
     }
 
     @Override
-    public void replan(String taskId, String start, String foreseen) throws InvalidDateException, UpdateException {
-        CoreTask task = new CoreTask(taskId, new TaskDate(start), new TaskDate(foreseen));
+    public void replan(String taskId, String start, String foreseen) throws UpdateException, InvalidDateException {
+        replan(taskId, TaskDate.DEFAULT_PATTERN, start, foreseen);
+    }
+
+    @Override
+    public void replan(String taskId, String dateFormat, String start, String foreseen) throws InvalidDateException, UpdateException {
+        SimpleDateFormat format = new SimpleDateFormat(dateFormat);
+
+        TaskDate startDate = start != null ? new TaskDate(start, format) : null;
+        TaskDate foreseenDate = foreseen != null ? new TaskDate(foreseen, format) : null;
+
+        CoreTask task = new CoreTask(taskId, startDate, foreseenDate);
 
         Response response = jsonClient.at(String.format("tasks/%s", taskId)).putAsJson(task.toJson());
         if (!response.getCode().equals(SUCCESS_CODE)) {
