@@ -171,7 +171,6 @@ function populateTimeline(task) {
 	var url = DOMAIN + "tarefas/" + task.data("id") + "/historico";
 	$.get(url, function(data) {
 		$("#task-history").show();
-
 		var html = $($.parseHTML(data));
 		$("#task-history").append(html);
 
@@ -418,6 +417,10 @@ function closeFloatWindow(){
 
 
 $(document).ready(function() {
+        $.ajaxSetup({
+            cache: false
+        });
+    
 	$(".filter-group input:checkbox").click(function(event) {
 		toogleFilterTasks($(this));
 	});
