@@ -1,4 +1,4 @@
-function userInfoActions(selected){
+function userInfoActions(selected, evt){
     if("logout" === selected.value){
         window.location = DOMAIN + "logout";
     }
@@ -12,7 +12,7 @@ function userInfoActions(selected){
     }
     
     resetUserNick();
-    event.preventDefault();
+    evt.preventDefault();
 }
 
 
@@ -170,4 +170,7 @@ $(document).ready(function() {
 		closeFloatWindow();
 	});
 	
+        $("#user-info").bind("change", function(event) {
+            userInfoActions(this, event)
+        });
 });
