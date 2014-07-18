@@ -30,7 +30,7 @@
 </head>
 <body>
     <header id="header">
-        <h1>TaskControl<span class="sub1">beta</span><span class="sub2">1</span></h1>
+        <h1>TaskControl<span class="sub1">beta</span><span class="sub2">2</span></h1>
         <jsp:include page="../_user.jsp"/>
     </header>
     <section id="main">
@@ -124,7 +124,7 @@
             <div id="task-history">
             </div>
         </div>
-        <div id="task-block-screen" class="block-screen">
+        <div id="block-screen" class="block-screen">
             <jsp:include page="_addTask.jsp"/>
             <jsp:include page="_changePass.jsp"/>
             <jsp:include page="_newUser.jsp"/>

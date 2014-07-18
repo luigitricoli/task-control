@@ -24,7 +24,7 @@ h1{
     position:absolute;
     top: 19px;
     right: 33px;
-    z-index: 99999999;
+    z-index: 999999;
 }
 .ui-menu {
     width: 100px;
@@ -287,22 +287,19 @@ h1{
     background: #fff;
     position: absolute;
     padding: 15px;
+    top: 50%;
+    left: 50%;
 }
 .addTaskWindow{
     width: 470px;
-    /*height: 370px;*/
     height: 320px;
-    top: 50%;
     margin-top: -200px;
-    left: 50%;
     margin-left: -250px;
 }
 .changePassWindow{
     width: 250px;
     height: 240px;
-    top: 50%;
     margin-top: -200px;
-    left: 50%;
     margin-left: -150px;
 }
 
@@ -424,17 +421,6 @@ h1{
     diplay: block;
     float: left;
 }
-#cancel-register-btn{
-    margin-left: 20px;
-}
-
-#cancel-register-pass{
-    margin-left: 20px;
-}
-
-#cancel-register-user{
-    margin-left: 20px;
-}
 
 .float-window .half-center{
     float: center;
@@ -454,10 +440,6 @@ h1{
 }
 
 #add-buttonOK-container{
-    display:none;
-}
-
-#replan-task-container{
     display:none;
 }
 
@@ -534,6 +516,8 @@ h1 .sub2{
 #replan-task-container{
     height: 130px;
     margin-top: -110px;
+    margin-left: -250px;
+    display:none;
 }
 #replan-task-container .field{
     padding-bottom: 15px;

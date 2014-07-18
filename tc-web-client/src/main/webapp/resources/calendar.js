@@ -208,12 +208,20 @@ function populateTimeline(task) {
 }
 
 function activeReplan(task){
-        if(!isAdmin() && (task.find(".stage").hasClass("finished") || task.hasClass("late"))){
+        if(task.find(".stage").hasClass("finished")){
             return;
         }
 
-        if(isAdmin() || task.find(".stage").hasClass("waiting")){
+        if(!isAdmin() && task.hasClass("late")){
+            return;
+        }
+
+        if(task.find(".stage").hasClass("waiting")){
             $("#replan-task-form .startDay").val("");
+            $("#replan-task-form .startDay").removeAttr("disabled");
+        }
+
+        if(isAdmin()){
             $("#replan-task-form .startDay").removeAttr("disabled");
         }
 
@@ -420,7 +428,7 @@ $(document).ready(function() {
 		prevMonth();
 	});
 	$("#btn_new").click(function(event){
-	    $("#task-block-screen").show();
+	    $("#block-screen").show();
 	    $("#add-task-container").show();
 	    event.preventDefault();
 	});

@@ -3,8 +3,8 @@ function userInfoActions(selected){
         window.location = DOMAIN + "logout";
     }
     if("changePass" == selected.value){
-    	    $("#block-screen").show();
-    	    $("#add-changePass-container").show();
+        $("#block-screen").show();
+        $("#add-changePass-container").show();
     }
     if("newUser" == selected.value){
 	    $("#block-screen").show();
