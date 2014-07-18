@@ -2,10 +2,7 @@ package br.com.egs.task.control.web.rest.client.task;
 
 import br.com.caelum.vraptor.ioc.Component;
 import br.com.caelum.vraptor.ioc.RequestScoped;
-import br.com.egs.task.control.web.model.Post;
-import br.com.egs.task.control.web.model.SessionUser;
-import br.com.egs.task.control.web.model.Task;
-import br.com.egs.task.control.web.model.Week;
+import br.com.egs.task.control.web.model.*;
 import br.com.egs.task.control.web.model.exception.InvalidDateException;
 import br.com.egs.task.control.web.model.exception.UpdateException;
 import br.com.egs.task.control.web.model.repository.TaskRepository;
@@ -20,7 +17,6 @@ import org.slf4j.LoggerFactory;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.Map.Entry;
-import java.util.logging.SimpleFormatter;
 
 @Component
 @RequestScoped
@@ -100,7 +96,12 @@ public class TaskClient implements TaskRepository {
             posts.add(new Post(post.getTimestamp(), post.getLogin(), post.getName(), post.getText()));
         }
 
-        return new Task(task.getId(),task.getDescription(),task.getStartDate().toCalendar(),task.getForeseenEndDate().toCalendar(),task.getSource(),task.getApplication(),posts);
+        List<User> owners = new LinkedList<>();
+        for (CoreUser user : task.getOwners()) {
+            owners.add(new User(user.getName(), user.getLogin(), user.getEmail(), user.getApplications()));
+        }
+
+        return new Task(task.getId(),task.getDescription(),task.getStartDate().toCalendar(),task.getForeseenEndDate().toCalendar(),task.getSource(),task.getApplication(),posts, owners);
     }
 
     @Override

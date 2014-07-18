@@ -5,7 +5,11 @@
 <h3>Hist&oacute;rico de Itera&ccedil;&otilde;es</h3>
 <p id="task-description">${task.description}</p>
 <p class="detail-label">Dura&ccedil;&atilde;o prevista de <span>${task.startDateAsString}</span> &agrave; <span>${task.foreseenEndDateAsString}</span></p>
-<p class="detail-label">Respons&aacute;veis: <span></span></p>
+<p class="detail-label">Respons&aacute;vel:
+    <c:forEach var="user" items="${task.owners}" varStatus="status">
+        <span>${user.name}</span>
+    </c:forEach>
+</p>
 <div id="iteraction-menu">
     <a id="finish" class="btn green"><span class="icon add">V</span>Encerrar</a>
     <a id="replan" class="btn green"><span class="icon add">R</span>Replanejar</a>

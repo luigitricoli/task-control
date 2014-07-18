@@ -4,6 +4,8 @@ import br.com.egs.task.control.web.model.filter.Applications;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 
 public class User {
@@ -23,7 +25,11 @@ public class User {
         this.email = email;
         this.type = type;
         this.pass = pass;
-        this.systems = systems;
+
+        this.systems = new LinkedList<>();
+        if(systems != null){
+            this.systems.addAll(systems);
+        }
     }
     
     public User(String name, String login, String email, List<String> systems) {
@@ -55,7 +61,7 @@ public class User {
     }
     
     public List<String> getSystems() {
-        return systems;
+        return Collections.unmodifiableList(systems);
     }
 
 }
