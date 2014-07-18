@@ -3,7 +3,7 @@
 	<parent>
 		<groupId>br.com.egs</groupId>
 		<artifactId>task-control</artifactId>
-		<version>0.2-SNAPSHOT</version>
+		<version>0.3-SNAPSHOT</version>
 	</parent>
 	<artifactId>tc-core-functional-tests</artifactId>
 	<packaging>pom</packaging>
@@ -12,7 +12,7 @@
 		<dependency>
 			<groupId>br.com.egs</groupId>
 			<artifactId>tc-core</artifactId>
-			<version>0.2-SNAPSHOT</version>
+			<version>0.3-SNAPSHOT</version>
 			<type>war</type>
 		</dependency>
         <dependency>
