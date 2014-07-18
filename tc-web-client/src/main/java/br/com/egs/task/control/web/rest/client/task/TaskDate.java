@@ -2,12 +2,13 @@ package br.com.egs.task.control.web.rest.client.task;
 
 import br.com.egs.task.control.web.model.exception.InvalidDateException;
 import com.google.gson.*;
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Type;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
 public class TaskDate implements Comparable<TaskDate> {
@@ -15,65 +16,39 @@ public class TaskDate implements Comparable<TaskDate> {
     private static final Logger log = LoggerFactory.getLogger(TaskDate.class);
     public static final String DEFAULT_PATTERN = "yyyy-MM-dd";
 
-    private Calendar time;
+    private DateTime time;
 	
 	public TaskDate() {
-        this.time = populateTimeFrom(Calendar.getInstance());
+        this.time = new DateTime().withMillisOfDay(0);
 	}
 
     public TaskDate(Calendar date) {
-        this.time = populateTimeFrom(date);
+        this.time = new DateTime(date).withMillisOfDay(0);
     }
 
 	public TaskDate(String date) throws InvalidDateException {
-        this.time = populateTimeFrom(date, new SimpleDateFormat(DEFAULT_PATTERN));
+        this(date, DEFAULT_PATTERN);
 	}
 	
-	public TaskDate(String date, SimpleDateFormat formater) throws InvalidDateException {
-        this.time = populateTimeFrom(date, formater);
-    }
-
-    private Calendar populateTimeFrom(Calendar date) {
-        SimpleDateFormat formater = new SimpleDateFormat(DEFAULT_PATTERN);
-        String sDate = formater.format(date.getTime());
-        try {
-            return populateTimeFrom(sDate, formater);
-        } catch (InvalidDateException cause) {
-            log.error(cause.getMessage(), cause);
-        }
-        return null;
-    }
-
-    private Calendar populateTimeFrom(String date, SimpleDateFormat formater) throws InvalidDateException {
-        Calendar tmp = Calendar.getInstance();
-        try {
-            tmp.setTime(formater.parse(date));
-        } catch (ParseException e) {
-            throw new InvalidDateException(date, formater.toPattern());
-        }
-
-        tmp.set(Calendar.HOUR, 0);
-        tmp.set(Calendar.MINUTE, 0);
-        tmp.set(Calendar.SECOND, 0);
-        tmp.set(Calendar.MILLISECOND, 0);
-
-        return tmp;
+	public TaskDate(String date, String format) throws InvalidDateException {
+        DateTimeFormatter fmt = DateTimeFormat.forPattern(format);
+        this.time = DateTime.parse(date, fmt);
     }
 
     public Integer getMonth(){
-        return time.get(Calendar.MONTH);
+        return time.getMonthOfYear();
     }
 
 	public Integer getWeekOfMonth(){
-		return time.get(Calendar.WEEK_OF_MONTH) - 1;
+		return time.getWeekOfWeekyear() - time.withDayOfMonth(1).getWeekOfWeekyear();
 	}
 	
 	public Integer getDayOfWeek(){
-		return time.get(Calendar.DAY_OF_WEEK);
+		return time.getDayOfWeek() % 7 != 0 ? time.getDayOfWeek() + 1 : 1;
 	}
 	
 	public Calendar toCalendar(){
-		return (Calendar) time.clone();
+		return time.toGregorianCalendar();
 	}
 	
 	@Override
@@ -106,18 +81,8 @@ public class TaskDate implements Comparable<TaskDate> {
 	
 	@Override
 	public String toString() {
-        String month = twoDigits(time.get(Calendar.MONTH) + 1);
-        String day = twoDigits(time.get(Calendar.DAY_OF_MONTH));
-		return String.format("%s-%s-%s", time.get(Calendar.YEAR), month, day);
+        return time.toString(DEFAULT_PATTERN);
 	}
-
-    private String twoDigits(int value){
-        if(value < 9){
-            return String.format("0%s", value);
-        } else {
-            return String.valueOf(value);
-        }
-    }
 	
 	public static class JsonUnmarshaller implements JsonDeserializer<TaskDate> {
 
@@ -135,8 +100,7 @@ public class TaskDate implements Comparable<TaskDate> {
 
         @Override
         public JsonElement serialize(TaskDate src, Type typeOfSrc, JsonSerializationContext context) {
-            String value = String.format("%s-%s-%s", src.time.get(Calendar.YEAR), src.time.get(Calendar.MONTH) + 1, src.time.get(Calendar.DAY_OF_MONTH));
-            return new JsonPrimitive(value);
+            return new JsonPrimitive(src.toString());
         }
     }
 

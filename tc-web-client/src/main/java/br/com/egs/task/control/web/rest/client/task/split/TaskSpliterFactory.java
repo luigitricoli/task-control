@@ -1,6 +1,5 @@
 package br.com.egs.task.control.web.rest.client.task.split;
 
-import br.com.egs.task.control.web.model.exception.InvalidDateException;
 import br.com.egs.task.control.web.rest.client.task.CoreTask;
 import br.com.egs.task.control.web.rest.client.task.TaskDate;
 import org.slf4j.Logger;

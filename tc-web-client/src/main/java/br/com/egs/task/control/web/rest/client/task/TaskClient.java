@@ -25,6 +25,7 @@ public class TaskClient implements TaskRepository {
     private static final Logger log = LoggerFactory.getLogger(TaskClient.class);
     public static final int SUCCESS_CODE = 200;
     public static final String EMPTY = "";
+    private static final String BRAZILIAN_FORMAT = "dd/MM/yy";
 
     private JsonClient jsonClient;
     private FilterFormat fomatter;
@@ -118,8 +119,7 @@ public class TaskClient implements TaskRepository {
 
         CoreTask task = null;
         try {
-            SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yy");
-            task = new CoreTask(new TaskDate(start, formatter), new TaskDate(foreseen, formatter), description, type, system, owners);
+            task = new CoreTask(new TaskDate(start, BRAZILIAN_FORMAT), new TaskDate(foreseen, BRAZILIAN_FORMAT), description, type, system, owners);
         } catch (InvalidDateException e) {
             log.error(e.getMessage());
             return false;
@@ -161,10 +161,8 @@ public class TaskClient implements TaskRepository {
 
     @Override
     public void replan(String taskId, String dateFormat, String start, String foreseen) throws InvalidDateException, UpdateException {
-        SimpleDateFormat format = new SimpleDateFormat(dateFormat);
-
-        TaskDate startDate = start != null ? new TaskDate(start, format) : null;
-        TaskDate foreseenDate = foreseen != null ? new TaskDate(foreseen, format) : null;
+        TaskDate startDate = start != null ? new TaskDate(start, dateFormat) : null;
+        TaskDate foreseenDate = foreseen != null ? new TaskDate(foreseen, dateFormat) : null;
 
         CoreTask task = new CoreTask(taskId, startDate, foreseenDate);
 

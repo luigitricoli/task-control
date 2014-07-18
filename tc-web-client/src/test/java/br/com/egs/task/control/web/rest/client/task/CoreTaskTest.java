@@ -38,7 +38,7 @@ public class CoreTaskTest {
         TaskDate date = new TaskDate("2014-02-20");
 
         CoreTask task = new CoreTask("530e76ef7cf056f2dad8fd32", date);
-        assertThat(task.toJson(), is("{\"task\":{\"id\":\"530e76ef7cf056f2dad8fd32\",\"endDate\":\"2014-2-20\"}}"));
+        assertThat(task.toJson(), is("{\"task\":{\"id\":\"530e76ef7cf056f2dad8fd32\",\"endDate\":\"2014-02-20\"}}"));
     }
 
     @Test
@@ -49,7 +49,7 @@ public class CoreTaskTest {
 
         CoreTask task = new CoreTask(date, date, "ção", "CCC", "OLM", users);
 
-        String expected = "{\"task\":{\"description\":\"ção\",\"startDate\":\"2014-2-20\",\"foreseenEndDate\":\"2014-2-20\",\"source\":\"CCC\",\"application\":\"OLM\",\"owners\":[{\"login\":\"luigi\"}]}}";
+        String expected = "{\"task\":{\"description\":\"ção\",\"startDate\":\"2014-02-20\",\"foreseenEndDate\":\"2014-02-20\",\"source\":\"CCC\",\"application\":\"OLM\",\"owners\":[{\"login\":\"luigi\"}]}}";
         assertThat(task.toJson(), is(expected));
         assertThat(task.toJson().getBytes(), equalTo(expected.getBytes()));
     }
