@@ -6,19 +6,19 @@
 			<p></p>
 		</div>
 
-		<div class="field half-left">
+		<div class="field">
 			<label>Senha Antiga</label> <input type="password" name="oldPass" 
 				class="changePass-input" id="oldPass" required>
 		</div>
-		<div class="field half-left">
+		<div class="field">
 			<label>Senha Nova</label> <input type="password" name="newPass"
 				class="changePass-input" id="newPass" required>
 		</div>
-		<div class="field half-left">
+		<div class="field">
 			<label>Confirme Senha Nova</label> <input type="password"
 				name="newcPass" class="changePass-input" id="newcPass" required>
 		</div>
-		<div class="field half-left">
+		<div class="field">
 			<button type="reset" id="cancel-register-pass" class="btn red">
 				<span class="icon add">X</span>Cancelar
 			</button>

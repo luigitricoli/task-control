@@ -9,7 +9,7 @@
             -->
             <option value="changePass">Alterar Senha</option>
             <c:if test="${sessionUser.admin}">
-                <option value="newUser">Novo Usu&aactue;rio</option>
+                <option value="newUser">Novo Usu&aacute;rio</option>
             </c:if>
             <option value="logout">Logout</option>
         </select>

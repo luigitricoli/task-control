@@ -1,5 +1,6 @@
 package br.com.egs.task.control.web.rest.client.task.split;
 
+import br.com.egs.task.control.web.model.exception.InvalidDateException;
 import br.com.egs.task.control.web.rest.client.task.CoreTask;
 import br.com.egs.task.control.web.rest.client.task.TaskDate;
 import org.slf4j.Logger;
@@ -12,7 +13,7 @@ public class TaskSpliterFactory {
     private static final Logger log = LoggerFactory.getLogger(TaskSpliterFactory.class);
     private static final String DATE_FORMAT = "2014-%s-01";
 
-    public static TaskSpliter getInstance(final CoreTask coreTask, final Calendar referenceMonth){
+    public static TaskSpliter getInstance(final CoreTask coreTask, final Calendar referenceMonth) {
         TaskDate today = new TaskDate();
         TaskDate month = getReferenceMonth(referenceMonth);
         if (isFinished(coreTask)) {

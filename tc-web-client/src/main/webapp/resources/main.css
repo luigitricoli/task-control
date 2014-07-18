@@ -297,7 +297,7 @@ h1{
     margin-left: -250px;
 }
 .changePassWindow{
-    width: 250px;
+    width: 241px;
     height: 240px;
     margin-top: -200px;
     margin-left: -150px;
@@ -400,14 +400,14 @@ h1{
 }
 .float-window .half-left{
     float: left;
-    width: 240px;
+    width: 220px;
 }
 .float-window .half-right{
-    width: 240px;
+    width: 220px;
     margin-left: 255px;
 }
 .float-window textarea{
-    width: 460px;
+    width: 440px;
     height: 50px;
 }
 .float-window form .btn{
