@@ -14,3 +14,29 @@ td {
     background-color: #ffffff;
     padding: 3px;
 }
+
+#report-options-form {
+    padding-top: 20px;
+}
+
+#report-options-form label {
+    font-size: 14px;
+    display: block;
+}
+
+#report-options-form select {
+    font-size: 14px;
+}
+
+#report-options-form input {
+    font-size: 14px;
+}
+
+#report-options-form option {
+    font-size: 14px;
+    padding-right: 20px;
+}
+
+#report-area {
+    height: 600px;
+}

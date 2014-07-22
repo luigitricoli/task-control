@@ -17,6 +17,7 @@ public class CoreTask {
     private TaskDate startDate;
     private TaskDate foreseenEndDate;
     private TaskDate endDate;
+    private Integer foreseenWorkHours;
     private String source;
     private String application;
     private List<CoreUser> owners;
@@ -24,9 +25,12 @@ public class CoreTask {
 
     private CoreTask(){}
 
-    public CoreTask(TaskDate startDate, TaskDate foreseenEndDate, String description, String source, String application, List<CoreUser> owners) {
+    public CoreTask(TaskDate startDate, TaskDate foreseenEndDate, Integer foreseenWorkHours,
+            String description, String source, 
+            String application, List<CoreUser> owners) {
         this.startDate = startDate;
         this.foreseenEndDate = foreseenEndDate;
+        this.foreseenWorkHours = foreseenWorkHours;
         this.description = description;
         this.source = source;
         this.application = application;
@@ -59,6 +63,10 @@ public class CoreTask {
 
     public TaskDate getForeseenEndDate() {
         return foreseenEndDate;
+    }
+
+    public Integer getForeseenWorkHours() {
+        return foreseenWorkHours;
     }
 
     public TaskDate getEndDate() {

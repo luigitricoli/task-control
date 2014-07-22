@@ -36,6 +36,26 @@ h1{
 #top-main{
     height: 90px;
 }
+
+#main-navigation-panel {
+    position:absolute;
+    top: 35px;
+    right: 200px;
+    z-index: 999999;
+}
+
+.main-navigation-item {
+    margin-right: 20px;
+    color: #b1b3b9;    
+    font-size: 16px;
+    font-weight: bold;
+}
+.main-navigation-item-current {
+    margin-right: 20px;
+    color: #b1b3b9;    
+    font-size: 16px;
+}
+
 .btn{
     cursor: pointer;
     text-decoration: none;

@@ -1,5 +1,6 @@
 package br.com.egs.task.control.web.model;
 
+import br.com.egs.task.control.web.model.calendar.CalendarFormat;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
@@ -14,6 +15,8 @@ public class Task {
     private String application;
     private List<Post> posts;
     private List<User> owners;
+    
+    private CalendarFormat calendarFormat = new CalendarFormat();
 
     public Task(String id, String description, Calendar startDate, Calendar foreseenEndDate, String source, String application, List<Post> posts, List<User> owners) {
         this.id = id;
@@ -39,7 +42,7 @@ public class Task {
     }
 
     public String getStartDateAsString() {
-        return calendarToString(startDate);
+        return calendarFormat.calendarToString(startDate);
     }
 
     public Calendar getForeseenEndDate() {
@@ -47,28 +50,7 @@ public class Task {
     }
 
     public String getForeseenEndDateAsString() {
-        return calendarToString(foreseenEndDate);
-    }
-
-    private String calendarToString(Calendar date) {
-        int day = date.get(Calendar.DAY_OF_MONTH);
-        int month = date.get(Calendar.MONTH)+1;
-        int year = date.get(Calendar.YEAR) % 100;
-
-        StringBuilder sDate = new StringBuilder();
-        if(day < 10){
-            sDate.append(0);
-        }
-        sDate.append(day);
-        sDate.append("/");
-        if(month < 10){
-            sDate.append(0);
-        }
-        sDate.append(month);
-        sDate.append("/");
-        sDate.append(year);
-
-        return sDate.toString();
+        return calendarFormat.calendarToString(foreseenEndDate);
     }
 
     public String getSource() {
