@@ -1,0 +1,59 @@
+#registers-list{
+    min-height: 380px;
+}
+
+/** TABLE */
+
+.table-content {
+    border: none;
+    border-collapse:collapse;
+    width: 100%;
+}
+
+.table-content td, .table-content th {
+    border: 1px solid #fff;
+    padding: 5px;
+    font-size: 12px;
+}
+
+.table-content thead tr {
+    background: #323a45;
+}
+
+.table-content thead th {
+    font-weight: bold;
+    color: #b1b3b9;
+}
+
+.table-content .white {
+    background: #fff;
+}
+
+.table-content .gray {
+    background: #e5e5e5;
+}
+
+.table-content .btn {
+    width: 80px;
+    text-align: center;
+}
+
+.table-content button {
+    padding: 3px 10px;
+    cursor: pointer;
+    font-size: 12px;
+    color: #fff;
+}
+
+.table-content button.edit {
+    background: #3fa34b;
+}
+
+.table-content button.delete {
+    background: #e03f33;
+}
+
+/** DEV */
+#registers-list{
+}
+

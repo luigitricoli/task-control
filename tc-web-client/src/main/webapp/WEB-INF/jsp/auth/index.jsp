@@ -14,7 +14,6 @@
 <body>
     <header id="header">
         <h1>TaskControl</h1>
-        <jsp:include page="../_user.jsp"/>
     </header>
     <section id="main">
         <div id="login-container">

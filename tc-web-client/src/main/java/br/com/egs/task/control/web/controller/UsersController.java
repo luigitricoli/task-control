@@ -1,5 +1,6 @@
 package br.com.egs.task.control.web.controller;
 
+import br.com.caelum.vraptor.Get;
 import br.com.caelum.vraptor.Post;
 import br.com.caelum.vraptor.Resource;
 import br.com.caelum.vraptor.Result;
@@ -34,6 +35,9 @@ public class UsersController {
 		this.users = user;
 		this.sessionUser = sessionUser;
 	}
+
+    @Get("/usuarios")
+    public void index(){}
 
 	@Post("/changePass")
 	public void changePass(String oldPass, String newPass, String newcPass) {

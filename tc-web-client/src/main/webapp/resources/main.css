@@ -60,7 +60,7 @@ h1{
     border: 0;
     float: right;
 }
-#btn_new{
+#top-main .btn.green{
     margin-top: 39px;
     margin-left: 10px;
 }

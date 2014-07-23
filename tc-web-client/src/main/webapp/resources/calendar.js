@@ -431,7 +431,7 @@ $(document).ready(function() {
 		prevMonth();
 	});
 	$("#btn_new").click(function(event){
-	    $("#block-screen").show();
+	    $("#block-screen-tasks").show();
 	    $("#add-task-container").show();
 	    event.preventDefault();
 	});
