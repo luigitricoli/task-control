@@ -147,11 +147,13 @@ function getTasks(month) {
 }
 
 function openTask() {
-	if (OPEN_TASK !== undefined) {
-		var id = "#task-" + OPEN_TASK;
-		OPEN_TASK = undefined;
-		$(id)[0].click();
-	}
+    try{
+        if (OPEN_TASK !== undefined) {
+            var id = "#task-" + OPEN_TASK;
+            OPEN_TASK = undefined;
+            $(id)[0].click();
+        }
+    } catch (error){}
 }
 
 function addClickActionToTasks() {

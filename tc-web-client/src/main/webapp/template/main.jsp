@@ -30,6 +30,15 @@
 <body>
     <header id="header">
         <h1>TaskControl<span class="sub1">beta</span><span class="sub2">2</span></h1>
+        <c:if test="${sessionUser.admin}">
+            <ul id="top-menu">
+                <li><a href="<c:url value="/tarefas"/>">Calend&aacute;rio</a></li>
+                <li class="separator">|</li>
+                <li><a href="<c:url value="/usuarios"/>">Usu&aacute;rios</a></li>
+                <li class="separator">|</li>
+                <li><a href="#">Relat&oacute;rios</a></li>
+            </ul>
+        </c:if>
         <jsp:include page="_user.jsp"/>
     </header>
     <section id="main">

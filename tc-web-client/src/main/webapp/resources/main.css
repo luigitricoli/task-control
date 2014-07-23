@@ -522,3 +522,34 @@ h1 .sub2{
 #replan-task-container .field{
     padding-bottom: 15px;
 }
+
+#top-menu {
+    list-style: none;
+    position: absolute;
+    top: 26px;
+    right: 165px;
+}
+
+#top-menu li {
+    float: left;
+    margin-left: 10px;
+}
+
+#top-menu li, #top-menu li a {
+    color: #b1b3b9;
+    font-size: 17px;
+}
+
+#top-menu li a {
+    text-decoration: none;
+    cursor: pointer;
+}
+
+#top-menu li a:hover {
+    text-decoration: underline;
+}
+
+#top-menu li a.active {
+    text-decoration: none;
+    color: #607792;
+}
