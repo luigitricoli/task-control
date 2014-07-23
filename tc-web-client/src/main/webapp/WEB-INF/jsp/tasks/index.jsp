@@ -22,7 +22,7 @@
                 <a id="previous-month" href="#" class="btn green previous">&lt;</a>
                 <a id="next-month" href="#" class="btn green next">&gt;</a>
             </div>
-            <h3 id="calendar-month-label">Atual</h3>
+            <h3 id="calendar-month-label"></h3>
         </div>
         <div id="tasks-in-calendar">
             <table id="calendar-layer">

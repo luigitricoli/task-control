@@ -38,7 +38,13 @@ public class ReferenceMonth {
     public String getDaysAsJson() {
         StringBuilder json = new StringBuilder();
         json.append("{\"label\":\"");
-        json.append(month.getFullName());
+
+        if(month.getId() == Calendar.getInstance().get(Calendar.MONTH)){
+            json.append("Atual");
+        } else {
+            json.append(month.getFullName());
+        }
+
 
         json.append("\", \"days\":[");
         json.append(previousMonthDays());
