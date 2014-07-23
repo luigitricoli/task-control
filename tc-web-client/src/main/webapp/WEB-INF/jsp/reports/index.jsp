@@ -1,3 +1,4 @@
+<%@ page pageEncoding="utf-8" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <!DOCTYPE HTML>
 <html>
@@ -38,9 +39,9 @@
     <header id="header">
         <h1>TaskControl<span class="sub1">beta</span><span class="sub2">2</span></h1>
         <div id="main-navigation-panel">
-            <a href="<c:url value="/tarefas"/>" class="main-navigation-item">Calendário</a>
-            <span class="main-navigation-item-current">Relatórios</span>
-            <a href="<c:url value="/usuarios"/>" class="main-navigation-item">Usuários</a>
+            <a href="<c:url value="/tarefas"/>" class="main-navigation-item">CalendÃ¡rio</a>
+            <span class="main-navigation-item-current">RelatÃ³rios</span>
+            <a href="<c:url value="/usuarios"/>" class="main-navigation-item">UsuÃ¡rios</a>
         </div>        
         <jsp:include page="../_user.jsp"/>
     </header>
@@ -53,7 +54,7 @@
         </div>        
         <div id="container-right">
             <div id="report-area">
-                <span>Utilize o menu ao lado para solicitar o relatório</span>
+                <span>Utilize o menu ao lado para solicitar o relatÃ³rio</span>
             </div>
         </div>
     </section>        

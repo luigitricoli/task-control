@@ -41,3 +41,28 @@ function submitReport(obj, evt) {
         }
     });
 }
+
+function refreshTable(url) {
+    $.ajax({
+        url: url,
+        method: "get",
+        success: function(data) {
+            $("#report-area").html(data);
+        },
+        error: function(jqXHR, textStatus, errorThrown) {
+            // TODO Improve this error handling
+            alert("Erro ao requisitar relatorio: " + jqXHR.status);
+        }
+    });    
+}
+
+function replaceDisplayTagLinksWithAjax() {
+    $("th.sortable a, div.pagelinks a").each(function() {
+        var url = $(this).attr("href");
+        $(this).attr("href", "#");
+        $(this).click(function(evt) {
+            refreshTable(url);
+            evt.preventDefault();
+        });
+    });
+}

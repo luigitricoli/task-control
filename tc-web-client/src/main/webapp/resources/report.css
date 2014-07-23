@@ -40,3 +40,19 @@ td {
 #report-area {
     height: 600px;
 }
+
+#report-area table {
+    margin-top: 15px;
+}
+
+th {
+    background-color: #2A7BC1;
+}
+th.sortable a {
+    color: #F9F9F9 !important;
+    font-weight: bold !important;
+}
+
+.pagebanner {
+    font-size: 12px;
+}

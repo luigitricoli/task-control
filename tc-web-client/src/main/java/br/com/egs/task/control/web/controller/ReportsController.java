@@ -39,7 +39,7 @@ public class ReportsController {
     
     @Get("/relatorios/listaTarefas")
     public void simpleTaskList(Integer month, Integer year) {
-        final List<SimpleTaskData> taskList = tasks.listTasks(month, year);
+        List<SimpleTaskData> taskList = tasks.listTasks(month, year);
         result.include("tasks", taskList);
     }
 }

@@ -4,7 +4,7 @@
         <h4>Relatório</h4>
         <select id="cboReportSelection">
             <option value="">Selecione...</option>
-            <option value="taskList">Listagem de Tarefas</option>
+            <option value="taskList">Listagem Simples de Tarefas</option>
         </select>
     </div>
     
