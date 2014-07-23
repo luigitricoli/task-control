@@ -3,7 +3,6 @@ package br.com.egs.task.control.web.rest.client.task;
 import br.com.caelum.vraptor.ioc.Component;
 import br.com.caelum.vraptor.ioc.RequestScoped;
 import br.com.egs.task.control.web.model.*;
-import br.com.egs.task.control.web.model.calendar.CalendarFormat;
 import br.com.egs.task.control.web.model.exception.InvalidDateException;
 import br.com.egs.task.control.web.model.exception.UpdateException;
 import br.com.egs.task.control.web.model.repository.TaskRepository;
@@ -31,8 +30,6 @@ public class TaskClient implements TaskRepository {
     private FilterFormat fomatter;
     private SessionUser session;
     
-    private CalendarFormat calendarFormat = new CalendarFormat();
-
     public TaskClient(final FilterFormat fomatter, JsonClient jsonClient, SessionUser user) {
         this.fomatter = fomatter;
         this.jsonClient = jsonClient;
@@ -194,10 +191,9 @@ public class TaskClient implements TaskRepository {
                 ownersDescription.append(coreUser.getName());
             }
             
-            String startDate = calendarFormat.calendarToString(coreTask.getStartDate().toCalendar());
-            String foreseenEndDate = calendarFormat.calendarToString(coreTask.getForeseenEndDate().toCalendar());
-            String endDate = coreTask.getEndDate() != null ? 
-                    calendarFormat.calendarToString(coreTask.getEndDate().toCalendar()) : null;
+            String startDate = coreTask.getStartDate().toString();
+            String foreseenEndDate = coreTask.getForeseenEndDate().toString();
+            String endDate = coreTask.getEndDate() != null ? coreTask.getEndDate().toString() : null;
             
             result.add(new SimpleTaskData(
                     coreTask.getDescription(),

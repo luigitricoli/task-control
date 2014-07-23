@@ -32,6 +32,6 @@
     </div>
     
     <div class="filter-group" id="reportSubmit">
-        <a href="#" id="btSubmitReport" class="btn green">Solicitar Relatório</a>
+        <a href="#" id="btSubmitReport" class="btn-no-icon green">Solicitar Relatório</a>
     </div>
 </form>
