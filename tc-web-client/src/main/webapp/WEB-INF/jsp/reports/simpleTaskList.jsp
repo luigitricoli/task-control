@@ -4,7 +4,7 @@
 <%@ taglib uri="http://displaytag.sf.net/el" prefix="display" %>
 
 <display:table name="tasks" export="true" requestURI="/relatorios/listaTarefas"
-               pagesize="10" id="task">
+               pagesize="30" id="task">
     <%@include file="_displayTag-setup.jsp" %>
     
     <display:column title="Descrição" property="description" sortable="true" />
@@ -27,5 +27,5 @@
 </display:table>
 
 <script lang="javascript">
-    replaceDisplayTagLinksWithAjax();
+    customizeTableLinks();
 </script>

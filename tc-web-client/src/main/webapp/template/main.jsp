@@ -36,7 +36,7 @@
                 <li class="separator">|</li>
                 <li><a href="<c:url value="/usuarios"/>">Usu&aacute;rios</a></li>
                 <li class="separator">|</li>
-                <li><a href="#">Relat&oacute;rios</a></li>
+                <li><a href="<c:url value="/relatorios"/>">Relat&oacute;rios</a></li>
             </ul>
         </c:if>
         <jsp:include page="_user.jsp"/>

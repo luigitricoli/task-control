@@ -4,7 +4,6 @@ import br.com.egs.task.control.web.model.SessionUser;
 import br.com.egs.task.control.web.model.SimpleTaskData;
 import br.com.egs.task.control.web.model.User;
 import br.com.egs.task.control.web.model.Week;
-import br.com.egs.task.control.web.model.filter.Applications;
 import br.com.egs.task.control.web.model.repository.TaskRepository;
 import br.com.egs.task.control.web.rest.client.JsonClient;
 import br.com.egs.task.control.web.rest.client.Response;

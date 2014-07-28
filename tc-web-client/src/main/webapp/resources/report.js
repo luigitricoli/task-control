@@ -56,7 +56,8 @@ function refreshTable(url) {
     });    
 }
 
-function replaceDisplayTagLinksWithAjax() {
+function customizeTableLinks() {
+    // Turn simple links into Ajax links
     $("th.sortable a, div.pagelinks a").each(function() {
         var url = $(this).attr("href");
         $(this).attr("href", "#");
@@ -64,5 +65,10 @@ function replaceDisplayTagLinksWithAjax() {
             refreshTable(url);
             evt.preventDefault();
         });
+    });
+    
+    // Export links should open in a new window/tab
+    $(".exportlinks a").each(function() {
+        $(this).attr("target", "_blank");
     });
 }
