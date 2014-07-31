@@ -1,7 +1,5 @@
 package br.com.egs.task.control.web.rest.client.task;
 
-import br.com.caelum.vraptor.ioc.Component;
-import br.com.caelum.vraptor.ioc.RequestScoped;
 import br.com.egs.task.control.web.model.*;
 import br.com.egs.task.control.web.model.exception.InvalidDateException;
 import br.com.egs.task.control.web.model.exception.UpdateException;
@@ -14,11 +12,11 @@ import br.com.egs.task.control.web.rest.client.user.CoreUser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.text.SimpleDateFormat;
+import javax.enterprise.context.RequestScoped;
+import javax.inject.Inject;
 import java.util.*;
 import java.util.Map.Entry;
 
-@Component
 @RequestScoped
 public class TaskClient implements TaskRepository {
 
@@ -31,6 +29,13 @@ public class TaskClient implements TaskRepository {
     private FilterFormat fomatter;
     private SessionUser session;
 
+    /**
+     * @deprecated needed for CDI
+     */
+    public TaskClient() {
+    }
+
+    @Inject
     public TaskClient(final FilterFormat fomatter, JsonClient jsonClient, SessionUser user) {
         this.fomatter = fomatter;
         this.jsonClient = jsonClient;

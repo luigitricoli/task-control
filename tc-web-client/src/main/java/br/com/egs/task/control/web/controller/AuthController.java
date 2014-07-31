@@ -1,30 +1,32 @@
 package br.com.egs.task.control.web.controller;
 
+import br.com.caelum.vraptor.Controller;
 import br.com.caelum.vraptor.Get;
 import br.com.caelum.vraptor.Post;
-import br.com.caelum.vraptor.Resource;
 import br.com.caelum.vraptor.Result;
 import br.com.egs.task.control.web.model.SessionUser;
 import br.com.egs.task.control.web.model.filter.Applications;
 import br.com.egs.task.control.web.model.filter.Sources;
 import br.com.egs.task.control.web.model.repository.UserRepository;
 
-@Resource
-public class AuthController {
+import javax.inject.Inject;
+import java.io.Serializable;
 
+@Controller
+public class AuthController implements Serializable {
+
+    private static final long serialVersionUID = -3709586215500930152L;
+
+    @Inject
     private Result result;
+    @Inject
     private UserRepository user;
+    @Inject
     private SessionUser sessionUser;
+    @Inject
     private Applications app;
+    @Inject
     private Sources source;
-
-    public AuthController(Result result, UserRepository user, SessionUser sessionUser, Applications app, Sources source) {
-        this.result = result;
-        this.user = user;
-        this.sessionUser = sessionUser;
-        this.app = app;
-        this.source = source;
-    }
 
     @Get("/login")
     public void index(){

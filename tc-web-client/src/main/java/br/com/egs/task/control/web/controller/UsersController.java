@@ -1,40 +1,33 @@
 package br.com.egs.task.control.web.controller;
 
+import br.com.caelum.vraptor.Controller;
 import br.com.caelum.vraptor.Get;
 import br.com.caelum.vraptor.Post;
-import br.com.caelum.vraptor.Resource;
 import br.com.caelum.vraptor.Result;
-import br.com.caelum.vraptor.view.ResultException;
 import br.com.caelum.vraptor.view.Results;
 import br.com.egs.task.control.web.interceptor.AuthRequired;
 import br.com.egs.task.control.web.model.SessionUser;
 import br.com.egs.task.control.web.model.User;
 import br.com.egs.task.control.web.model.repository.UserRepository;
 import br.com.egs.task.control.web.rest.client.user.UserClient;
-
-import java.util.List;
-import java.util.regex.*;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@Resource
+import javax.inject.Inject;
+import java.util.List;
+
+@Controller
 @AuthRequired
 public class UsersController {
 	
 	private static final Logger log = LoggerFactory.getLogger(UserClient.class);
-	
-	private Result result;
-	private UserRepository users;
-	private SessionUser sessionUser;
 
-	public UsersController(Result result, UserRepository user,
-			SessionUser sessionUser) {
-		super();
-		this.result = result;
-		this.users = user;
-		this.sessionUser = sessionUser;
-	}
+    @Inject
+	private Result result;
+    @Inject
+	private UserRepository users;
+    @Inject
+	private SessionUser sessionUser;
 
     @Get("/usuarios")
     public void index(){}

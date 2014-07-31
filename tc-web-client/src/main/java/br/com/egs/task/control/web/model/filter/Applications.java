@@ -1,13 +1,11 @@
 package br.com.egs.task.control.web.model.filter;
 
-import br.com.caelum.vraptor.ioc.Component;
-import br.com.caelum.vraptor.ioc.SessionScoped;
-
+import javax.enterprise.context.SessionScoped;
+import java.io.Serializable;
 import java.util.*;
 
-@Component
 @SessionScoped
-public class Applications {
+public class Applications implements Serializable{
 
     public static final String GERAL = "geral";
     public static final String ADMINISTRATIVO = "administrativo";
@@ -21,8 +19,6 @@ public class Applications {
     public static final String SLA = "sla";
     public static final String BILL_PRESENTMENT = "bill_presentment";
     public static final String PORTAL = "portal";
-
-
 
     private Map<String, String> labels;
     private String selected;
