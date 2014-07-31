@@ -3,14 +3,10 @@ function userInfoActions(selected, evt){
         window.location = DOMAIN + "logout";
     }
     if("changePass" == selected.value){
-        $("#block-screen").show();
+        $("#block-screen-main").show();
         $("#add-changePass-container").show();
     }
-    if("newUser" == selected.value){
-	    $("#block-screen").show();
-	    $("#add-newUser-container").show();
-    }
-    
+
     resetUserNick();
     evt.preventDefault();
 }
@@ -78,7 +74,7 @@ function closeAddAlertPass() {
 
 
 function closeFloatWindowPass() {
-	$("#block-screen").hide();
+	$(".block-screen").hide();
 	$("#add-changePass-container").hide();
 	closeAddAlertPass();
 }
@@ -134,7 +130,7 @@ function showAddAlertUser(text) {
 }
 
 function closeFloatWindowUser() {
-	$("#block-screen").hide();
+	$(".block-screen").hide();
 	$("#add-newUser-container").hide();
 	closeAddAlertUser();
 }
@@ -173,7 +169,12 @@ $(document).ready(function() {
 		closeFloatWindow();
 	});
 	
-        $("#user-info").bind("change", function(event) {
-            userInfoActions(this, event);
-        });
+    $("#user-info").bind("change", function(event) {
+        userInfoActions(this, event)
+    });
+
+    $("#new-user-btn").click(function(event) {
+        $("#block-screen-users").show();
+        $("#add-newUser-container").show();
+    });
 });

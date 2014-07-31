@@ -36,15 +36,41 @@ h1{
 #top-main{
     height: 90px;
 }
-.btn{
+
+#main-navigation-panel {
+    position:absolute;
+    top: 35px;
+    right: 200px;
+    z-index: 999999;
+}
+
+.main-navigation-item {
+    margin-right: 20px;
+    color: #b1b3b9;    
+    font-size: 16px;
+    font-weight: bold;
+}
+.main-navigation-item-current {
+    margin-right: 20px;
+    color: #b1b3b9;    
+    font-size: 16px;
+}
+
+.btn, .btn-no-icon{
     cursor: pointer;
     text-decoration: none;
     position: relative;
     border-radius: 3px;
-    font-size: 14px;
-    padding: 11px 15px 11px 45px;
+    font-size: 14px;    
     color: #fff;
 }
+.btn {
+    padding: 11px 15px 11px 45px;
+}
+.btn-no-icon {
+    padding: 11px 15px 11px 15px;
+}
+
 .green{
     background: #3fa34b;
     border: 0;
@@ -60,7 +86,7 @@ h1{
     border: 0;
     float: right;
 }
-#btn_new{
+#top-main .btn.green{
     margin-top: 39px;
     margin-left: 10px;
 }
@@ -521,4 +547,35 @@ h1 .sub2{
 }
 #replan-task-container .field{
     padding-bottom: 15px;
+}
+
+#top-menu {
+    list-style: none;
+    position: absolute;
+    top: 26px;
+    right: 165px;
+}
+
+#top-menu li {
+    float: left;
+    margin-left: 10px;
+}
+
+#top-menu li, #top-menu li a {
+    color: #b1b3b9;
+    font-size: 17px;
+}
+
+#top-menu li a {
+    text-decoration: none;
+    cursor: pointer;
+}
+
+#top-menu li a:hover {
+    text-decoration: underline;
+}
+
+#top-menu li a.active {
+    text-decoration: none;
+    color: #607792;
 }

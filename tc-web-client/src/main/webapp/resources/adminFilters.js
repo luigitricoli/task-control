@@ -34,6 +34,19 @@ function toogleUserFilterTasks(filter){
     loadMonth();
 }
 
+function handleActiveItemMenu(){
+    $("#top-menu li").removeClass("active");
+    if(/tarefas/.test(window.location.pathname)){
+        $($("#top-menu li")[0]).find("a").addClass("active");
+    }
+    if(/usuarios/.test(window.location.pathname)){
+        $($("#top-menu li")[2]).find("a").addClass("active");
+    }
+    if(/relatorios/.test(window.location.pathname)){
+        $($("#top-menu li")[4]).find("a").addClass("active");
+    }
+}
+
 $(document).ready(function(){
     $(".filter-group input.app").click(function(event){
         filterRadio($(this));
@@ -44,5 +57,6 @@ $(document).ready(function(){
             $(this).prop( "checked", true );
         }
     });
-});
 
+    handleActiveItemMenu();
+});

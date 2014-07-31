@@ -1,10 +1,14 @@
 package br.com.egs.task.control.web.controller;
 
+import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import br.com.caelum.vraptor.Get;
 import br.com.caelum.vraptor.Post;
-import br.com.caelum.vraptor.Put;
 import br.com.caelum.vraptor.Resource;
 import br.com.caelum.vraptor.Result;
-import br.com.caelum.vraptor.view.ResultException;
 import br.com.caelum.vraptor.view.Results;
 import br.com.egs.task.control.web.interceptor.AuthRequired;
 import br.com.egs.task.control.web.model.SessionUser;
@@ -13,16 +17,6 @@ import br.com.egs.task.control.web.model.exception.AuthenticateException;
 import br.com.egs.task.control.web.model.exception.UpdateException;
 import br.com.egs.task.control.web.model.repository.UserRepository;
 import br.com.egs.task.control.web.rest.client.user.UserClient;
-
-
-
-
-
-import java.util.List;
-import java.util.regex.*;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @Resource
 @AuthRequired
@@ -41,6 +35,9 @@ public class UsersController {
 		this.users = user;
 		this.sessionUser = sessionUser;
 	}
+
+    @Get("/usuarios")
+    public void index(){}
 
 	@Post("/senha")
 	public void changePass(String oldPass, String newPass, String newcPass) {

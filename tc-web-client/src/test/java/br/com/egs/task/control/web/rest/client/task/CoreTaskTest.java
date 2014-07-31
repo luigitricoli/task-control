@@ -47,7 +47,7 @@ public class CoreTaskTest {
         List<CoreUser> users = new ArrayList<>();
         users.add(new CoreUser("luigi"));
 
-        CoreTask task = new CoreTask(date, date, "ção", "CCC", "OLM", users);
+        CoreTask task = new CoreTask(date, date, null, "ção", "CCC", "OLM", users);
 
         String expected = "{\"task\":{\"description\":\"ção\",\"startDate\":\"2014-02-20\",\"foreseenEndDate\":\"2014-02-20\",\"source\":\"CCC\",\"application\":\"OLM\",\"owners\":[{\"login\":\"luigi\"}]}}";
         assertThat(task.toJson(), is(expected));

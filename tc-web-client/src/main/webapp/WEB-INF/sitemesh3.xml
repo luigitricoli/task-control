@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<sitemesh>
+    <mapping path="/tarefas" decorator="/template/main.jsp"/>
+    <mapping path="/usuarios" decorator="/template/main.jsp"/>
+    <mapping path="/relatorios" decorator="/template/main.jsp"/>
+</sitemesh>
