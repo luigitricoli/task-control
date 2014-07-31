@@ -2,4 +2,5 @@
 <sitemesh>
     <mapping path="/tarefas" decorator="/template/main.jsp"/>
     <mapping path="/usuarios" decorator="/template/main.jsp"/>
+    <mapping path="/relatorios" decorator="/template/main.jsp"/>
 </sitemesh>

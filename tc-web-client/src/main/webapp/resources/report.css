@@ -1,16 +1,64 @@
-table {
-    border: 1px solid #111111;
-    border-spacing: 0px;
+#report-area table {
+    border: none;
+    border-collapse:collapse;
+    width: 100%;
+    margin-top: 15px;
 }
 
-th {
-    background-color: #323a45;
-    color: #f9f9f9;
+#report-area td, #report-area th {
+    border: 1px solid #fff;
+    padding: 5px;
+    font-size: 12px;
+}
+
+#report-area thead tr {
+    background: #323a45;
+}
+
+#report-area thead th {
     font-weight: bold;
-    padding: 3px;
+    color: #b1b3b9;
 }
 
-td {
-    background-color: #ffffff;
-    padding: 3px;
+#report-area thead th a {
+    font-weight: bold !important;
+    color: #b1b3b9;
+}
+
+#report-area .odd {
+    background: #fff;
+}
+
+#report-area .even {
+    background: #e5e5e5;
+}
+
+#report-options-form {
+    padding-top: 20px;
+}
+
+#report-options-form label {
+    font-size: 14px;
+    display: block;
+}
+
+#report-options-form select {
+    font-size: 14px;
+}
+
+#report-options-form input {
+    font-size: 14px;
+}
+
+#report-options-form option {
+    font-size: 14px;
+    padding-right: 20px;
+}
+
+#report-area {
+    height: 600px;
+}
+
+.pagebanner {
+    font-size: 12px;
 }

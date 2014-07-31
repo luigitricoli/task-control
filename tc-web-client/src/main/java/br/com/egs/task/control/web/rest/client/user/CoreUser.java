@@ -20,6 +20,13 @@ public class CoreUser {
         this.login = login;
     }
 
+    public CoreUser(String login, String name, String email, List<String> applications) {
+        this.login = login;
+        this.name = name;
+        this.email = email;
+        this.applications = applications;
+    }
+    
     public String getName() {
         return name;
     }

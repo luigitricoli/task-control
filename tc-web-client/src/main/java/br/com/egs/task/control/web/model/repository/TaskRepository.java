@@ -1,6 +1,7 @@
 package br.com.egs.task.control.web.model.repository;
 
 import br.com.egs.task.control.web.model.Post;
+import br.com.egs.task.control.web.model.SimpleTaskData;
 import br.com.egs.task.control.web.model.Task;
 import br.com.egs.task.control.web.model.Week;
 import br.com.egs.task.control.web.model.exception.InvalidDateException;
@@ -27,4 +28,6 @@ public interface TaskRepository {
     public void replan(String taskId, String start, String foreseen) throws InvalidDateException, UpdateException;
 
     public void replan(String taskId, String dateFormat, String start, String foreseen) throws InvalidDateException, UpdateException;
+    
+    public List<SimpleTaskData> listTasks(Integer month, Integer year);
 }

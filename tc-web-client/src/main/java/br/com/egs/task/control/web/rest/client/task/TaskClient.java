@@ -124,7 +124,7 @@ public class TaskClient implements TaskRepository {
 
         CoreTask task = null;
         try {
-            task = new CoreTask(new TaskDate(start, BRAZILIAN_FORMAT), new TaskDate(foreseen, BRAZILIAN_FORMAT), description, type, system, owners);
+            task = new CoreTask(new TaskDate(start, BRAZILIAN_FORMAT), new TaskDate(foreseen, BRAZILIAN_FORMAT), null, description, type, system, owners);
         } catch (InvalidDateException e) {
             log.error(e.getMessage());
             return false;
@@ -175,5 +175,42 @@ public class TaskClient implements TaskRepository {
         if (!response.getCode().equals(SUCCESS_CODE)) {
             throw new UpdateException(response.getContent());
         }
+    }
+
+    @Override
+    public List<SimpleTaskData> listTasks(Integer month, Integer year) {
+        jsonClient.at("tasks").addUrlParam("year", "2014").addUrlParam("month", month.toString());
+        List<CoreTask> tasks = CoreTask.unmarshalList(jsonClient.getAsJson().getContent());
+
+        List<SimpleTaskData> result = convertCoreTasksToSimpleTaskData(tasks);
+        return result;
+    }
+
+    List<SimpleTaskData> convertCoreTasksToSimpleTaskData(List<CoreTask> tasks) {
+        List<SimpleTaskData> result = new ArrayList<>();
+        for (CoreTask coreTask : tasks) {
+            StringBuilder ownersDescription = new StringBuilder();
+            for (CoreUser coreUser : coreTask.getOwners()) {
+                if (ownersDescription.length() > 0) {
+                    ownersDescription.append(", ");
+                }
+                ownersDescription.append(coreUser.getName());
+            }
+            
+            String startDate = coreTask.getStartDate().toString();
+            String foreseenEndDate = coreTask.getForeseenEndDate().toString();
+            String endDate = coreTask.getEndDate() != null ? coreTask.getEndDate().toString() : null;
+            
+            result.add(new SimpleTaskData(
+                    coreTask.getDescription(),
+                    startDate,
+                    foreseenEndDate,
+                    endDate,
+                    coreTask.getForeseenWorkHours(),
+                    coreTask.getSource(),
+                    coreTask.getApplication(), 
+                    ownersDescription.toString()));
+        }
+        return result;
     }
 }
