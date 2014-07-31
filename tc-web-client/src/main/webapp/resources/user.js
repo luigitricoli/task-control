@@ -47,7 +47,7 @@ function changePass() {
 		return;
 	}
 	
-	var url = DOMAIN + "changePass";
+	var url = DOMAIN + "senha";
 	var formData = $("#change-pass-form").serialize();
 	var successFunction = function(data) {
 		if ("sucess" == data) {
@@ -115,8 +115,11 @@ function saveUser() {
 	var formData = $("#new-user-form").serialize();
 	var successFunction = function(data) {
 		if ("sucess" == data) {
+			getUsers();
 			$("#cancel-register-user")[0].click();
+			
 			successBallon("Usuario criado com sucesso!");
+
 		} 
 	};
 	$.post(url, formData, successFunction);
@@ -171,6 +174,6 @@ $(document).ready(function() {
 	});
 	
         $("#user-info").bind("change", function(event) {
-            userInfoActions(this, event)
+            userInfoActions(this, event);
         });
 });

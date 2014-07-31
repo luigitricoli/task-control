@@ -1,13 +1,10 @@
 package br.com.egs.task.control.web.model;
 
-import br.com.caelum.vraptor.ioc.Component;
-import br.com.caelum.vraptor.ioc.SessionScoped;
-import br.com.egs.task.control.web.model.filter.Applications;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.List;
+import br.com.caelum.vraptor.ioc.Component;
+import br.com.caelum.vraptor.ioc.SessionScoped;
 
 @Component
 @SessionScoped
@@ -18,10 +15,9 @@ public class SessionUser {
 
     public SessionUser() {}
 
-    public Boolean login(String name, String login, String email, List<String> systems) {
-        user = new User(name, login, email, systems);
-
-        log.debug("Loggin as {}, handling the applications {}", login, systems);
+    public Boolean login(User user) {
+        this.user = user;
+        log.debug("Loggin as {}, handling the applications {}", user.getNickname(), user.getSystems());
 
         return isLogged();
     }

@@ -1,12 +1,14 @@
 package br.com.egs.task.control.web.model;
 
-import br.com.egs.task.control.web.model.filter.Applications;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import br.com.egs.task.control.web.model.exception.UpdateException;
+import br.com.egs.task.control.web.model.filter.Applications;
 
 public class User {
 
@@ -56,12 +58,20 @@ public class User {
         return type;
     }
     
-    public String getpass() {
+    public String getPass() {
         return pass;
     }
+    
     
     public List<String> getSystems() {
         return Collections.unmodifiableList(systems);
     }
 
+    
+	public User changePassword(String pass, String cPass) throws UpdateException {
+		if (!pass.equals(cPass)){
+			throw new UpdateException("Confirmação de senha incorreta!");
+		}
+        return new User(this.name, this.login, this.email, this.type, pass, this.systems);
+	}
 }
