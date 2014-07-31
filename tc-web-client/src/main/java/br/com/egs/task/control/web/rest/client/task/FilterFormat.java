@@ -1,7 +1,5 @@
 package br.com.egs.task.control.web.rest.client.task;
 
-import br.com.caelum.vraptor.ioc.ApplicationScoped;
-import br.com.caelum.vraptor.ioc.Component;
 import br.com.egs.task.control.web.model.filter.Applications;
 import br.com.egs.task.control.web.model.filter.Sources;
 import br.com.egs.task.control.web.model.filter.Status;
@@ -12,15 +10,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@Component
-@ApplicationScoped
 public class FilterFormat {
 
 	private Logger log = LoggerFactory.getLogger(FilterFormat.class);
-	
-	public FilterFormat() {
-	}
-	
+
 	public Map<String, String> formatParams(List<String> selected){
 		Map<String, String> formatted = new HashMap<>();
 		for(String filter : selected){

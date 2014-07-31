@@ -1,16 +1,18 @@
 package br.com.egs.task.control.web.model;
 
+import java.io.Serializable;
+
+import javax.enterprise.context.SessionScoped;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import br.com.caelum.vraptor.ioc.Component;
-import br.com.caelum.vraptor.ioc.SessionScoped;
-
-@Component
 @SessionScoped
-public class SessionUser {
+public class SessionUser implements Serializable{
 
+    private static final long serialVersionUID = 4544357036779454022L;
     private static final Logger log = LoggerFactory.getLogger(SessionUser.class);
+
     private User user;
 
     public SessionUser() {}

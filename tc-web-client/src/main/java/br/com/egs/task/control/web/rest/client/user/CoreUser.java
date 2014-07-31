@@ -1,13 +1,21 @@
 package br.com.egs.task.control.web.rest.client.user;
 
-import br.com.egs.task.control.web.rest.client.task.TaskDate;
-
-import com.google.gson.*;
-import com.google.gson.reflect.TypeToken;
-
 import java.lang.reflect.Type;
 import java.util.LinkedList;
 import java.util.List;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.JsonPrimitive;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
+import com.google.gson.reflect.TypeToken;
 
 public class CoreUser {
 
@@ -29,7 +37,7 @@ public class CoreUser {
         this.type = type;
         this.password = pass;
         this.applications = applications;
-    }    
+    }
     
     public String getName() {
         return name;

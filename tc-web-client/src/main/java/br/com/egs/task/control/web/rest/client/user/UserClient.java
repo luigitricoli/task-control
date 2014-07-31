@@ -1,20 +1,21 @@
 package br.com.egs.task.control.web.rest.client.user;
 
+
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.enterprise.context.RequestScoped;
+import javax.inject.Inject;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import br.com.caelum.vraptor.ioc.Component;
-import br.com.caelum.vraptor.ioc.RequestScoped;
 import br.com.egs.task.control.web.model.User;
 import br.com.egs.task.control.web.model.exception.AuthenticateException;
 import br.com.egs.task.control.web.model.repository.UserRepository;
 import br.com.egs.task.control.web.rest.client.JsonClient;
 import br.com.egs.task.control.web.rest.client.Response;
 
-@Component
 @RequestScoped
 public class UserClient implements UserRepository {
 
@@ -23,9 +24,17 @@ public class UserClient implements UserRepository {
 
     private JsonClient jsonClient;
 
+    /**
+     * @deprecated only needed because CDI
+     */
+    public UserClient() { 
+    }
+    
+    @Inject
 	public UserClient(JsonClient jsonClient) {
         this.jsonClient = jsonClient;
     }
+
 
     @Override
 	public User authenticate(String login, String pass) throws AuthenticateException{

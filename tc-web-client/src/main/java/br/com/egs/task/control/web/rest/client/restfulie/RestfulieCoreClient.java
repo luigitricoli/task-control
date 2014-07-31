@@ -2,13 +2,12 @@ package br.com.egs.task.control.web.rest.client.restfulie;
 
 import br.com.caelum.restfulie.RestClient;
 import br.com.caelum.restfulie.Restfulie;
-import br.com.caelum.vraptor.ioc.Component;
-import br.com.caelum.vraptor.ioc.RequestScoped;
 import br.com.egs.task.control.web.rest.client.JsonClient;
 import br.com.egs.task.control.web.rest.client.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import java.io.IOException;
 import java.io.InputStream;
@@ -16,7 +15,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Properties;
 
-@Component
 @RequestScoped
 public class RestfulieCoreClient implements JsonClient {
 

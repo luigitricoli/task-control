@@ -6,19 +6,17 @@
 
 package br.com.egs.task.control.web.controller;
 
+import br.com.caelum.vraptor.Controller;
 import br.com.caelum.vraptor.Get;
-import br.com.caelum.vraptor.Resource;
 import br.com.caelum.vraptor.Result;
 import br.com.egs.task.control.web.interceptor.AuthRequired;
 import br.com.egs.task.control.web.model.SessionUser;
 import br.com.egs.task.control.web.model.SimpleTaskData;
 import br.com.egs.task.control.web.model.repository.TaskRepository;
+
 import java.util.List;
 
-/**
- *
- */
-@Resource
+@Controller
 @AuthRequired
 public class ReportsController {
     

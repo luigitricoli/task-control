@@ -10,12 +10,13 @@ import br.com.egs.task.control.web.model.repository.TaskRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.inject.Inject;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 import java.util.regex.Pattern;
 
-@Resource
+@Controller
 @AuthRequired
 public class TasksController {
 
@@ -25,15 +26,12 @@ public class TasksController {
     private static final String FAIL_RESPONSE_CODE = "fail";
     private static final String BRAZILIAN_DATE_FORMAT = "dd/MM/yy";
 
+    @Inject
     private Result result;
+    @Inject
     private TaskRepository tasks;
+    @Inject
     private SessionUser session;
-
-    public TasksController(Result result, TaskRepository repository, SessionUser user) {
-        this.result = result;
-        this.tasks = repository;
-        this.session = user;
-    }
 
     @Get("/tarefas")
     public void index(String task) {

@@ -1,16 +1,16 @@
 package br.com.egs.task.control.web.model.filter;
 
-import br.com.caelum.vraptor.ioc.Component;
-import br.com.caelum.vraptor.ioc.SessionScoped;
-
+import javax.enterprise.context.SessionScoped;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@Component
 @SessionScoped
-public class Sources {
+public class Sources implements Serializable{
+
+    private static final long serialVersionUID = 5237469042102689591L;
 
     private Map<String, String> labels;
 
