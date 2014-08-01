@@ -83,7 +83,7 @@ public class ReferenceMonth {
 
         if (isItCurrentMonth() && isItCurrentYear()) {
             Integer day = Calendar.getInstance().get(Calendar.DAY_OF_MONTH);
-            return days.toString().replace(String.format("\"%s\"", day.toString()), String.format("\"Hoje %s\"", day.toString()));
+            return days.toString().replaceFirst(String.format("\"(\\w{3} )?%s\"", day.toString()), String.format("\"Hoje %s\"", day.toString()));
         } else {
             return days.toString();
         }
