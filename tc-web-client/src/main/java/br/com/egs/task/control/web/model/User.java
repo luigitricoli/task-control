@@ -4,11 +4,14 @@ import br.com.egs.task.control.web.model.filter.Applications;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.Serializable;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
-public class User {
+public class User implements Serializable {
+
+    private static final long serialVersionUID = -5854083372268617802L;
 
     private static final Logger log = LoggerFactory.getLogger(User.class);
 

@@ -1,20 +1,20 @@
 package br.com.egs.task.control.web.model.filter;
 
+import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.context.SessionScoped;
+import javax.enterprise.event.Observes;
+import javax.servlet.ServletContext;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
-@SessionScoped
+@ApplicationScoped
 public class Sources implements Serializable{
 
     private static final long serialVersionUID = 5237469042102689591L;
 
     private Map<String, String> labels;
 
-    public Sources() {
+    public void whenApplicationStarts(@Observes ServletContext context) {
         labels = new HashMap<>();
 
         labels.put("ccc", "CCC");

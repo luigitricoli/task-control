@@ -6,6 +6,8 @@ import br.com.egs.task.control.web.interceptor.AuthRequired;
 import br.com.egs.task.control.web.model.SessionUser;
 import br.com.egs.task.control.web.model.exception.TaskControlWebClientException;
 import br.com.egs.task.control.web.model.exception.UpdateException;
+import br.com.egs.task.control.web.model.filter.Applications;
+import br.com.egs.task.control.web.model.filter.Sources;
 import br.com.egs.task.control.web.model.repository.TaskRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,6 +34,8 @@ public class TasksController {
     private TaskRepository tasks;
     @Inject
     private SessionUser session;
+
+
 
     @Get("/tarefas")
     public void index(String task) {

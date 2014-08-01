@@ -1,11 +1,20 @@
 package br.com.egs.task.control.web.model.filter;
 
+import br.com.egs.task.control.web.rest.client.user.UserClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.context.SessionScoped;
+import javax.enterprise.event.Observes;
+import javax.servlet.ServletContext;
 import java.io.Serializable;
 import java.util.*;
 
-@SessionScoped
+@ApplicationScoped
 public class Applications implements Serializable{
+
+    private static final Logger log = LoggerFactory.getLogger(Applications.class);
 
     public static final String GERAL = "geral";
     public static final String ADMINISTRATIVO = "administrativo";
@@ -23,7 +32,8 @@ public class Applications implements Serializable{
     private Map<String, String> labels;
     private String selected;
 
-    public Applications() {
+    public void whenApplicationStarts(@Observes ServletContext context) {
+
         labels = new TreeMap<>();
         labels.put(GERAL, "Geral");
         labels.put(ADMINISTRATIVO, "Administrativo");

@@ -23,10 +23,6 @@ public class AuthController implements Serializable {
     private UserRepository user;
     @Inject
     private SessionUser sessionUser;
-    @Inject
-    private Applications app;
-    @Inject
-    private Sources source;
 
     @Get("/login")
     public void index(){
