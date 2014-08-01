@@ -21,7 +21,10 @@ import static org.mockito.Mockito.when;
 
 public class TasckClientTest {
 
-    @Test
+    private static final CoreUser JOHN_USER = new CoreUser("john", "John Programmer", null, null, null, null);
+    private static final CoreUser MARY_USER = new CoreUser("mary", "Mary Developer", null, null, null, null);
+
+	@Test
     public void numberOfWeeks() {
         String json = "[]";
         JsonClient client = mock(JsonClient.class);
@@ -60,7 +63,7 @@ public class TasckClientTest {
                 "A Conversion Test Task", 
                 "CCC", 
                 "task_control", 
-                Arrays.asList(new CoreUser("john", "John Programmer", null, null))));
+                Arrays.asList(JOHN_USER)));
         
         final List<SimpleTaskData> result = repo.convertCoreTasksToSimpleTaskData(inputTasks);
         
@@ -88,8 +91,8 @@ public class TasckClientTest {
                 "A Conversion Test Task", 
                 "CCC", 
                 "task_control", 
-                Arrays.asList(new CoreUser("john", "John Programmer", null, null),
-                                new CoreUser("mary", "Mary Developer", null, null))));
+                Arrays.asList(JOHN_USER,
+                		MARY_USER)));
         
         final List<SimpleTaskData> result = repo.convertCoreTasksToSimpleTaskData(inputTasks);
         

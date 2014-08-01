@@ -1,11 +1,11 @@
 package br.com.egs.task.control.web.model;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.io.Serializable;
 
 import javax.enterprise.context.SessionScoped;
-import java.io.Serializable;
-import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @SessionScoped
 public class SessionUser implements Serializable{
@@ -17,10 +17,9 @@ public class SessionUser implements Serializable{
 
     public SessionUser() {}
 
-    public Boolean login(String name, String login, String email, List<String> systems) {
-        user = new User(name, login, email, systems);
-
-        log.debug("Loggin as {}, handling the applications {}", login, systems);
+    public Boolean login(User user) {
+        this.user = user;
+        log.debug("Loggin as {}, handling the applications {}", user.getNickname(), user.getSystems());
 
         return isLogged();
     }
