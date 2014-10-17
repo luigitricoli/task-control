@@ -14,21 +14,19 @@ import br.com.egs.task.control.web.model.SessionUser;
 import br.com.egs.task.control.web.model.SimpleTaskData;
 import br.com.egs.task.control.web.model.repository.TaskRepository;
 
+import javax.inject.Inject;
 import java.util.List;
 
 @Controller
 @AuthRequired
 public class ReportsController {
-    
-    private Result result;
-    private TaskRepository tasks;
-    private SessionUser session;
 
-    public ReportsController(Result result, TaskRepository tasks, SessionUser session) {
-        this.result = result;
-        this.tasks = tasks;
-        this.session = session;
-    }
+    @Inject
+    private Result result;
+    @Inject
+    private TaskRepository tasks;
+    @Inject
+    private SessionUser session;
     
     @Get("/relatorios")
     public void index() {
