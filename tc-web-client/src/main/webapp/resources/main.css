@@ -86,6 +86,11 @@ h1{
     border: 0;
     float: right;
 }
+.gray{
+    background: #f4f4f4;
+    border: 0;
+    float: right;
+}
 #top-main .btn.green{
     margin-top: 39px;
     margin-left: 10px;

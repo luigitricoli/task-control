@@ -4,7 +4,7 @@
 <%@ taglib uri="http://displaytag.sf.net/el" prefix="display" %>
 
 <display:table name="tasks" export="true" requestURI="/relatorios/listaTarefas"
-               pagesize="30" id="task">
+               pagesize="20" id="task">
     <%@include file="_displayTag-setup.jsp" %>
     
     <display:column title="Descrição" property="description" sortable="true" />
@@ -21,8 +21,13 @@
     </display:column>
     <display:column title="Horas Previstas" property="foreseenWorkHours" sortable="true" />
     <display:column title="Data Fim" sortProperty="endDate" sortable="true">
-        <fmt:parseDate pattern="yyyy-MM-dd" type="date" var="endDate" value="${task.endDate}" />
-        <fmt:formatDate pattern="dd/MM/yyyy" value="${endDate}" />        
+        <c:if test="${task.endDate ne null}">
+            <fmt:parseDate pattern="yyyy-MM-dd" type="date" var="endDate" value="${task.endDate}" />
+            <fmt:formatDate pattern="dd/MM/yyyy" value="${endDate}" />
+        </c:if>
+        <c:if test="${task.endDate eq null}">
+            -
+        </c:if>
     </display:column>    
 </display:table>
 

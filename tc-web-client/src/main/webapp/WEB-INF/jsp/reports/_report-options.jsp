@@ -1,19 +1,28 @@
+<%@ page pageEncoding="utf-8" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <form id="report-options-form">
     <div class="filter-group">
-        <h4>Relatório</h4>
-        <select id="cboReportSelection">
-            <option value="">Selecione...</option>
-            <option value="taskList">Listagem Simples de Tarefas</option>
-        </select>
+        <h4>Tipo</h4>
+
+        <div class="constraint">
+            <input type="radio" id="optReportType-taskList" name="optReportType" value="taskList" />
+            <label for="optReportType:taskList">Listagem Simples de Tarefas</label>
+        </div>
+
+        <%--   Temporarily disabled
+        <div class="constraint">
+            <input type="radio" id="optReportType-dailyActivities" name="optReportType" value="dailyActivities" />
+            <label for="optReportType:dailyActivities">Atividades DiÃ¡rias</label>
+        </div>
+        --%>
     </div>
     
     <div class="filter-group" id="reportParamGroup-yearMonth">
-        <label>Mês/Ano</label>
+        <label class="reportFilterLabel">PerÃ­odo</label>
         <select id="cboReportMonth" name="month">
             <option value="1">Janeiro</option>
             <option value="2">Fevereiro</option>
-            <option value="3">Março</option>
+            <option value="3">MarÃ§o</option>
             <option value="4">Abril</option>
             <option value="5">Maio</option>
             <option value="6">Junho</option>
@@ -30,8 +39,13 @@
             </c:forEach>
         </select>
     </div>
+
+    <div class="filter-group" id="reportParamGroup-date">
+        <label class="reportFilterLabel">Data</label>
+        <input id="txtReportDate" name="date" />
+    </div>
     
     <div class="filter-group" id="reportSubmit">
-        <a href="#" id="btSubmitReport" class="btn-no-icon green">Solicitar Relatório</a>
+        <a href="#" id="btSubmitReport" class="btn-no-icon green">Visualizar</a>
     </div>
 </form>

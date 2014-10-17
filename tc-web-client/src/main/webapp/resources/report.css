@@ -11,18 +11,18 @@
     font-size: 12px;
 }
 
-#report-area thead tr {
+#report-area tr {
     background: #323a45;
 }
 
-#report-area thead th {
-    font-weight: bold;
+#report-area th {
     color: #b1b3b9;
+    font-size: 14px;
 }
 
 #report-area thead th a {
-    font-weight: bold !important;
     color: #b1b3b9;
+    font-size: 14px;
 }
 
 #report-area .odd {
@@ -35,10 +35,14 @@
 
 #report-options-form {
     padding-top: 20px;
+    padding-right: 13px;
 }
 
 #report-options-form label {
     font-size: 14px;
+}
+
+.reportFilterLabel {
     display: block;
 }
 
@@ -46,8 +50,9 @@
     font-size: 14px;
 }
 
-#report-options-form input {
+#report-options-form input, #report-options-form select {
     font-size: 14px;
+    padding: 3px;
 }
 
 #report-options-form option {
@@ -55,10 +60,43 @@
     padding-right: 20px;
 }
 
+#cboReportSelection {
+    width: 206px;
+}
+
+#cboReportMonth {
+    width: 120px;
+    margin-right: 9px;
+}
+
 #report-area {
     height: 600px;
+    margin-top: 10px;
 }
 
 .pagebanner {
-    font-size: 12px;
+    font-size: 14px;
+}
+
+.exportlinks {
+    border-top: 1px solid #4f4f4f;
+    margin-top: 20px;
+    padding-top: 7px;
+    font-size: 14px;
+}
+
+.exportlinks a {
+    text-decoration: none;
+    padding: 2px;
+    border-radius: 3px;
+    background: none repeat scroll 0 0 #3fa34b;
+    font-size: 14px;
+    color: #f4f4f4;
+}
+
+.ui-datepicker-trigger {
+    background-color: #e0e0e0;
+    width: 25px;
+    margin-left: 20px;
+    cursor: pointer;
 }
