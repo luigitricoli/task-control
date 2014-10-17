@@ -9,12 +9,10 @@
             <label for="optReportType:taskList">Listagem Simples de Tarefas</label>
         </div>
 
-        <%--   Temporarily disabled
         <div class="constraint">
             <input type="radio" id="optReportType-dailyActivities" name="optReportType" value="dailyActivities" />
             <label for="optReportType:dailyActivities">Atividades Diárias</label>
         </div>
-        --%>
     </div>
     
     <div class="filter-group" id="reportParamGroup-yearMonth">
