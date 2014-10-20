@@ -21,10 +21,7 @@ import org.junit.Test;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 import static org.junit.Assert.*;
 
@@ -41,7 +38,10 @@ public class TasksRepositoryTest {
 	public void setUp() throws Exception {
 		conn = TestConnectionFactory.getConnection();
 		populateDatabase();
-		repository = new TasksRepositoryImpl(conn, timestampFormat.parse(TODAY));
+
+        Calendar todayCal = Calendar.getInstance();
+        todayCal.setTime(timestampFormat.parse(TODAY));
+		repository = new TasksRepositoryImpl(conn, todayCal);
 	}
 
 	@After

@@ -3,6 +3,7 @@ package br.com.egs.task.control.core.repository.impl;
 import br.com.egs.task.control.core.repository.TaskSearchCriteria;
 import com.mongodb.BasicDBObject;
 import com.mongodb.util.JSON;
+import org.apache.commons.lang.time.DateUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
@@ -11,6 +12,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Date;
 
 import static org.junit.Assert.assertEquals;
@@ -27,19 +29,9 @@ public class TasksRepositoryImplTest {
 
     @Before
     public void setUp() throws ParseException {
-        Date referenceDate = timestampFormat.parse("2014-02-20 13:00:00.000");
+        Calendar referenceDate = Calendar.getInstance();
+        referenceDate.setTime(timestampFormat.parse("2014-02-20 13:00:00.000"));
         repository = new TasksRepositoryImpl(null, referenceDate);
-    }
-
-    @Test
-    public void createDateInterval() throws ParseException {
-        Date[] interval = repository.createDateIntervalForMonth(2013, 10);
-        assertEquals(timestampFormat.parse("2013-10-01 00:00:00.000"), interval[0]);
-        assertEquals(timestampFormat.parse("2013-10-31 23:59:59.999"), interval[1]);
-
-        interval = repository.createDateIntervalForMonth(2014, 2);
-        assertEquals(timestampFormat.parse("2014-02-01 00:00:00.000"), interval[0]);
-        assertEquals(timestampFormat.parse("2014-02-28 23:59:59.999"), interval[1]);
     }
 
     @Test
@@ -118,6 +110,42 @@ public class TasksRepositoryImplTest {
                         ),
                         new BasicDBObject("endDate", new BasicDBObject(
                                 "$gte", timestampFormat.parse("2014-02-01 00:00:00.000"))
+                        ),
+                        new BasicDBObject("endDate", new BasicDBObject(
+                                "$exists", Boolean.FALSE)
+                        )
+                })
+        });
+
+        JSONAssert.assertEquals(expectedFilter.toString(), filter.toString(), true);
+    }
+
+    @Test
+    public void filterByDayInterval() throws Exception {
+        DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+
+        Calendar begin = Calendar.getInstance();
+        begin.setTime(df.parse("2013-10-09"));
+
+        Calendar end = Calendar.getInstance();
+        end.setTime(df.parse("2013-10-23"));
+
+        TaskSearchCriteria criteria = new TaskSearchCriteria()
+                .dayInterval(begin, end);
+
+        BasicDBObject filter = repository.createFilterObject(criteria);
+
+        // See explanation on filterByMonth_pastAndCurrentTasks test.
+        BasicDBObject expectedFilter = new BasicDBObject("$and", new BasicDBObject[]{
+                new BasicDBObject("startDate", new BasicDBObject(
+                        "$lte", timestampFormat.parse("2013-10-23 23:59:59.999")))
+                ,
+                new BasicDBObject("$or", new BasicDBObject[]{
+                        new BasicDBObject("foreseenEndDate", new BasicDBObject(
+                                "$gte", timestampFormat.parse("2013-10-09 00:00:00.000"))
+                        ),
+                        new BasicDBObject("endDate", new BasicDBObject(
+                                "$gte", timestampFormat.parse("2013-10-09 00:00:00.000"))
                         ),
                         new BasicDBObject("endDate", new BasicDBObject(
                                 "$exists", Boolean.FALSE)

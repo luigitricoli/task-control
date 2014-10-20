@@ -1,6 +1,8 @@
 package br.com.egs.task.control.core.repository;
 
 import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
 
 /**
  *
@@ -13,6 +15,8 @@ public class TaskSearchCriteria {
     private String[] sources;
     private String[] ownerLogins;
     private boolean excludePosts;
+    private Calendar dayIntervalBegin;
+    private Calendar dayIntervalEnd;
 
     public TaskSearchCriteria month(int year, int month) {
         if (month < 1 || month > 12) {
@@ -52,6 +56,12 @@ public class TaskSearchCriteria {
         return this;
     }
 
+    public TaskSearchCriteria dayInterval(Calendar begin, Calendar end) {
+        this.dayIntervalBegin = begin;
+        this.dayIntervalEnd = end;
+        return this;
+    }
+
     public int getYear() {
         return year;
     }
@@ -80,6 +90,26 @@ public class TaskSearchCriteria {
         return excludePosts;
     }
 
+    public Calendar getDayIntervalEnd() {
+        return dayIntervalEnd;
+    }
+
+    public Calendar getDayIntervalBegin() {
+        return dayIntervalBegin;
+    }
+
+    /**
+     *
+     *
+     *
+     */
+    public static enum Status {
+        DOING,
+        FINISHED,
+        WAITING,
+        LATE
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -91,6 +121,10 @@ public class TaskSearchCriteria {
         if (month != that.month) return false;
         if (year != that.year) return false;
         if (!Arrays.equals(applications, that.applications)) return false;
+        if (dayIntervalBegin != null ? !dayIntervalBegin.equals(that.dayIntervalBegin) : that.dayIntervalBegin != null)
+            return false;
+        if (dayIntervalEnd != null ? !dayIntervalEnd.equals(that.dayIntervalEnd) : that.dayIntervalEnd != null)
+            return false;
         if (!Arrays.equals(ownerLogins, that.ownerLogins)) return false;
         if (!Arrays.equals(sources, that.sources)) return false;
         if (!Arrays.equals(status, that.status)) return false;
@@ -107,6 +141,8 @@ public class TaskSearchCriteria {
         result = 31 * result + (sources != null ? Arrays.hashCode(sources) : 0);
         result = 31 * result + (ownerLogins != null ? Arrays.hashCode(ownerLogins) : 0);
         result = 31 * result + (excludePosts ? 1 : 0);
+        result = 31 * result + (dayIntervalBegin != null ? dayIntervalBegin.hashCode() : 0);
+        result = 31 * result + (dayIntervalEnd != null ? dayIntervalEnd.hashCode() : 0);
         return result;
     }
 
@@ -120,19 +156,8 @@ public class TaskSearchCriteria {
                 ", sources=" + (sources == null ? null : Arrays.asList(sources)) +
                 ", ownerLogins=" + (ownerLogins == null ? null : Arrays.asList(ownerLogins)) +
                 ", excludePosts=" + excludePosts +
+                ", dayIntervalBegin=" + dayIntervalBegin +
+                ", dayIntervalEnd=" + dayIntervalEnd +
                 '}';
     }
-
-    /**
-     *
-     *
-     *
-     */
-    public static enum Status {
-        DOING,
-        FINISHED,
-        WAITING,
-        LATE
-    }
-
 }
