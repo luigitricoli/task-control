@@ -9,10 +9,19 @@ import java.util.Map;
 
 public class RestifulieResponse implements Response {
 
+    public static final int SUCCESS_CODE = 200;
+    public static final int SUCCESS_CODE_NO_CONTENT = 204;
+
     private br.com.caelum.restfulie.Response resp;
+
 
     public RestifulieResponse(br.com.caelum.restfulie.Response resp) {
         this.resp = resp;
+    }
+
+    @Override
+    public boolean isSuccess() {
+        return (resp.getCode() == SUCCESS_CODE) || (resp.getCode() == SUCCESS_CODE_NO_CONTENT);
     }
 
     @Override

@@ -11,9 +11,9 @@
     </c:forEach>
 </p>
 <div id="iteraction-menu">
-    <a id="finish" class="btn green"><span class="icon add">V</span>Encerrar</a>
+    <a id="finish" class="btn green"><span class="icon add">E</span>Encerrar</a>
     <a id="replan" class="btn green"><span class="icon add">R</span>Replanejar</a>
-    <a href="#" id="cancel" class="btn red"><span class="icon add">X</span>Cancelar</a>
+    <a id="cancel" class="btn red"><span class="icon add">X</span>Remover</a>
 </div>
 <div id="iteraction-form">
     <form>
@@ -44,4 +44,7 @@
 </div>
 <div id="replan-block-screen" class="block-screen">
     <jsp:include page="_replan.jsp"/>
+</div>
+<div id="cancel-block-screen" class="block-screen">
+    <jsp:include page="_cancel.jsp"/>
 </div>

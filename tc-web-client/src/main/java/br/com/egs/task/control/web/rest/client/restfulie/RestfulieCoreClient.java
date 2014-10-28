@@ -144,8 +144,12 @@ public class RestfulieCoreClient implements JsonClient {
 
     @Override
     public Response putAsJson(String body) {
-
         return new RestifulieResponse(client.at(getUrl()).as(JsonUnicode.TYPE).accept(JsonUnicode.TYPE).put(body.getBytes()));
+    }
+
+    @Override
+    public Response delete() {
+        return new RestifulieResponse(client.at(getUrl()).accept(JsonUnicode.TYPE).delete());
     }
 
 }

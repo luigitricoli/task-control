@@ -579,3 +579,11 @@ h1 .sub2{
     text-decoration: none;
     color: #607792;
 }
+.info{
+    padding: 5px 0px;
+    border-radius: 5px;
+    margin-bottom: 10px;
+}
+.info p{
+    font-size: 12px;
+}

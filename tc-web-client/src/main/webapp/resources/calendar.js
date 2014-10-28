@@ -202,10 +202,55 @@ function populateTimeline(task) {
             $("#finish").show();
         }
 
+        activeDelete(task);
+
         activeReplan(task);
 
         $("#btn-task-history")[0].click();
     });
+}
+
+function activeDelete(task){
+        if(!isAdmin()){
+            return;
+        }
+
+        $("#cancel").click(function() {
+            $("#cancel-block-screen").show();
+            $("#cancel-task-container").show();
+        });
+
+        $("#cancel-cancel-btn").click(function(event){
+            closeFloatWindow("#replan-task-container");
+        });
+        $("#salve-cancel-btn").click(function(event){
+            remove();
+            event.preventDefault();
+        });
+
+        $("#cancel").show();
+
+}
+
+function remove(){
+    var url = DOMAIN + "tarefas/" + $("#cancel-id").val();
+
+    $.ajax({
+        "url": url,
+        "type": "DELETE",
+        "success": function(data) {
+                    if("success" === data) {
+                        closeFloatWindowAlert("#cancel-task-container");
+                        loadMonth();
+                    } else if (data.message) {
+                        showFloatWindowAlert("#cancel-task-container", data.message);
+                    } else {
+                        showFloatWindowAlert("#cancel-task-container", "Não foi possível remover esta tarefa, entre em contato com o Gestor.");
+                    }
+
+        }
+    });
+
 }
 
 function activeReplan(task){

@@ -86,6 +86,16 @@ public class TasksController {
         return true;
     }
 
+    @Delete(value = "/tarefas/{task}")
+    public void delete(String task) {
+        try {
+            tasks.delete(task);
+            result.use(Results.http()).body(SUCCESS_RESPONSE_CODE);
+        } catch (TaskControlWebClientException e) {
+            log.error(e.getMessage());
+            result.use(Results.http()).body(FAIL_RESPONSE_CODE);
+        }
+    }
 
     @Put(value = "/tarefas/{task}/finalizacao")
     public void finish(String task, String date) {
