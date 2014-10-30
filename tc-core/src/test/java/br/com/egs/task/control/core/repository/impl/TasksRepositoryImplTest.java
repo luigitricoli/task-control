@@ -3,7 +3,6 @@ package br.com.egs.task.control.core.repository.impl;
 import br.com.egs.task.control.core.repository.TaskSearchCriteria;
 import com.mongodb.BasicDBObject;
 import com.mongodb.util.JSON;
-import org.apache.commons.lang.time.DateUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
@@ -13,9 +12,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Date;
 
-import static org.junit.Assert.assertEquals;
 
 /**
  * Unit tests for the repository implementation. We use this for operations which require some logic,
@@ -144,6 +141,71 @@ public class TasksRepositoryImplTest {
                         new BasicDBObject("foreseenEndDate", new BasicDBObject(
                                 "$gte", timestampFormat.parse("2013-10-09 00:00:00.000"))
                         ),
+                        new BasicDBObject("endDate", new BasicDBObject(
+                                "$gte", timestampFormat.parse("2013-10-09 00:00:00.000"))
+                        ),
+                        new BasicDBObject("endDate", new BasicDBObject(
+                                "$exists", Boolean.FALSE)
+                        )
+                })
+        });
+
+        JSONAssert.assertEquals(expectedFilter.toString(), filter.toString(), true);
+    }
+
+    @Test
+    public void filterByDayInterval_excludeForeseenTasks_futureTasks() throws Exception {
+        DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+
+        Calendar begin = Calendar.getInstance();
+        begin.setTime(df.parse("2014-10-06"));
+
+        Calendar end = Calendar.getInstance();
+        end.setTime(df.parse("2014-10-08"));
+
+        TaskSearchCriteria criteria = new TaskSearchCriteria()
+                .dayInterval(begin, end)
+                .excludeForeseenTasks();
+
+        BasicDBObject filter = repository.createFilterObject(criteria);
+
+        // See full explanation on filterByMonth_futureTasks test.
+        // If the option to exclude foreseen tasks is activated, the query becomes simpler.
+        // The difference is that foreseenEndDate is not taken into account.
+        BasicDBObject expectedFilter = new BasicDBObject("$and", new BasicDBObject[]{
+                new BasicDBObject("startDate", new BasicDBObject(
+                        "$lte", timestampFormat.parse("2014-10-08 23:59:59.999")))
+                ,
+                new BasicDBObject("endDate", new BasicDBObject(
+                                "$gte", timestampFormat.parse("2014-10-06 00:00:00.000"))
+                        )
+        });
+
+        JSONAssert.assertEquals(expectedFilter.toString(), filter.toString(), true);
+    }
+
+    @Test
+    public void filterByDayInterval_excludeForeseenTasks_pastAndCurrentTasks() throws Exception {
+        DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+
+        Calendar begin = Calendar.getInstance();
+        begin.setTime(df.parse("2013-10-09"));
+
+        Calendar end = Calendar.getInstance();
+        end.setTime(df.parse("2013-10-23"));
+
+        TaskSearchCriteria criteria = new TaskSearchCriteria()
+                .dayInterval(begin, end)
+                .excludeForeseenTasks();
+
+        BasicDBObject filter = repository.createFilterObject(criteria);
+
+        // See full explanation on filterByMonth_pastAndCurrentTasks test.
+        BasicDBObject expectedFilter = new BasicDBObject("$and", new BasicDBObject[]{
+                new BasicDBObject("startDate", new BasicDBObject(
+                        "$lte", timestampFormat.parse("2013-10-23 23:59:59.999")))
+                ,
+                new BasicDBObject("$or", new BasicDBObject[]{
                         new BasicDBObject("endDate", new BasicDBObject(
                                 "$gte", timestampFormat.parse("2013-10-09 00:00:00.000"))
                         ),

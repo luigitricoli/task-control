@@ -167,6 +167,23 @@ public class TasksRepositoryTest {
     }
 
     @Test
+    public void searchByDayInterval() throws Exception {
+        Calendar begin = Calendar.getInstance();
+        begin.setTime(timestampFormat.parse("2013-12-18 03:03:00.000"));
+
+        Calendar end = Calendar.getInstance();
+        end.setTime(timestampFormat.parse("2013-12-19 04:04:00.000"));
+
+        TaskSearchCriteria criteria = new TaskSearchCriteria()
+                .dayInterval(begin, end);
+        List<Task> result = repository.searchTasks(criteria);
+
+        assertEquals(2, result.size());
+        assertEquals("111122223333aaaabbbbccc2", result.get(0).getId());
+        assertEquals("111122223333aaaabbbbccc3", result.get(1).getId());
+    }
+
+    @Test
     public void addTask() {
         DBCollection collection = conn.getCollection("tasks");
         assertEquals(4, collection.count());

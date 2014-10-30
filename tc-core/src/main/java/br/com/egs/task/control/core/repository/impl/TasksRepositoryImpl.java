@@ -109,13 +109,14 @@ public class TasksRepositoryImpl implements TasksRepository {
 
         if (criteria.getMonth() > 0) {
             Calendar[] monthInterval = createDateIntervalForMonth(criteria.getYear(), criteria.getMonth());
-            filters.add(createDayIntervalFilter(monthInterval[0], monthInterval[1]));
+            filters.add(createDayIntervalFilter(monthInterval[0], monthInterval[1], criteria.isExcludeForeseenTasks()));
         }
 
         if (criteria.getDayIntervalBegin() != null) {
             filters.add(createDayIntervalFilter(
                     criteria.getDayIntervalBegin(),
-                    criteria.getDayIntervalEnd()));
+                    criteria.getDayIntervalEnd(),
+                    criteria.isExcludeForeseenTasks()));
         }
 
         if (criteria.getApplications() != null && criteria.getApplications().length > 0) {
@@ -240,7 +241,7 @@ public class TasksRepositoryImpl implements TasksRepository {
         }
     }
 
-    private BasicDBObject createDayIntervalFilter(Calendar begin, Calendar end) {
+    private BasicDBObject createDayIntervalFilter(Calendar begin, Calendar end, boolean excludeForeseenTasks) {
         // Ensure that both edges of the interval are in their limit times
         begin.set(Calendar.HOUR_OF_DAY, 0);
         begin.set(Calendar.MINUTE, 0);
@@ -256,7 +257,24 @@ public class TasksRepositoryImpl implements TasksRepository {
 
         BasicDBObject filter;
 
-        if (searchingFutureMonth) {
+        if (excludeForeseenTasks && searchingFutureMonth) {
+            filter = new BasicDBObject("$and", new BasicDBObject[]{
+                    new BasicDBObject("startDate", new BasicDBObject("$lte", end.getTime()))
+                    ,
+                    new BasicDBObject("endDate", new BasicDBObject("$gte", begin.getTime()))
+            });
+
+        } else if (excludeForeseenTasks && !searchingFutureMonth) {
+            filter = new BasicDBObject("$and", new BasicDBObject[]{
+                    new BasicDBObject("startDate", new BasicDBObject("$lte", end.getTime()))
+                    ,
+                    new BasicDBObject("$or", new BasicDBObject[]{
+                            new BasicDBObject("endDate", new BasicDBObject("$gte", begin.getTime())),
+                            new BasicDBObject("endDate", new BasicDBObject("$exists", Boolean.FALSE))
+                    })
+            });
+
+        } else if (!excludeForeseenTasks && searchingFutureMonth) {
             filter = new BasicDBObject("$and", new BasicDBObject[]{
                     new BasicDBObject("startDate", new BasicDBObject("$lte", end.getTime()))
                     ,
@@ -265,6 +283,7 @@ public class TasksRepositoryImpl implements TasksRepository {
                             new BasicDBObject("endDate", new BasicDBObject("$gte", begin.getTime()))
                     })
             });
+
         } else {
             filter = new BasicDBObject("$and", new BasicDBObject[]{
                     new BasicDBObject("startDate", new BasicDBObject("$lte", end.getTime()))

@@ -2,7 +2,7 @@ package br.com.egs.task.control.core.repository;
 
 import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Date;
+
 
 /**
  *
@@ -17,6 +17,7 @@ public class TaskSearchCriteria {
     private boolean excludePosts;
     private Calendar dayIntervalBegin;
     private Calendar dayIntervalEnd;
+    private boolean excludeForeseenTasks;
 
     public TaskSearchCriteria month(int year, int month) {
         if (month < 1 || month > 12) {
@@ -53,6 +54,11 @@ public class TaskSearchCriteria {
 
     public TaskSearchCriteria excludePosts() {
         this.excludePosts = true;
+        return this;
+    }
+
+    public TaskSearchCriteria excludeForeseenTasks() {
+        this.excludeForeseenTasks = true;
         return this;
     }
 
@@ -98,6 +104,10 @@ public class TaskSearchCriteria {
         return dayIntervalBegin;
     }
 
+    public boolean isExcludeForeseenTasks() {
+        return excludeForeseenTasks;
+    }
+
     /**
      *
      *
@@ -117,6 +127,7 @@ public class TaskSearchCriteria {
 
         TaskSearchCriteria that = (TaskSearchCriteria) o;
 
+        if (excludeForeseenTasks != that.excludeForeseenTasks) return false;
         if (excludePosts != that.excludePosts) return false;
         if (month != that.month) return false;
         if (year != that.year) return false;
@@ -143,6 +154,7 @@ public class TaskSearchCriteria {
         result = 31 * result + (excludePosts ? 1 : 0);
         result = 31 * result + (dayIntervalBegin != null ? dayIntervalBegin.hashCode() : 0);
         result = 31 * result + (dayIntervalEnd != null ? dayIntervalEnd.hashCode() : 0);
+        result = 31 * result + (excludeForeseenTasks ? 1 : 0);
         return result;
     }
 
@@ -158,6 +170,7 @@ public class TaskSearchCriteria {
                 ", excludePosts=" + excludePosts +
                 ", dayIntervalBegin=" + dayIntervalBegin +
                 ", dayIntervalEnd=" + dayIntervalEnd +
+                ", excludeForeseenTasks=" + excludeForeseenTasks +
                 '}';
     }
 }
