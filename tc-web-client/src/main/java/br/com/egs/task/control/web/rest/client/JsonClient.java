@@ -16,4 +16,5 @@ public interface JsonClient {
 
     public Response putAsJson(String body);
 
+    public Response delete();
 }

@@ -2,6 +2,7 @@ package br.com.egs.task.control.web.rest.client.task;
 
 import br.com.egs.task.control.web.model.*;
 import br.com.egs.task.control.web.model.exception.InvalidDateException;
+import br.com.egs.task.control.web.model.exception.TaskControlWebClientException;
 import br.com.egs.task.control.web.model.exception.UpdateException;
 import br.com.egs.task.control.web.model.repository.TaskRepository;
 import br.com.egs.task.control.web.rest.client.JsonClient;
@@ -21,7 +22,6 @@ import java.util.Map.Entry;
 public class TaskClient implements TaskRepository {
 
     private static final Logger log = LoggerFactory.getLogger(TaskClient.class);
-    public static final int SUCCESS_CODE = 200;
     public static final String EMPTY = "";
     private static final String BRAZILIAN_FORMAT = "dd/MM/yy";
 
@@ -131,7 +131,7 @@ public class TaskClient implements TaskRepository {
         }
 
         Response response = jsonClient.at("tasks").postAsJson(task.toJson());
-        if (response.getCode().equals(SUCCESS_CODE)) {
+        if (response.isSuccess()) {
             return true;
         }
 
@@ -143,7 +143,7 @@ public class TaskClient implements TaskRepository {
         CorePost post = new CorePost(p.getTime(), p.getLogin(), p.getText(), p.getText());
 
         Response response = jsonClient.at(String.format("tasks/%s", taskId)).postAsJson(post.toJson());
-        if (response.getCode().equals(SUCCESS_CODE)) {
+        if (response.isSuccess()) {
             return true;
         }
         return false;
@@ -154,7 +154,7 @@ public class TaskClient implements TaskRepository {
         CoreTask task = new CoreTask(taskId, new TaskDate(date));
 
         Response response = jsonClient.at(String.format("tasks/%s", taskId)).putAsJson(task.toJson());
-        if (!response.getCode().equals(SUCCESS_CODE)) {
+        if (!response.isSuccess()) {
             throw new UpdateException(response.getContent());
         }
     }
@@ -172,7 +172,7 @@ public class TaskClient implements TaskRepository {
         CoreTask task = new CoreTask(taskId, startDate, foreseenDate);
 
         Response response = jsonClient.at(String.format("tasks/%s", taskId)).putAsJson(task.toJson());
-        if (!response.getCode().equals(SUCCESS_CODE)) {
+        if (!response.isSuccess()) {
             throw new UpdateException(response.getContent());
         }
     }
@@ -184,6 +184,14 @@ public class TaskClient implements TaskRepository {
 
         List<SimpleTaskData> result = convertCoreTasksToSimpleTaskData(tasks);
         return result;
+    }
+
+    @Override
+    public void delete(String taskId) throws TaskControlWebClientException {
+        Response response = jsonClient.at(String.format("tasks/%s", taskId)).delete();
+        if (!response.isSuccess()) {
+            throw new UpdateException(response.getContent());
+        }
     }
 
     List<SimpleTaskData> convertCoreTasksToSimpleTaskData(List<CoreTask> tasks) {

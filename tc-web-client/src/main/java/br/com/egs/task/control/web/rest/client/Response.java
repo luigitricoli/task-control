@@ -5,7 +5,9 @@ import java.util.Map;
 
 public interface Response {
 
-        Integer getCode();
+    boolean isSuccess();
+
+    Integer getCode();
 
         String getContent();
 

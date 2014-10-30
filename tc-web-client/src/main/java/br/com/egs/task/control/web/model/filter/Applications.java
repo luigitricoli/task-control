@@ -1,15 +1,16 @@
 package br.com.egs.task.control.web.model.filter;
 
-import br.com.egs.task.control.web.rest.client.user.UserClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.context.SessionScoped;
 import javax.enterprise.event.Observes;
 import javax.servlet.ServletContext;
 import java.io.Serializable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 @ApplicationScoped
 public class Applications implements Serializable{
@@ -31,6 +32,10 @@ public class Applications implements Serializable{
 
     private Map<String, String> labels;
     private String selected;
+
+    public Applications(){
+        whenApplicationStarts(null);
+    }
 
     public void whenApplicationStarts(@Observes ServletContext context) {
 

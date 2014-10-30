@@ -5,6 +5,7 @@ import br.com.egs.task.control.web.model.SimpleTaskData;
 import br.com.egs.task.control.web.model.Task;
 import br.com.egs.task.control.web.model.Week;
 import br.com.egs.task.control.web.model.exception.InvalidDateException;
+import br.com.egs.task.control.web.model.exception.TaskControlWebClientException;
 import br.com.egs.task.control.web.model.exception.UpdateException;
 
 import java.util.List;
@@ -30,4 +31,6 @@ public interface TaskRepository {
     public void replan(String taskId, String dateFormat, String start, String foreseen) throws InvalidDateException, UpdateException;
     
     public List<SimpleTaskData> listTasks(Integer month, Integer year);
+
+    void delete(String task) throws TaskControlWebClientException;
 }

@@ -38,6 +38,10 @@ public class CoreTask {
         this.owners = new LinkedList<>(owners);
     }
 
+    public CoreTask(String id){
+        this.id = id;
+    }
+
     public CoreTask(String id, TaskDate endDate){
         this.id = id;
         this.endDate = endDate;
