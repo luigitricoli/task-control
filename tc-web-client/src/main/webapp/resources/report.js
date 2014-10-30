@@ -23,9 +23,16 @@ $(document).ready(function(){
                         "dateFormat": "dd/mm/yy",
                         "showOn": "button",
     });
+
+    updateMonthName();
+    $("#cboReportMonth").click(function() {
+        updateMonthName();
+    })
 });
 
 function prepareFiltersForReport(obj, evt) {
+    clearAlert();
+
     if(obj.val() == "taskList") {
         $("#reportParamGroup-yearMonth").show();
         $("#reportParamGroup-date").hide();
@@ -42,6 +49,8 @@ function prepareFiltersForReport(obj, evt) {
 }
 
 function submitReport(obj, evt) {
+    clearAlert();
+
     var selectedType = $('input[name="optReportType"]:checked').val();
 
     var url;
@@ -58,8 +67,25 @@ function submitReport(obj, evt) {
                 alert("Erro ao requisitar relatorio: " + jqXHR.status);
             }
         });
+
     } else if (selectedType == "dailyActivities") {
-        alert("dailyActivities - not ready")
+        if ($("#txtReportDate").val() == "") {
+            showAlert("Informe a data de pesquisa");
+            return;
+        }
+
+        $.ajax({
+            url: DOMAIN + "relatorios/atividadesDiarias",
+            method: "get",
+            data: $("#report-options-form").serialize(),
+            success: function(data) {
+                $("#report-area").html(data);
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                // TODO Improve this error handling
+                alert("Erro ao requisitar relatorio: " + jqXHR.status + "\n" + jqXHR.responseText);
+            }
+        });
     } else {
         alert("ERROR: Unknown report type");
     }
@@ -94,4 +120,17 @@ function customizeTableLinks() {
     $(".exportlinks a").each(function() {
         $(this).attr("target", "_blank");
     });
+}
+
+function showAlert(message) {
+    $(".alert").text(message).show();
+}
+
+function clearAlert() {
+    $(".alert").text("").hide();
+}
+
+function updateMonthName() {
+    var monthName = $("#cboReportMonth option").filter(":selected").text();
+    $("#hidReportMonthName").val(monthName);
 }

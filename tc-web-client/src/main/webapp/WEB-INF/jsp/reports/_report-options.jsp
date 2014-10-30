@@ -6,7 +6,7 @@
 
         <div class="constraint">
             <input type="radio" id="optReportType-taskList" name="optReportType" value="taskList" />
-            <label for="optReportType:taskList">Listagem Simples de Tarefas</label>
+            <label for="optReportType:taskList">Relatório Mensal</label>
         </div>
 
         <div class="constraint">
@@ -20,7 +20,7 @@
         <select id="cboReportMonth" name="month">
             <option value="1">Janeiro</option>
             <option value="2">Fevereiro</option>
-            <option value="3">Março</option>
+            <option value="3">Marco</option>
             <option value="4">Abril</option>
             <option value="5">Maio</option>
             <option value="6">Junho</option>
@@ -31,6 +31,7 @@
             <option value="11">Novembro</option>
             <option value="12">Dezembro</option>
         </select>
+        <input type="hidden" id="hidReportMonthName" name="monthName"></input>
         <select id="cboReportYear" name="year">
             <c:forEach begin="2000" end="2030" var="yearOption">
                 <option value="${yearOption}">${yearOption}</option>
@@ -46,4 +47,6 @@
     <div class="filter-group" id="reportSubmit">
         <a href="#" id="btSubmitReport" class="btn-no-icon green">Visualizar</a>
     </div>
+
+    <div class="alert"></div>
 </form>

@@ -33,4 +33,7 @@ public interface TaskRepository {
     public List<SimpleTaskData> listTasks(Integer month, Integer year);
 
     void delete(String task) throws TaskControlWebClientException;
+
+    public List<SimpleTaskData> listActiveTasks(String date, String dateFormat) throws InvalidDateException;
+
 }

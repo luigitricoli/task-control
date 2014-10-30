@@ -1,5 +1,5 @@
 
-<display:setProperty name="basic.msg.empty_list" value="Nenhum registro encontrado" />
+<display:setProperty name="basic.msg.empty_list" value="<span class='pagebanner'>Nenhum registro encontrado</span>" />
 <display:setProperty name="export.banner" value="<div class=''exportlinks''>Exportar: {0}</div>" />
 <display:setProperty name="export.excel.label" value="Excel" />
 <display:setProperty name="export.pdf.label" value="PDF" />

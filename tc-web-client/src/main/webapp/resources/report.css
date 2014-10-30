@@ -100,3 +100,13 @@
     margin-left: 20px;
     cursor: pointer;
 }
+
+.reportTitle {
+    margin-bottom: 15px;
+}
+
+.alert {
+    clear: both;
+    padding-top: 15px;
+    color: #ff0000;
+}
