@@ -9,7 +9,7 @@ public interface UserRepository {
     public User authenticate(String login, String pass) throws AuthenticateException;
 
     public List<User> getAll();
-    
+
     public boolean updatePassword(User user);
         
     public boolean newUser(User user) ;

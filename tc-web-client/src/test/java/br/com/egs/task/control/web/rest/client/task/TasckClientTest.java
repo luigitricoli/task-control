@@ -60,7 +60,7 @@ public class TasckClientTest {
                 new TaskDate("2014-01-05"), 
                 new TaskDate("2014-01-07"), 
                 30, 
-                "A Conversion Test Task", 
+                "A Conversion Test BasicTask",
                 "CCC", 
                 "task_control", 
                 Arrays.asList(JOHN_USER)));
@@ -69,7 +69,7 @@ public class TasckClientTest {
         
         assertThat(result.size(), is(1));
         
-        assertThat(result.get(0).getDescription(), is("A Conversion Test Task"));
+        assertThat(result.get(0).getDescription(), is("A Conversion Test BasicTask"));
         assertThat(result.get(0).getStartDate(), is("2014-01-05"));
         assertThat(result.get(0).getForeseenEndDate(), is("2014-01-07"));
         assertThat(result.get(0).getForeseenWorkHours(), is(30));
@@ -88,7 +88,7 @@ public class TasckClientTest {
                 new TaskDate("2014-01-05"), 
                 new TaskDate("2014-01-07"), 
                 30, 
-                "A Conversion Test Task", 
+                "A Conversion Test BasicTask",
                 "CCC", 
                 "task_control", 
                 Arrays.asList(JOHN_USER,
@@ -98,7 +98,7 @@ public class TasckClientTest {
         
         assertThat(result.size(), is(1));
         
-        assertThat(result.get(0).getDescription(), is("A Conversion Test Task"));
+        assertThat(result.get(0).getDescription(), is("A Conversion Test BasicTask"));
         assertThat(result.get(0).getStartDate(), is("2014-01-05"));
         assertThat(result.get(0).getForeseenEndDate(), is("2014-01-07"));
         assertThat(result.get(0).getForeseenWorkHours(), is(30));

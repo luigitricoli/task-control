@@ -29,154 +29,24 @@
                         <th>Login</th>
                         <th>E-mail</th>
                         <th>Sistemas</th>
-                        <th colspan="2"></th>
+                        <th colspan="1"></th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr class="white">
-                        <td>Johnny Cash</td>
-                        <td>jcash</td>
-                        <td>jcash_ericsson@timbrasil.com.br</td>
-                        <td>OLM, EMA, TaskControl</td>
-                        <td class="btn"><button class="edit">Editar</button></td>
-                        <td class="btn"><button class="delete">Excluir</button></td>
-                    <tr>
-                    <tr class="gray">
-                        <td>James Bond</td>
-                        <td>jbond</td>
-                        <td>jbond_ericsson@timbrasil.com.br</td>
-                        <td>OLM, EMA, TaskControl</td>
-                        <td class="btn"><button class="edit">Editar</button></td>
-                        <td class="btn"><button class="delete">Excluir</button></td>
-                    <tr>
-                    <tr class="white">
-                        <td>Johnny Cash</td>
-                        <td>jcash</td>
-                        <td>jcash_ericsson@timbrasil.com.br</td>
-                        <td>OLM, EMA, TaskControl</td>
-                        <td class="btn"><button class="edit">Editar</button></td>
-                        <td class="btn"><button class="delete">Excluir</button></td>
-                    <tr>
-                    <tr class="gray">
-                        <td>James Bond</td>
-                        <td>jbond</td>
-                        <td>jbond_ericsson@timbrasil.com.br</td>
-                        <td>OLM, EMA, TaskControl</td>
-                        <td class="btn"><button class="edit">Editar</button></td>
-                        <td class="btn"><button class="delete">Excluir</button></td>
-                    <tr>
-                    <tr class="white">
-                        <td>Johnny Cash</td>
-                        <td>jcash</td>
-                        <td>jcash_ericsson@timbrasil.com.br</td>
-                        <td>OLM, EMA, TaskControl</td>
-                        <td class="btn"><button class="edit">Editar</button></td>
-                        <td class="btn"><button class="delete">Excluir</button></td>
-                    <tr>
-                    <tr class="gray">
-                        <td>James Bond</td>
-                        <td>jbond</td>
-                        <td>jbond_ericsson@timbrasil.com.br</td>
-                        <td>OLM, EMA, TaskControl</td>
-                        <td class="btn"><button class="edit">Editar</button></td>
-                        <td class="btn"><button class="delete">Excluir</button></td>
-                    <tr>
-                    <tr class="white">
-                        <td>Johnny Cash</td>
-                        <td>jcash</td>
-                        <td>jcash_ericsson@timbrasil.com.br</td>
-                        <td>OLM, EMA, TaskControl</td>
-                        <td class="btn"><button class="edit">Editar</button></td>
-                        <td class="btn"><button class="delete">Excluir</button></td>
-                    <tr>
-                    <tr class="gray">
-                        <td>James Bond</td>
-                        <td>jbond</td>
-                        <td>jbond_ericsson@timbrasil.com.br</td>
-                        <td>OLM, EMA, TaskControl</td>
-                        <td class="btn"><button class="edit">Editar</button></td>
-                        <td class="btn"><button class="delete">Excluir</button></td>
-                    <tr>
-                    <tr class="white">
-                        <td>Johnny Cash</td>
-                        <td>jcash</td>
-                        <td>jcash_ericsson@timbrasil.com.br</td>
-                        <td>OLM, EMA, TaskControl</td>
-                        <td class="btn"><button class="edit">Editar</button></td>
-                        <td class="btn"><button class="delete">Excluir</button></td>
-                    <tr>
-                    <tr class="gray">
-                        <td>James Bond</td>
-                        <td>jbond</td>
-                        <td>jbond_ericsson@timbrasil.com.br</td>
-                        <td>OLM, EMA, TaskControl</td>
-                        <td class="btn"><button class="edit">Editar</button></td>
-                        <td class="btn"><button class="delete">Excluir</button></td>
-                    <tr>
-                    <tr class="white">
-                        <td>Johnny Cash</td>
-                        <td>jcash</td>
-                        <td>jcash_ericsson@timbrasil.com.br</td>
-                        <td>OLM, EMA, TaskControl</td>
-                        <td class="btn"><button class="edit">Editar</button></td>
-                        <td class="btn"><button class="delete">Excluir</button></td>
-                    <tr>
-                    <tr class="gray">
-                        <td>James Bond</td>
-                        <td>jbond</td>
-                        <td>jbond_ericsson@timbrasil.com.br</td>
-                        <td>OLM, EMA, TaskControl</td>
-                        <td class="btn"><button class="edit">Editar</button></td>
-                        <td class="btn"><button class="delete">Excluir</button></td>
-                    <tr>
-                    <tr class="white">
-                        <td>Johnny Cash</td>
-                        <td>jcash</td>
-                        <td>jcash_ericsson@timbrasil.com.br</td>
-                        <td>OLM, EMA, TaskControl</td>
-                        <td class="btn"><button class="edit">Editar</button></td>
-                        <td class="btn"><button class="delete">Excluir</button></td>
-                    <tr>
-                    <tr class="gray">
-                        <td>James Bond</td>
-                        <td>jbond</td>
-                        <td>jbond_ericsson@timbrasil.com.br</td>
-                        <td>OLM, EMA, TaskControl</td>
-                        <td class="btn"><button class="edit">Editar</button></td>
-                        <td class="btn"><button class="delete">Excluir</button></td>
-                    <tr>
-                    <tr class="white">
-                        <td>Johnny Cash</td>
-                        <td>jcash</td>
-                        <td>jcash_ericsson@timbrasil.com.br</td>
-                        <td>OLM, EMA, TaskControl</td>
-                        <td class="btn"><button class="edit">Editar</button></td>
-                        <td class="btn"><button class="delete">Excluir</button></td>
-                    <tr>
-                    <tr class="gray">
-                        <td>James Bond</td>
-                        <td>jbond</td>
-                        <td>jbond_ericsson@timbrasil.com.br</td>
-                        <td>OLM, EMA, TaskControl</td>
-                        <td class="btn"><button class="edit">Editar</button></td>
-                        <td class="btn"><button class="delete">Excluir</button></td>
-                    <tr>
-                    <tr class="white">
-                        <td>Johnny Cash</td>
-                        <td>jcash</td>
-                        <td>jcash_ericsson@timbrasil.com.br</td>
-                        <td>OLM, EMA, TaskControl</td>
-                        <td class="btn"><button class="edit">Editar</button></td>
-                        <td class="btn"><button class="delete">Excluir</button></td>
-                    <tr>
-                    <tr class="gray">
-                        <td>James Bond</td>
-                        <td>jbond</td>
-                        <td>jbond_ericsson@timbrasil.com.br</td>
-                        <td>OLM, EMA, TaskControl</td>
-                        <td class="btn"><button class="edit">Editar</button></td>
-                        <td class="btn"><button class="delete">Excluir</button></td>
-                    <tr>
+                    <c:forEach var="user" items="${users}" varStatus="status">
+                        <tr class="${status.count % 2 == 0 ? 'white' : 'gray' }">
+                            <td>${user.name}</td>
+                            <td>${user.nickname}</td>
+                            <td>${user.email}</td>
+                            <td>
+                                <c:forEach var="system" items="${user.systems}">
+                                    ${applications.getLabel(system)},
+                                </c:forEach>
+                            </td>
+                            <!-- <td class="btn"><button class="edit">Editar</button></td> -->
+                            <td class="btn"><button class="delete">Excluir</button></td>
+                        <tr>
+                    </c:forEach>
                 </tbody>
             </table>
         </div>

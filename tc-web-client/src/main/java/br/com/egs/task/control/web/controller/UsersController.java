@@ -34,7 +34,9 @@ public class UsersController {
 	private SessionUser sessionUser;
 
     @Get("/usuarios")
-    public void index(){}
+    public void index(){
+        result.include("users", users.getAll());
+    }
 
 	@Post("/senha")
 	public void changePass(String oldPass, String newPass, String newcPass) {

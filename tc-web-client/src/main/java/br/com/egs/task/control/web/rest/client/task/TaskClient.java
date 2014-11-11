@@ -5,6 +5,7 @@ import br.com.egs.task.control.web.model.exception.InvalidDateException;
 import br.com.egs.task.control.web.model.exception.TaskControlWebClientException;
 import br.com.egs.task.control.web.model.exception.UpdateException;
 import br.com.egs.task.control.web.model.repository.TaskRepository;
+import br.com.egs.task.control.web.model.task.BasicTask;
 import br.com.egs.task.control.web.rest.client.JsonClient;
 import br.com.egs.task.control.web.rest.client.Response;
 import br.com.egs.task.control.web.rest.client.task.split.TaskSpliter;
@@ -107,7 +108,7 @@ public class TaskClient implements TaskRepository {
             owners.add(new User(user.getName(), user.getLogin(), user.getEmail(), user.getApplications()));
         }
 
-        return new Task(task.getId(),task.getDescription(),task.getStartDate().toCalendar(),task.getForeseenEndDate().toCalendar(),task.getSource(),task.getApplication(),posts, owners);
+        return new BasicTask(task.getId(),task.getDescription(),task.getStartDate().toCalendar(),task.getForeseenEndDate().toCalendar(),task.getSource(),task.getApplication(),posts, owners);
     }
 
     @Override
@@ -160,8 +161,12 @@ public class TaskClient implements TaskRepository {
     }
 
     @Override
-    public void replan(String taskId, String start, String foreseen) throws UpdateException, InvalidDateException {
-        replan(taskId, TaskDate.DEFAULT_PATTERN, start, foreseen);
+    public void update(Task task) throws InvalidDateException, UpdateException {
+        String path = String.format("tasks/%s", task.getId());
+        Response response = jsonClient.at(path).putAsJson(new CoreTask(task).toJson());
+        if (!response.isSuccess()) {
+            throw new UpdateException(response.getContent());
+        }
     }
 
     @Override

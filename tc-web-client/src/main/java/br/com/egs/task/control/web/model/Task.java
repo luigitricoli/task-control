@@ -1,89 +1,33 @@
 package br.com.egs.task.control.web.model;
 
+import br.com.egs.task.control.web.model.exception.InvalidDateException;
+import br.com.egs.task.control.web.model.exception.UpdateException;
+
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.List;
 
-public class Task {
+public interface Task {
+    public String getId();
 
-    private String id;
-    private String description;
-    private Calendar startDate;
-    private Calendar foreseenEndDate;
-    private String source;
-    private String application;
-    private List<Post> posts;
-    private List<User> owners;
+    public String getDescription();
 
-    public Task(String id, String description, Calendar startDate, Calendar foreseenEndDate, String source, String application, List<Post> posts, List<User> owners) {
-        this.id = id;
-        this.description = description;
-        this.startDate = startDate;
-        this.foreseenEndDate = foreseenEndDate;
-        this.source = source;
-        this.application = application;
-        this.posts = posts;
-        this.owners = owners;
-    }
+    public Calendar getStartDate();
 
-    public String getId() {
-        return id;
-    }
+    public String getStartDateAsString();
 
-    public String getDescription() {
-        return description;
-    }
+    public Calendar getForeseenEndDate();
 
-    public Calendar getStartDate() {
-        return startDate;
-    }
+    public String getForeseenEndDateAsString();
 
-    public String getStartDateAsString() {
-        return calendarToString(startDate);
-    }
+    public String getSource();
 
-    public Calendar getForeseenEndDate() {
-        return foreseenEndDate;
-    }
+    public String getApplication();
 
-    public String getForeseenEndDateAsString() {
-        return calendarToString(foreseenEndDate);
-    }
+    public List<Post> getPosts();
 
-    private String calendarToString(Calendar date) {
-        int day = date.get(Calendar.DAY_OF_MONTH);
-        int month = date.get(Calendar.MONTH)+1;
-        int year = date.get(Calendar.YEAR) % 100;
+    public List<User> getOwners();
 
-        StringBuilder sDate = new StringBuilder();
-        if(day < 10){
-            sDate.append(0);
-        }
-        sDate.append(day);
-        sDate.append("/");
-        if(month < 10){
-            sDate.append(0);
-        }
-        sDate.append(month);
-        sDate.append("/");
-        sDate.append(year);
+    public Task replan(String start, String foreseen) throws InvalidDateException, UpdateException;
 
-        return sDate.toString();
-    }
-
-    public String getSource() {
-        return source;
-    }
-
-    public String getApplication() {
-        return application;
-    }
-
-    public List<Post> getPosts() {
-        return Collections.unmodifiableList(posts);
-    }
-
-    public List<User> getOwners() {
-        return Collections.unmodifiableList(owners);
-    }
+    void setDefaultDateFormat(String defaultDateFormat);
 }

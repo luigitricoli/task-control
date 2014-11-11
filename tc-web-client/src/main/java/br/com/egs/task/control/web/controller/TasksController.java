@@ -4,11 +4,11 @@ import br.com.caelum.vraptor.*;
 import br.com.caelum.vraptor.view.Results;
 import br.com.egs.task.control.web.interceptor.AuthRequired;
 import br.com.egs.task.control.web.model.SessionUser;
+import br.com.egs.task.control.web.model.Task;
 import br.com.egs.task.control.web.model.exception.TaskControlWebClientException;
 import br.com.egs.task.control.web.model.exception.UpdateException;
-import br.com.egs.task.control.web.model.filter.Applications;
-import br.com.egs.task.control.web.model.filter.Sources;
 import br.com.egs.task.control.web.model.repository.TaskRepository;
+import br.com.egs.task.control.web.model.task.TaskWebValidation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,9 +38,9 @@ public class TasksController {
 
 
     @Get("/tarefas")
-    public void index(String task) {
-        if (task != null) {
-            result.include("openTask", task);
+    public void index(String taskId) {
+        if (taskId != null) {
+            result.include("openTask", taskId);
         }
     }
 
@@ -86,10 +86,10 @@ public class TasksController {
         return true;
     }
 
-    @Delete(value = "/tarefas/{task}")
-    public void delete(String task) {
+    @Delete(value = "/tarefas/{taskId}")
+    public void delete(String taskId) {
         try {
-            tasks.delete(task);
+            tasks.delete(taskId);
             result.use(Results.http()).body(SUCCESS_RESPONSE_CODE);
         } catch (TaskControlWebClientException e) {
             log.error(e.getMessage());
@@ -97,10 +97,10 @@ public class TasksController {
         }
     }
 
-    @Put(value = "/tarefas/{task}/finalizacao")
-    public void finish(String task, String date) {
+    @Put(value = "/tarefas/{taskId}/finalizacao")
+    public void finish(String taskId, String date) {
         try {
-            tasks.finish(task, date);
+            tasks.finish(taskId, date);
             result.use(Results.http()).body(SUCCESS_RESPONSE_CODE);
         } catch (TaskControlWebClientException e) {
             log.error(e.getMessage());
@@ -108,10 +108,11 @@ public class TasksController {
         }
     }
 
-    @Put(value = "/tarefas/{task}/planejamento")
-    public void replan(String task, String start, String foreseen) {
+    @Put(value = "/tarefas/{taskId}/planejamento")
+    public void replan(String taskId, String start, String foreseen) {
         try {
-            tasks.replan(task, BRAZILIAN_DATE_FORMAT, start, foreseen);
+            Task task = new TaskWebValidation(tasks.get(taskId), session.getUser());
+            tasks.update(task.replan(start, foreseen));
             result.use(Results.http()).body(SUCCESS_RESPONSE_CODE);
         } catch (UpdateException e){
             log.error(e.getMessage());
@@ -122,16 +123,16 @@ public class TasksController {
         }
     }
 
-    @Get("/tarefas/{task}/historico")
-    public void postsBy(String task) {
-        result.include("task", tasks.get(task));
+    @Get("/tarefas/{taskId}/historico")
+    public void postsBy(String taskId) {
+        result.include("task", tasks.get(taskId));
     }
 
-    @Post("/tarefas/{task}/historico")
-    public void addPost(String task, String text) {
+    @Post("/tarefas/{taskId}/historico")
+    public void addPost(String taskId, String text) {
         br.com.egs.task.control.web.model.Post post = new br.com.egs.task.control.web.model.Post(
                             Calendar.getInstance(), session.getUser().getNickname(), null, text);
-        if (tasks.add(post, task)) {
+        if (tasks.add(post, taskId)) {
             result.use(Results.http()).body(SUCCESS_RESPONSE_CODE);
         } else {
             result.use(Results.http()).body(FAIL_RESPONSE_CODE);

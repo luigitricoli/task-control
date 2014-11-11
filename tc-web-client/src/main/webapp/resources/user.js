@@ -115,7 +115,7 @@ function saveUser() {
 			$("#cancel-register-user")[0].click();
 			
 			successBallon("Usuario criado com sucesso!");
-
+            closeFloatWindowUser();
 		} 
 	};
 	$.post(url, formData, successFunction);

@@ -2,6 +2,7 @@ package br.com.egs.task.control.web.rest.client.user;
 
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.enterprise.context.RequestScoped;
@@ -27,9 +28,9 @@ public class UserClient implements UserRepository {
     /**
      * @deprecated only needed because CDI
      */
-    public UserClient() { 
+    public UserClient() {
     }
-    
+
     @Inject
 	public UserClient(JsonClient jsonClient) {
         this.jsonClient = jsonClient;
@@ -38,7 +39,7 @@ public class UserClient implements UserRepository {
 
     @Override
 	public User authenticate(String login, String pass) throws AuthenticateException{
-    	
+
         String json = String.format("{username:'%s', password:'%s'}", login, pass);
         Response response = jsonClient.at("authentication").postAsJson(json);
         if(response.getCode().equals(SUCCESS_CODE)){
@@ -49,10 +50,9 @@ public class UserClient implements UserRepository {
         //return null;
         throw new AuthenticateException("Usuário Inválido!");
 	}
-    
+
     @Override
 	public boolean updatePassword(User user){
-    	//verificacao aqui-----
         String json = String.format("{password:\"%s\"}",user.getPass());
         Response response = jsonClient.at("users/"+user.getNickname()).putAsJson(json);
         if(response.getCode().equals(SUCCESS_CODE)){

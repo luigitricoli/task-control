@@ -102,7 +102,7 @@ public class OneWeekTask {
 
     @Override
     public String toString() {
-        return "Task{" +
+        return "BasicTask{" +
                 "id='" + id + '\'' +
                 ", startDay=" + startDay +
                 ", daysInterval=" + daysInterval +

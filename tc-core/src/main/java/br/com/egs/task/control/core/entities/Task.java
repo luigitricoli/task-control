@@ -336,12 +336,6 @@ public class Task {
         }
         
         if (newStartDate != null && !newStartDate.equals(this.startDate)) {
-            if (this.startDate.before(getCurrentDate())) {
-                throw new ValidationException("Cannot change dates. The task is already started. Start date: " 
-                            + this.startDate,
-                        Messages.Keys.VALIDATION_TASK_CANNOT_CHANGE_START_ALREADY_STARTED);
-            }
-
             this.startDate = toZeroHourDate(newStartDate);
         }
         

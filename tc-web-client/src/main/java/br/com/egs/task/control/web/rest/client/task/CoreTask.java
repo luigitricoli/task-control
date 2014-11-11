@@ -1,5 +1,6 @@
 package br.com.egs.task.control.web.rest.client.task;
 
+import br.com.egs.task.control.web.model.Task;
 import br.com.egs.task.control.web.rest.client.gson.OwnersUnmarshaller;
 import br.com.egs.task.control.web.rest.client.user.CoreUser;
 import com.google.gson.Gson;
@@ -51,6 +52,12 @@ public class CoreTask {
         this.id = id;
         this.startDate = startDate;
         this.foreseenEndDate = foreseenEndDate;
+    }
+
+    public CoreTask(Task task){
+        this.id = task.getId();
+        this.startDate = new TaskDate(task.getStartDate());
+        this.foreseenEndDate = new TaskDate(task.getForeseenEndDate());
     }
 
     public String getId() {
