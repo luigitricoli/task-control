@@ -19,19 +19,19 @@ public class TasksRepositoryImpl implements TasksRepository {
 
     /**
      * By default, calculations that depend on the current date are made using
-     * the object created by "new java.util.Date()".
+     * the object created by "Calendar.getInstance()".
      *
      * Whenever there is need to use a fixed reference date (for example, testing
      * in a controlled environment) this field must be set.
      */
-    private Date fixedReferenceDate;
+    private Calendar fixedReferenceDate;
 
     @Inject
 	public TasksRepositoryImpl(MongoDbConnection connection) {
 		this.connection = connection;
 	}
 
-    public TasksRepositoryImpl(MongoDbConnection connection, Date fixedReferenceDate) {
+    public TasksRepositoryImpl(MongoDbConnection connection, Calendar fixedReferenceDate) {
         this.connection = connection;
         this.fixedReferenceDate = fixedReferenceDate;
     }
@@ -108,7 +108,15 @@ public class TasksRepositoryImpl implements TasksRepository {
         List<BasicDBObject> filters = new ArrayList<>();
 
         if (criteria.getMonth() > 0) {
-            filters.add(createYearMonthFilter(criteria.getYear(), criteria.getMonth()));
+            Calendar[] monthInterval = createDateIntervalForMonth(criteria.getYear(), criteria.getMonth());
+            filters.add(createDayIntervalFilter(monthInterval[0], monthInterval[1], criteria.isExcludeForeseenTasks()));
+        }
+
+        if (criteria.getDayIntervalBegin() != null) {
+            filters.add(createDayIntervalFilter(
+                    criteria.getDayIntervalBegin(),
+                    criteria.getDayIntervalEnd(),
+                    criteria.isExcludeForeseenTasks()));
         }
 
         if (criteria.getApplications() != null && criteria.getApplications().length > 0) {
@@ -146,8 +154,7 @@ public class TasksRepositoryImpl implements TasksRepository {
         List<BasicDBObject> filters = new ArrayList<>();
 
         if (statusSet.contains(TaskSearchCriteria.Status.DOING)) {
-            Calendar endOfCurrentDate = Calendar.getInstance();
-            endOfCurrentDate.setTime(getDate());
+            Calendar endOfCurrentDate = getCurrentDate();
             endOfCurrentDate.set(Calendar.HOUR_OF_DAY, 23);
             endOfCurrentDate.set(Calendar.MINUTE, 59);
             endOfCurrentDate.set(Calendar.SECOND, 59);
@@ -164,8 +171,7 @@ public class TasksRepositoryImpl implements TasksRepository {
         }
 
         if (statusSet.contains(TaskSearchCriteria.Status.WAITING)) {
-            Calendar endOfCurrentDate = Calendar.getInstance();
-            endOfCurrentDate.setTime(getDate());
+            Calendar endOfCurrentDate = getCurrentDate();
             endOfCurrentDate.set(Calendar.HOUR_OF_DAY, 23);
             endOfCurrentDate.set(Calendar.MINUTE, 59);
             endOfCurrentDate.set(Calendar.SECOND, 59);
@@ -178,8 +184,7 @@ public class TasksRepositoryImpl implements TasksRepository {
         }
 
         if (statusSet.contains(TaskSearchCriteria.Status.LATE)) {
-            Calendar startOfCurrentDate = Calendar.getInstance();
-            startOfCurrentDate.setTime(getDate());
+            Calendar startOfCurrentDate = getCurrentDate();
             startOfCurrentDate.set(Calendar.HOUR_OF_DAY, 0);
             startOfCurrentDate.set(Calendar.MINUTE, 0);
             startOfCurrentDate.set(Calendar.SECOND, 0);
@@ -236,71 +241,84 @@ public class TasksRepositoryImpl implements TasksRepository {
         }
     }
 
-    private BasicDBObject createYearMonthFilter(int year, int month) {
-        Date[] interval = createDateIntervalForMonth(year, month);
+    private BasicDBObject createDayIntervalFilter(Calendar begin, Calendar end, boolean excludeForeseenTasks) {
+        // Ensure that both edges of the interval are in their limit times
+        begin.set(Calendar.HOUR_OF_DAY, 0);
+        begin.set(Calendar.MINUTE, 0);
+        begin.set(Calendar.SECOND, 0);
+        begin.set(Calendar.MILLISECOND, 0);
 
-        boolean searchingFutureMonth = getDate().compareTo(interval[0]) < 0;
+        end.set(Calendar.HOUR_OF_DAY, 23);
+        end.set(Calendar.MINUTE, 59);
+        end.set(Calendar.SECOND, 59);
+        end.set(Calendar.MILLISECOND, 999);
 
-        BasicDBObject monthFilter;
-        if (searchingFutureMonth) {
-            monthFilter = new BasicDBObject("$and", new BasicDBObject[]{
-                    new BasicDBObject("startDate", new BasicDBObject("$lte", interval[1]))
+        boolean searchingFutureMonth = getCurrentDate().compareTo(begin) < 0;
+
+        BasicDBObject filter;
+
+        if (excludeForeseenTasks && searchingFutureMonth) {
+            filter = new BasicDBObject("$and", new BasicDBObject[]{
+                    new BasicDBObject("startDate", new BasicDBObject("$lte", end.getTime()))
+                    ,
+                    new BasicDBObject("endDate", new BasicDBObject("$gte", begin.getTime()))
+            });
+
+        } else if (excludeForeseenTasks && !searchingFutureMonth) {
+            filter = new BasicDBObject("$and", new BasicDBObject[]{
+                    new BasicDBObject("startDate", new BasicDBObject("$lte", end.getTime()))
                     ,
                     new BasicDBObject("$or", new BasicDBObject[]{
-                            new BasicDBObject("foreseenEndDate", new BasicDBObject("$gte", interval[0])),
-                            new BasicDBObject("endDate", new BasicDBObject("$gte", interval[0]))
+                            new BasicDBObject("endDate", new BasicDBObject("$gte", begin.getTime())),
+                            new BasicDBObject("endDate", new BasicDBObject("$exists", Boolean.FALSE))
                     })
             });
-        } else {
-            monthFilter = new BasicDBObject("$and", new BasicDBObject[]{
-                    new BasicDBObject("startDate", new BasicDBObject("$lte", interval[1]))
+
+        } else if (!excludeForeseenTasks && searchingFutureMonth) {
+            filter = new BasicDBObject("$and", new BasicDBObject[]{
+                    new BasicDBObject("startDate", new BasicDBObject("$lte", end.getTime()))
                     ,
                     new BasicDBObject("$or", new BasicDBObject[]{
-                            new BasicDBObject("foreseenEndDate", new BasicDBObject("$gte", interval[0])),
-                            new BasicDBObject("endDate", new BasicDBObject("$gte", interval[0])),
+                            new BasicDBObject("foreseenEndDate", new BasicDBObject("$gte", begin.getTime())),
+                            new BasicDBObject("endDate", new BasicDBObject("$gte", begin.getTime()))
+                    })
+            });
+
+        } else {
+            filter = new BasicDBObject("$and", new BasicDBObject[]{
+                    new BasicDBObject("startDate", new BasicDBObject("$lte", end.getTime()))
+                    ,
+                    new BasicDBObject("$or", new BasicDBObject[]{
+                            new BasicDBObject("foreseenEndDate", new BasicDBObject("$gte", begin.getTime())),
+                            new BasicDBObject("endDate", new BasicDBObject("$gte", begin.getTime())),
                             new BasicDBObject("endDate", new BasicDBObject("$exists", Boolean.FALSE))
                     })
             });
         }
 
-        return monthFilter;
+        return filter;
     }
 
     /**
      * Create a two-position array with the limits (start and end) of the requested month.
-     * @param year
-     * @param month
-     * @return
      */
-    Date[] createDateIntervalForMonth(int year, int month) {
-        Calendar cal = Calendar.getInstance();
-        cal.set(Calendar.YEAR, year);
-        cal.set(Calendar.MONTH, month - 1);
+    private Calendar[] createDateIntervalForMonth(int year, int month) {
+        Calendar begin = Calendar.getInstance();
+        begin.set(Calendar.YEAR, year);
+        begin.set(Calendar.MONTH, month - 1);
+        begin.set(Calendar.DAY_OF_MONTH, 1);
 
-        cal.set(Calendar.DAY_OF_MONTH, 1);
-        cal.set(Calendar.HOUR_OF_DAY, 0);
-        cal.set(Calendar.MINUTE, 0);
-        cal.set(Calendar.SECOND, 0);
-        cal.set(Calendar.MILLISECOND, 0);
+        Calendar end = (Calendar) begin.clone();
+        end.set(Calendar.DAY_OF_MONTH, end.getActualMaximum(Calendar.DAY_OF_MONTH));
 
-        Date begin = cal.getTime();
-
-        cal.set(Calendar.DAY_OF_MONTH, cal.getActualMaximum(Calendar.DAY_OF_MONTH));
-        cal.set(Calendar.HOUR_OF_DAY, 23);
-        cal.set(Calendar.MINUTE, 59);
-        cal.set(Calendar.SECOND, 59);
-        cal.set(Calendar.MILLISECOND, 999);
-
-        Date end = cal.getTime();
-
-        return new Date[] {begin, end};
+        return new Calendar[] {begin, end};
     }
 
-    private Date getDate() {
+    private Calendar getCurrentDate() {
         if (fixedReferenceDate != null) {
             return fixedReferenceDate;
         } else {
-            return new Date();
+            return Calendar.getInstance();
         }
     }
 }

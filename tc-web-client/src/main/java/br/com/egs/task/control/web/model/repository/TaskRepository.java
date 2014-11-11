@@ -30,4 +30,7 @@ public interface TaskRepository {
     void delete(String task) throws TaskControlWebClientException;
 
     void update(Task task) throws InvalidDateException, UpdateException;
+
+    public List<SimpleTaskData> listActiveTasks(String date, String dateFormat) throws InvalidDateException;
+
 }

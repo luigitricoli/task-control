@@ -65,7 +65,7 @@ public class TasckClientTest {
                 "task_control", 
                 Arrays.asList(JOHN_USER)));
         
-        final List<SimpleTaskData> result = repo.convertCoreTasksToSimpleTaskData(inputTasks);
+        final List<SimpleTaskData> result = repo.convertCoreTasksToSimpleTaskData(inputTasks, false);
         
         assertThat(result.size(), is(1));
         
@@ -79,7 +79,7 @@ public class TasckClientTest {
     }
 
     @Test
-    public void convertCoreTasksToSimpleTaskData_multipleOwners() throws Exception {
+    public void convertCoreTasksToSimpleTaskData_multipleOwners_noSplit() throws Exception {
         TaskClient repo = new TaskClient(null, null, null);
         
         List<CoreTask> inputTasks = new ArrayList<>();
@@ -94,7 +94,7 @@ public class TasckClientTest {
                 Arrays.asList(JOHN_USER,
                 		MARY_USER)));
         
-        final List<SimpleTaskData> result = repo.convertCoreTasksToSimpleTaskData(inputTasks);
+        final List<SimpleTaskData> result = repo.convertCoreTasksToSimpleTaskData(inputTasks, false);
         
         assertThat(result.size(), is(1));
         
@@ -105,5 +105,42 @@ public class TasckClientTest {
         assertThat(result.get(0).getSource(), is("CCC"));
         assertThat(result.get(0).getApplication(), is("task_control"));
         assertThat(result.get(0).getOwners(), is("John Programmer, Mary Developer"));
+    }
+
+    @Test
+    public void convertCoreTasksToSimpleTaskData_multipleOwners_split() throws Exception {
+        TaskClient repo = new TaskClient(null, null, null);
+
+        List<CoreTask> inputTasks = new ArrayList<>();
+
+        inputTasks.add(new CoreTask(
+                new TaskDate("2014-01-05"),
+                new TaskDate("2014-01-07"),
+                30,
+                "A Conversion Test Task",
+                "CCC",
+                "task_control",
+                Arrays.asList(JOHN_USER,
+                        MARY_USER)));
+
+        final List<SimpleTaskData> result = repo.convertCoreTasksToSimpleTaskData(inputTasks, true);
+
+        assertThat(result.size(), is(2));
+
+        assertThat(result.get(0).getDescription(), is("A Conversion Test Task"));
+        assertThat(result.get(0).getStartDate(), is("2014-01-05"));
+        assertThat(result.get(0).getForeseenEndDate(), is("2014-01-07"));
+        assertThat(result.get(0).getForeseenWorkHours(), is(30));
+        assertThat(result.get(0).getSource(), is("CCC"));
+        assertThat(result.get(0).getApplication(), is("task_control"));
+        assertThat(result.get(0).getOwners(), is("John Programmer"));
+
+        assertThat(result.get(1).getDescription(), is("A Conversion Test Task"));
+        assertThat(result.get(1).getStartDate(), is("2014-01-05"));
+        assertThat(result.get(1).getForeseenEndDate(), is("2014-01-07"));
+        assertThat(result.get(1).getForeseenWorkHours(), is(30));
+        assertThat(result.get(1).getSource(), is("CCC"));
+        assertThat(result.get(1).getApplication(), is("task_control"));
+        assertThat(result.get(1).getOwners(), is("Mary Developer"));
     }
 }

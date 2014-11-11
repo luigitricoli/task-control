@@ -19,9 +19,12 @@ import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import javax.ws.rs.*;
+import java.text.DateFormat;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.List;
 
 @Path("tasks")
@@ -59,9 +62,13 @@ public class TasksService {
                             @QueryParam("status") String status,
                             @QueryParam("sources") String sources,
                             @QueryParam("excludePosts") String excludePosts,
-                            @QueryParam("prettyPrint") String prettyPrint) {
+                            @QueryParam("prettyPrint") String prettyPrint,
+                            @QueryParam("dayIntervalStart") String dayIntervalStart,
+                            @QueryParam("dayIntervalEnd") String dayIntervalEnd,
+                            @QueryParam("excludeForeseenTasks") String excludeForeseenTasks) {
 
-        TaskSearchCriteria criteria = buildSearchCriteria(year, month, owner, application, sources, status, excludePosts);
+        TaskSearchCriteria criteria = buildSearchCriteria(year, month, owner, application,
+                sources, status, excludePosts, dayIntervalStart, dayIntervalEnd, excludeForeseenTasks);
 
         List<Task> result = repository.searchTasks(criteria);
 
@@ -212,17 +219,50 @@ public class TasksService {
         repository.remove(task);
     }
 
-    private TaskSearchCriteria buildSearchCriteria(String year, String month, String owner, String application, String sources, String status, String excludePosts) {
+    private TaskSearchCriteria buildSearchCriteria(String year, String month, String owner,
+                                                   String application, String sources, String status,
+                                                   String excludePosts,
+                                                   String startDay, String endDay, String excludeForeseenTasks) {
         TaskSearchCriteria criteria = new TaskSearchCriteria();
 
-        if (StringUtils.isBlank(year) || StringUtils.isBlank(month)) {
-            throw responseUtils.buildBadRequestException(Messages.Keys.VALIDATION_TASK_YEAR_AND_MONTH_REQUIRED);
-        }
+        if (StringUtils.isNotBlank(year) && StringUtils.isNotBlank(month)) {
+            // Selected interval parameter: Month/year
+            try {
+                criteria.month(Integer.parseInt(year, 10), Integer.parseInt(month, 10));
+            } catch (IllegalArgumentException iae) {
+                throw responseUtils.buildBadRequestException(Messages.Keys.VALIDATION_TASK_YEAR_OR_MONTH_INVALID);
+            }
 
-        try {
-            criteria.month(Integer.parseInt(year, 10), Integer.parseInt(month, 10));
-        } catch (IllegalArgumentException iae) {
-            throw responseUtils.buildBadRequestException(Messages.Keys.VALIDATION_TASK_YEAR_OR_MONTH_INVALID);
+        } else if (StringUtils.isNotBlank(year) && !StringUtils.isNotBlank(month)
+                || !StringUtils.isNotBlank(year) && StringUtils.isNotBlank(month)) {
+            // Selected interval parameter: Month/year - One of the values is missing
+            throw responseUtils.buildBadRequestException(Messages.Keys.VALIDATION_TASK_YEAR_AND_MONTH_USE_BOTH);
+
+        } else if (StringUtils.isNotBlank(startDay) && StringUtils.isNotBlank(endDay)) {
+            // Selected interval parameter: Start Date / End Date
+
+            DateFormat parser = new SimpleDateFormat("yyyy-MM-dd");
+            parser.setLenient(false);
+
+            Calendar beginCal = Calendar.getInstance();
+            Calendar endCal = Calendar.getInstance();
+            try {
+                beginCal.setTime(parser.parse(startDay));
+                endCal.setTime(parser.parse(endDay));
+            } catch (ParseException e) {
+                throw responseUtils.buildBadRequestException(Messages.Keys.VALIDATION_TASK_INVALID_SEARCH_DATE);
+            }
+
+            if (beginCal.after(endCal)) {
+                throw responseUtils.buildBadRequestException(Messages.Keys.VALIDATION_TASK_INVALID_SEARCH_DATE_BEGIN_AFTER_END);
+            }
+
+            criteria.dayInterval(beginCal, endCal);
+
+        } else if (StringUtils.isNotBlank(startDay) && !StringUtils.isNotBlank(endDay)
+                || !StringUtils.isNotBlank(startDay) && StringUtils.isNotBlank(endDay)) {
+            // Selected interval parameter: Start Date / End Date   - One of the values is missing
+            throw responseUtils.buildBadRequestException(Messages.Keys.VALIDATION_TASK_DAY_INTERVAL_USE_BOTH);
         }
 
         if (StringUtils.isNotBlank(owner)) {
@@ -261,6 +301,11 @@ public class TasksService {
         if (Boolean.parseBoolean(excludePosts)) {
              criteria.excludePosts();
         }
+
+        if (Boolean.parseBoolean(excludeForeseenTasks)) {
+            criteria.excludeForeseenTasks();
+        }
+
         return criteria;
     }
 

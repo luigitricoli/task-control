@@ -21,10 +21,7 @@ import org.junit.Test;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 import static org.junit.Assert.*;
 
@@ -41,7 +38,10 @@ public class TasksRepositoryTest {
 	public void setUp() throws Exception {
 		conn = TestConnectionFactory.getConnection();
 		populateDatabase();
-		repository = new TasksRepositoryImpl(conn, timestampFormat.parse(TODAY));
+
+        Calendar todayCal = Calendar.getInstance();
+        todayCal.setTime(timestampFormat.parse(TODAY));
+		repository = new TasksRepositoryImpl(conn, todayCal);
 	}
 
 	@After
@@ -162,6 +162,23 @@ public class TasksRepositoryTest {
 
         assertEquals(2, result.size());
 
+        assertEquals("111122223333aaaabbbbccc2", result.get(0).getId());
+        assertEquals("111122223333aaaabbbbccc3", result.get(1).getId());
+    }
+
+    @Test
+    public void searchByDayInterval() throws Exception {
+        Calendar begin = Calendar.getInstance();
+        begin.setTime(timestampFormat.parse("2013-12-18 03:03:00.000"));
+
+        Calendar end = Calendar.getInstance();
+        end.setTime(timestampFormat.parse("2013-12-19 04:04:00.000"));
+
+        TaskSearchCriteria criteria = new TaskSearchCriteria()
+                .dayInterval(begin, end);
+        List<Task> result = repository.searchTasks(criteria);
+
+        assertEquals(2, result.size());
         assertEquals("111122223333aaaabbbbccc2", result.get(0).getId());
         assertEquals("111122223333aaaabbbbccc3", result.get(1).getId());
     }
