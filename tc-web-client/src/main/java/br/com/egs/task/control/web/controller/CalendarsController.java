@@ -17,9 +17,11 @@ public class CalendarsController {
     @Inject
 	private Result result;
 
-	@Get("/calendario/mes/{month}")
-	public void monthDays(Integer month){
-        int year = Calendar.getInstance().get(Calendar.YEAR);
+	@Get("/calendario/mes/{date}")
+	public void monthDays(String date){
+        String[] datePartials = date.split("-");
+        int month = Integer.valueOf(datePartials[0]);
+        int year = Integer.valueOf(datePartials[1]);
         ReferenceMonth structure = new ReferenceMonth(month,year);
 		result.use(Results.http()).body(structure.getDaysAsJson());
 	}

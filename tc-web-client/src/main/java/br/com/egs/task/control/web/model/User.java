@@ -22,7 +22,11 @@ public class User implements Serializable {
     private String type;
     private String pass;
     private List<String> systems;
-    
+
+    public User(String login) {
+        this(null, login, null, null, null, null);
+    }
+
     public User(String name, String login, String email, String type, String pass, List<String> systems) {
         this.name = name;
         this.login = login;

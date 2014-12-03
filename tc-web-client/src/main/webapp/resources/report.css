@@ -53,6 +53,8 @@
 #report-options-form input, #report-options-form select {
     font-size: 14px;
     padding: 3px;
+    border: 1px solid #636363;
+    border-radius: 3px;
 }
 
 #report-options-form option {
@@ -65,7 +67,7 @@
 }
 
 #cboReportMonth {
-    width: 120px;
+    width: 118px;
     margin-right: 9px;
 }
 
@@ -97,7 +99,7 @@
 .ui-datepicker-trigger {
     background-color: #e0e0e0;
     width: 25px;
-    margin-left: 20px;
+    margin-left: 10px;
     cursor: pointer;
 }
 
@@ -109,4 +111,8 @@
     clear: both;
     padding-top: 15px;
     color: #ff0000;
+}
+
+#txtReportDate {
+    width: 162px;
 }

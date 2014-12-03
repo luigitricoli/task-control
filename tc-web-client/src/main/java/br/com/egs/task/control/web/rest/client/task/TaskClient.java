@@ -44,13 +44,13 @@ public class TaskClient implements TaskRepository {
     }
 
     @Override
-    public List<Week> weeksBy(Integer month) {
-        return weeksBy(month, new ArrayList<String>(), null);
+    public List<Week> weeksBy(Integer month, Integer year) {
+        return weeksBy(month, year, new ArrayList<String>(), null);
     }
 
     @Override
-    public List<Week> weeksBy(Integer month, List<String> filters, String users) {
-        jsonClient.at("tasks").addUrlParam("year", "2014").addUrlParam("month", month.toString());
+    public List<Week> weeksBy(Integer month, Integer year, List<String> filters, String users) {
+        jsonClient.at("tasks").addUrlParam("year", year.toString()).addUrlParam("month", month.toString());
 
         if (users != null && !users.equals(EMPTY)) {
             jsonClient.addUrlParam("owner", users);
@@ -69,7 +69,7 @@ public class TaskClient implements TaskRepository {
         List<Week> weeks = loadWeeks();
 
         Calendar referenceMonth = Calendar.getInstance();
-        referenceMonth.set(Calendar.YEAR, 2014);
+        referenceMonth.set(Calendar.YEAR, year);
         referenceMonth.set(Calendar.MONTH, month - 1);
 
         for (CoreTask coreTask : tasks) {
@@ -184,7 +184,7 @@ public class TaskClient implements TaskRepository {
 
     @Override
     public List<SimpleTaskData> listTasks(Integer month, Integer year) {
-        jsonClient.at("tasks").addUrlParam("year", "2014").addUrlParam("month", month.toString());
+        jsonClient.at("tasks").addUrlParam("year", year.toString()).addUrlParam("month", month.toString());
         List<CoreTask> tasks = CoreTask.unmarshalList(jsonClient.getAsJson().getContent());
 
         List<SimpleTaskData> result = convertCoreTasksToSimpleTaskData(tasks, false);

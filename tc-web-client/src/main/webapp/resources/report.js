@@ -18,9 +18,9 @@ $(document).ready(function(){
     $("#cboReportMonth").val(dt.getMonth() + 1);
     $("#cboReportYear").val(dt.getFullYear());
 
-    $("#txtReportDate").mask('00/00/0000');
+    $("#txtReportDate").mask('00/00/00');
     $("#txtReportDate").datepicker({
-                        "dateFormat": "dd/mm/yy",
+                        "dateFormat": "dd/mm/y",
                         "showOn": "button",
     });
 

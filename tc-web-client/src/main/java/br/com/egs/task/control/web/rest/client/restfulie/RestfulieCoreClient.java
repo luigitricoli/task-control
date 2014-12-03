@@ -11,6 +11,7 @@ import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -33,6 +34,7 @@ public class RestfulieCoreClient implements JsonClient {
 	private String version;
 	private String resource;
 	private Map<String, String> params;
+    private Map<String, String> auth;
 
 	@Inject
 	public RestfulieCoreClient() {
@@ -114,6 +116,10 @@ public class RestfulieCoreClient implements JsonClient {
 	}
 
     private void loadRootUrlFromConfig() {
+        rootUrl = getConfig().getProperty("core.services.root-url");
+    }
+
+    private Properties getConfig() {
         if(!CONFIGURATION_FILE.startsWith("/")){
             throw new IllegalArgumentException("The configurationFile param needs to begin with slash");
         }
@@ -128,8 +134,7 @@ public class RestfulieCoreClient implements JsonClient {
         } catch (IOException e) {
             throw new RuntimeException("Cannot load configuration file", e);
         }
-
-        rootUrl = config.getProperty("core.services.root-url");
+        return config;
     }
 
     @Override

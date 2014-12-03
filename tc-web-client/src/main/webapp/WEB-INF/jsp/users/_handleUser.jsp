@@ -1,7 +1,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <div id="add-handleUser-container" class="float-window handleUserWindow">
 	<form id="handle-user-form">
-		<h4>Cadastro de Usuário</h4>
+		<h4>Cadastro de Usuï¿½rio</h4>
 		<div class="alert begin">
 			<p></p>
 		</div>

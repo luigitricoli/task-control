@@ -26,7 +26,6 @@ public class TasksController {
     public static final String EMPTY = "";
     private static final String SUCCESS_RESPONSE_CODE = "success";
     private static final String FAIL_RESPONSE_CODE = "fail";
-    private static final String BRAZILIAN_DATE_FORMAT = "dd/MM/yy";
 
     @Inject
     private Result result;
@@ -36,7 +35,6 @@ public class TasksController {
     private SessionUser session;
 
 
-
     @Get("/tarefas")
     public void index(String taskId) {
         if (taskId != null) {
@@ -44,22 +42,26 @@ public class TasksController {
         }
     }
 
-    @Get("/tarefas/mes/{month}")
-    public void tasksBy(Integer month, String filters, String users) {
+    @Get("/tarefas/mes/{date}")
+    public void tasksBy(String date, String filters, String users) {
+        String[] datePartials = date.split("-");
+        int month = Integer.valueOf(datePartials[0]);
+        int year = Integer.valueOf(datePartials[1]);
         if (filters == null) {
-            result.include("weeks", tasks.weeksBy(month));
+            result.include("weeks", tasks.weeksBy(month, year));
         } else {
-            result.include("weeks", tasks.weeksBy(month, Arrays.asList(filters.split(",")), users));
+            result.include("weeks", tasks.weeksBy(month, year, Arrays.asList(filters.split(",")), users));
         }
 
     }
 
     @Post("/tarefas")
-    public void addTask(String start, String foreseen, String type, String system, String description, List<String> owners) {
-        if(!isValidTask(start, foreseen, type, system, description, owners)){
+    public void addTask(String start, String foreseen, String type, String system, String description, List<String> owners, String idType, String idValue) {
+        if (!isValidTask(start, foreseen, type, system, description, owners, idType, idValue)) {
             return;
         }
 
+        description = String.format("%s%s - %s", idType, idValue, description);
         log.debug("Description: {}", description);
         if (tasks.add(start, foreseen, type, system, description, owners)) {
             result.use(Results.http()).body(SUCCESS_RESPONSE_CODE);
@@ -68,7 +70,7 @@ public class TasksController {
         }
     }
 
-    public boolean isValidTask(String start, String foreseen, String type, String system, String description, List<String> owners) {
+    public boolean isValidTask(String start, String foreseen, String type, String system, String description, List<String> owners, String idType, String idValue) {
         Pattern pValidDate = Pattern.compile("([0-2][0-9]|3[0-1])\\/(0[1-9]|1[0-2])\\/[1-9][0-9]");
         if (start == null || !pValidDate.matcher(start).matches()) {
             result.use(Results.http()).body("Data de início inválida");
@@ -78,6 +80,9 @@ public class TasksController {
             return false;
         } else if (description == null || description.equals(EMPTY)) {
             result.use(Results.http()).body("Descrição inválida");
+            return false;
+        } else if (idType == null || idType.equals(EMPTY) || idValue == null || idValue.equals(EMPTY)) {
+            result.use(Results.http()).body("Identificação inválida");
             return false;
         } else if (type == null || system == null || owners == null) {
             result.use(Results.http()).body(FAIL_RESPONSE_CODE);
@@ -114,7 +119,7 @@ public class TasksController {
             Task task = new TaskWebValidation(tasks.get(taskId), session.getUser());
             tasks.update(task.replan(start, foreseen));
             result.use(Results.http()).body(SUCCESS_RESPONSE_CODE);
-        } catch (UpdateException e){
+        } catch (UpdateException e) {
             log.error(e.getMessage());
             result.use(Results.http()).body(e.getMessage());
         } catch (TaskControlWebClientException e) {
@@ -131,7 +136,7 @@ public class TasksController {
     @Post("/tarefas/{taskId}/historico")
     public void addPost(String taskId, String text) {
         br.com.egs.task.control.web.model.Post post = new br.com.egs.task.control.web.model.Post(
-                            Calendar.getInstance(), session.getUser().getNickname(), null, text);
+                Calendar.getInstance(), session.getUser().getNickname(), null, text);
         if (tasks.add(post, taskId)) {
             result.use(Results.http()).body(SUCCESS_RESPONSE_CODE);
         } else {

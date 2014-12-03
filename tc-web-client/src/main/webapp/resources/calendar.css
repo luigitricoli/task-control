@@ -173,3 +173,7 @@
 #iteraction-form{
     display: none;
 }
+.startDay, .foreseenDay {
+    width: 180px;
+    margin-right: 10px;
+}

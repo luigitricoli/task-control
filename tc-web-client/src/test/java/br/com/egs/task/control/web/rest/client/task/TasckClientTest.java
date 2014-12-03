@@ -45,7 +45,7 @@ public class TasckClientTest {
         when(mockSession.getUser()).thenReturn(mockUser);
 
         TaskRepository repo = new TaskClient(new FilterFormat(), client, mockSession);
-        List<Week> weeks = repo.weeksBy(1);
+        List<Week> weeks = repo.weeksBy(1, 2014);
 
         assertThat(weeks.size(), is(6));
     }

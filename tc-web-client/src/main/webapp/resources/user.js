@@ -107,19 +107,40 @@ function saveUser() {
 
 	//var isApplicationChecked = $("#userApplications input").filter(":checked").size() > 0;	
 	
-	var url = DOMAIN + "saveUser";
+	var url = DOMAIN + "usuarios";
 	var formData = $("#new-user-form").serialize();
 	var successFunction = function(data) {
 		if ("sucess" == data) {
 			getUsers();
 			$("#cancel-register-user")[0].click();
-			
 			successBallon("Usuario criado com sucesso!");
             closeFloatWindowUser();
+            window.location = DOMAIN + "usuarios";
 		} 
 	};
 	$.post(url, formData, successFunction);
 	}
+}
+
+function removeUser(id){
+    var url = DOMAIN + "usuarios/" + id;
+
+    $.ajax({
+        "url": url,
+        "type": "DELETE",
+        "success": function(data) {
+                    if("success" === data) {
+                        closeFloatWindowAlert("#cancel-task-container");
+                        window.location = DOMAIN + "usuarios"
+                    } else if (data.message) {
+                        showFloatWindowAlert("#cancel-task-container", data.message);
+                    } else {
+                        showFloatWindowAlert("#cancel-task-container", "Não foi possível remover este usuário, entre em contato com o Gestor.");
+                    }
+
+        }
+    });
+
 }
 
 function showAddAlertUser(text) {
@@ -171,6 +192,10 @@ $(document).ready(function() {
 	
     $("#user-info").bind("change", function(event) {
         userInfoActions(this, event)
+    });
+
+    $(".line-btn.delete").click(function(event) {
+        removeUser($(this).data("login"));
     });
 
     $("#new-user-btn").click(function(event) {

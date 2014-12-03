@@ -6,12 +6,12 @@
 
         <div class="constraint">
             <input type="radio" id="optReportType-taskList" name="optReportType" value="taskList" />
-            <label for="optReportType:taskList">Relatório Mensal</label>
+            <label for="optReportType-taskList">Relatório Mensal</label>
         </div>
 
         <div class="constraint">
             <input type="radio" id="optReportType-dailyActivities" name="optReportType" value="dailyActivities" />
-            <label for="optReportType:dailyActivities">Atividades Diárias</label>
+            <label for="optReportType-dailyActivities">Atividades Diárias</label>
         </div>
     </div>
     
@@ -39,6 +39,8 @@
         </select>
     </div>
 
+    <div class="alert"></div>
+
     <div class="filter-group" id="reportParamGroup-date">
         <label class="reportFilterLabel">Data</label>
         <input id="txtReportDate" name="date" />
@@ -48,5 +50,4 @@
         <a href="#" id="btSubmitReport" class="btn-no-icon green">Visualizar</a>
     </div>
 
-    <div class="alert"></div>
 </form>

@@ -9,9 +9,9 @@ import java.util.List;
 
 public interface TaskRepository {
 
-	public List<Week> weeksBy(Integer month);
+	public List<Week> weeksBy(Integer month, Integer year);
 	
-	public List<Week> weeksBy(Integer month, List<String> filters, String users);
+	public List<Week> weeksBy(Integer month, Integer year, List<String> filters, String users);
 
     public Task get(String taskId);
 

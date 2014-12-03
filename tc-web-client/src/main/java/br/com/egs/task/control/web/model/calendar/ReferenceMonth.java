@@ -43,6 +43,8 @@ public class ReferenceMonth {
             json.append("Atual");
         } else {
             json.append(month.getFullName());
+            json.append("/");
+            json.append(year);
         }
 
 

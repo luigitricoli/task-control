@@ -14,7 +14,7 @@ public class CalendarStructureTest {
     public void februaryJson() {
         ReferenceMonth month = new ReferenceMonth(2, 2013);
 
-        String expected = "{\"label\":\"Fevereiro\", \"days\":[\"27\",\"28\",\"29\",\"30\",\"31\",\"Fev 1\","
+        String expected = "{\"label\":\"Fevereiro/2013\", \"days\":[\"27\",\"28\",\"29\",\"30\",\"31\",\"Fev 1\","
                 + "\"2\",\"3\",\"4\",\"5\",\"6\",\"7\",\"8\","
                 + "\"9\",\"10\",\"11\",\"12\",\"13\",\"14\",\"15\","
                 + "\"16\",\"17\",\"18\",\"19\",\"20\",\"21\",\"22\","
@@ -24,16 +24,17 @@ public class CalendarStructureTest {
         assertEquals(expected, month.getDaysAsJson());
     }
 
-    //@Test
-    public void marchJson() {
-        ReferenceMonth month = new ReferenceMonth(3, 2014);
+    @Test
+    public void dezemberJson() {
+        ReferenceMonth month = new ReferenceMonth(12, 2014);
 
-        String expected = "{\"label\":\"Março\", \"days\":[\"23\",\"24\",\"25\",\"26\",\"27\",\"28\",\"Mar 1\","
-                + "\"2\",\"3\",\"4\",\"5\",\"6\",\"7\",\"8\","
+        String expected = "{\"label\":\"Atual\", \"days\":[\"30\",\"Dez 1\","
+                + "\"2\",\"Hoje 3\",\"4\",\"5\",\"6\",\"7\",\"8\","
                 + "\"9\",\"10\",\"11\",\"12\",\"13\",\"14\",\"15\","
                 + "\"16\",\"17\",\"18\",\"19\",\"20\",\"21\",\"22\"," +
                 "\"23\",\"24\",\"25\",\"26\",\"27\",\"28\",\"29\","
-                + "\"30\",\"31\",\"Abr 1\",\"2\",\"3\",\"4\",\"5\"]}";
+                + "\"30\",\"31\",\"Jan 1\",\"2\",\"3\",\"4\",\"5\"," +
+                "\"6\",\"7\",\"8\",\"9\",\"10\"]}";
 
         assertEquals(expected, month.getDaysAsJson());
     }

@@ -10,7 +10,6 @@ import java.util.Calendar;
 public class TaskSpliterFactory {
 
     private static final Logger log = LoggerFactory.getLogger(TaskSpliterFactory.class);
-    private static final String DATE_FORMAT = "2014-%s-01";
 
     public static TaskSpliter getInstance(final CoreTask coreTask, final Calendar referenceMonth) {
         TaskDate today = new TaskDate();

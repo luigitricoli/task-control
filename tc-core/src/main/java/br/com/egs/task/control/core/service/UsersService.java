@@ -148,4 +148,17 @@ public class UsersService {
 
         return currentlySavedUser.toJson();
     }
+
+    @DELETE
+    @Path("{login}")
+    public void cancelUser(@PathParam("login") String login) {
+        log.info("Cancelling (DELETE) user. ID: [ {} ]", login);
+
+        User user = repository.get(login);
+        if (user == null) {
+            throw responseUtils.buildNotFoundException(Messages.Keys.VALIDATION_USER_UNKNOWN_LOGIN, login);
+        }
+
+        repository.remove(user);
+    }
 }

@@ -8,12 +8,10 @@
         <div class="field half-left">
             <label>In&iacute;cio</label>
             <input type="text" name="start" id="startDay" class="startDay" required>
-            <span class="format">dd/mm/aa</span>
         </div>
         <div class="field half-right">
             <label>Fim</label>
             <input type="text" name="foreseen" id="foreseenDay" class="foreseenDay" required>
-            <span class="format">dd/mm/aa</span>
         </div>
         <div class="field half-left">
             <label>Tipo</label>
@@ -30,6 +28,16 @@
                     <option value="${system}">${applications.getLabel(system)}</option>
                 </c:forEach>
             </select>
+        </div>
+        <div class="field">
+            <label>Identificador</label>
+            <select name="idType" id="id-type">
+                <option value="DM">DM</option>
+                <option value="SDN">SDN</option>
+                <option value="TIR">TIR</option>
+                <option value="INT">INT</option>
+            </select>
+            <input type="text" name="idValue" id="id-value" required>
         </div>
         <div class="field">
             <label>Descri&ccedil;&atilde;o</label>

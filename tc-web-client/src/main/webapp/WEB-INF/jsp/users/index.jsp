@@ -44,7 +44,7 @@
                                 </c:forEach>
                             </td>
                             <!-- <td class="btn"><button class="edit">Editar</button></td> -->
-                            <td class="btn"><button class="delete">Excluir</button></td>
+                            <td class="btn"><button class="line-btn delete" data-login="${user.nickname}">Excluir</button></td>
                         <tr>
                     </c:forEach>
                 </tbody>

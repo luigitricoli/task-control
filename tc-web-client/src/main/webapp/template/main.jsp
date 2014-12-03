@@ -16,7 +16,7 @@
     <link rel="stylesheet" type="text/css" href="<c:url value="/resources/calendar.css"/>">
     <link rel="stylesheet" type="text/css" href="<c:url value="/resources/main.css"/>">
     <link rel="stylesheet" type="text/css" href="<c:url value="/resources/noty_theme.css"/>">
-
+    <link rel="stylesheet" type="text/css" href="<c:url value="/resources/jquery-ui.css"/>">
     <c:if test="${sessionUser.admin}">
         <script src="<c:url value="/resources/adminFilters.js"/>"></script>
     </c:if>
@@ -29,7 +29,7 @@
 </head>
 <body>
     <header id="header">
-        <h1>TaskControl<span class="sub1">beta</span><span class="sub2">2</span></h1>
+        <h1>TaskControl<span class="sub1">RC</span><span class="sub2">1</span></h1>
         <c:if test="${sessionUser.admin}">
             <ul id="top-menu">
                 <li><a href="<c:url value="/tarefas"/>">Calend&aacute;rio</a></li>

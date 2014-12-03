@@ -1,4 +1,5 @@
 var CURRENT_MONTH = "currentMonth";
+var CURRENT_YEAR = "currentYear";
 var activeFilters = "";
 var appFilter = "";
 var users = "";
@@ -13,6 +14,11 @@ function isAdmin(){
 
 function getIntCookie(name){
 	return parseInt($.cookie(name));
+}
+function setYearCookie(value) {
+	$.cookie(CURRENT_YEAR, value, {
+		path : '/'
+	});
 }
 function setMonthCookie(value) {
 	$.cookie(CURRENT_MONTH, value, {
@@ -71,8 +77,8 @@ function populateCalendar(days) {
 		$(this).text(value);
 	});
 }
-function getMonth(month) {
-	var url = DOMAIN + "calendario/mes/" + month;
+function getMonth(month, year) {
+	var url = DOMAIN + "calendario/mes/" + month + "-" + year;
 	$.getJSON(url, function(data) {
 		$("#calendar-month-label").text(data.label);
 		populateCalendar(data.days);
@@ -80,33 +86,41 @@ function getMonth(month) {
 }
 
 function nextMonth() {
+    var year = getIntCookie(CURRENT_YEAR);
 	var month = getIntCookie(CURRENT_MONTH) + 1;
 	if (month >= 13) {
 		month = 1;
+		year += 1;
 	}
 	setMonthCookie(month);
-	getMonth(month);
-	getTasks(month);
+	setYearCookie(year);
+	getMonth(month, year);
+	getTasks(month, year);
 }
 function prevMonth() {
+	var year = getIntCookie(CURRENT_YEAR);
 	var month = getIntCookie(CURRENT_MONTH) - 1;
 	if (month <= 0) {
 		month = 12;
+        year -= 1;
 	}
 	setMonthCookie(month);
-	getMonth(month);
-	getTasks(month);
+	setYearCookie(year);
+	getMonth(month, year);
+	getTasks(month, year);
 }
 function loadMonth() {
+    var year = $.cookie(CURRENT_YEAR);
 	var month = $.cookie(CURRENT_MONTH);
-	if (month === undefined) {
+	if (month === undefined || year ===  undefined) {
 		var date = new Date();
 		month = date.getMonth() + 1;
 		setMonthCookie(month);
+		setYearCookie(date.getFullYear());
 	}
-	getMonth(month);
+	getMonth(month, year);
 	cleanTimeline();
-	getTasks(month);
+	getTasks(month, year);
 }
 
 function formatUrlFilters(params) {
@@ -128,8 +142,8 @@ function formatUrlFilters(params) {
 	return params;
 }
 
-function getTasks(month) {
-	var url = DOMAIN + "tarefas/mes/" + month;
+function getTasks(month, year) {
+	var url = DOMAIN + "tarefas/mes/" + month + "-" + year;
 
 	var params = formatUrlFilters(params);
 	if (!jQuery.isEmptyObject(params)) {
@@ -224,7 +238,7 @@ function activeDelete(task){
             closeFloatWindow("#replan-task-container");
         });
         $("#salve-cancel-btn").click(function(event){
-            remove();
+            removeTask();
             event.preventDefault();
         });
 
@@ -232,7 +246,7 @@ function activeDelete(task){
 
 }
 
-function remove(){
+function removeTask(){
     var url = DOMAIN + "tarefas/" + $("#cancel-id").val();
 
     $.ajax({
@@ -488,6 +502,22 @@ $(document).ready(function() {
 	$("#salve-register-btn").click(function(event){
         addTask();
         event.preventDefault();
+    });
+
+    $("#id-type").click(function(event){
+        if($(this).val() == "INT"){
+            $("#id-value").val(new Date().getTime());
+        }
+    });
+
+    $("#startDay").datepicker({
+                        "dateFormat": "dd/mm/y",
+                        "showOn": "button",
+    });
+
+    $("#foreseenDay").datepicker({
+                        "dateFormat": "dd/mm/y",
+                        "showOn": "button",
     });
 
     $(".startDay").mask('00/00/00');

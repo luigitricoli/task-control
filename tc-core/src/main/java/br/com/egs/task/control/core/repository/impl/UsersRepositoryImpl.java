@@ -1,11 +1,13 @@
 package br.com.egs.task.control.core.repository.impl;
 
 import br.com.egs.task.control.core.database.MongoDbConnection;
+import br.com.egs.task.control.core.entities.Task;
 import br.com.egs.task.control.core.entities.User;
 import br.com.egs.task.control.core.repository.UsersRepository;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
+import org.bson.types.ObjectId;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
@@ -32,6 +34,12 @@ public class UsersRepositoryImpl implements UsersRepository {
         } else {
             return User.fromDbObject(dbUser);
         }
+    }
+
+    @Override
+    public void remove(User user) {
+        BasicDBObject key = new BasicDBObject("_id", user.getLogin());
+        conn.getCollection("users").remove(key);
     }
 
     @Override

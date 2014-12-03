@@ -13,4 +13,6 @@ public interface UserRepository {
     public boolean updatePassword(User user);
         
     public boolean newUser(User user) ;
+
+    public boolean remove(User user);
 }
