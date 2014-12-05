@@ -11,7 +11,11 @@
         </div>
         <div class="field half-right">
             <label>Fim</label>
-            <input type="text" name="foreseen" id="foreseenDay" class="foreseenDay" required>
+            <select name="foreseenType" class="foreseenType">
+                <option value="days">Dias</option>
+                <option value="hours">Horas</option>
+            </select>
+            <input type="text" name="foreseenQtd" id="foreseenQtd" class="foreseenQtd" required>
         </div>
         <div class="field half-left">
             <label>Tipo</label>

@@ -515,11 +515,6 @@ $(document).ready(function() {
                         "showOn": "button",
     });
 
-    $("#foreseenDay").datepicker({
-                        "dateFormat": "dd/mm/y",
-                        "showOn": "button",
-    });
-
     $(".startDay").mask('00/00/00');
     $(".foreseenDay").mask('00/00/00');
 

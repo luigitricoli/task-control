@@ -6,14 +6,13 @@
 
 package br.com.egs.task.control.web.controller;
 
-import br.com.caelum.vraptor.Consumes;
 import br.com.caelum.vraptor.Controller;
 import br.com.caelum.vraptor.Get;
 import br.com.caelum.vraptor.Result;
 import br.com.caelum.vraptor.view.Results;
 import br.com.egs.task.control.web.interceptor.AuthRequired;
 import br.com.egs.task.control.web.model.SessionUser;
-import br.com.egs.task.control.web.model.SimpleTaskData;
+import br.com.egs.task.control.web.model.SimpleTask;
 import br.com.egs.task.control.web.model.exception.InvalidDateException;
 import br.com.egs.task.control.web.model.repository.TaskRepository;
 import org.slf4j.Logger;
@@ -47,19 +46,19 @@ public class ReportsController {
     
     @Get("/relatorios/listaTarefas")
     public void simpleTaskList(Integer month, Integer year) {
-        List<SimpleTaskData> taskList = tasks.listTasks(month, year);
+        List<SimpleTask> taskList = tasks.listTasks(month, year);
         result.include("tasks", taskList);
     }
 
     @Get("/relatorios/atividadesDiarias")
     public void dailyActivities(String date) {
         try {
-            List<SimpleTaskData> taskList = tasks.listActiveTasks(date, BRAZILIAN_DATE_FORMAT);
+            List<SimpleTask> taskList = tasks.listActiveTasks(date, BRAZILIAN_DATE_FORMAT);
 
             // Sort by owner, to a better visualization
-            Collections.sort(taskList, new Comparator<SimpleTaskData>() {
+            Collections.sort(taskList, new Comparator<SimpleTask>() {
                 @Override
-                public int compare(SimpleTaskData task1, SimpleTaskData task2) {
+                public int compare(SimpleTask task1, SimpleTask task2) {
                      return task1.getOwners().compareTo(task2.getOwners());
                 }
             });

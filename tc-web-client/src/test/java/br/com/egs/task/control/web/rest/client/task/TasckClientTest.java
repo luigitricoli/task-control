@@ -1,7 +1,7 @@
 package br.com.egs.task.control.web.rest.client.task;
 
 import br.com.egs.task.control.web.model.SessionUser;
-import br.com.egs.task.control.web.model.SimpleTaskData;
+import br.com.egs.task.control.web.model.SimpleTask;
 import br.com.egs.task.control.web.model.User;
 import br.com.egs.task.control.web.model.Week;
 import br.com.egs.task.control.web.model.repository.TaskRepository;
@@ -65,7 +65,7 @@ public class TasckClientTest {
                 "task_control", 
                 Arrays.asList(JOHN_USER)));
         
-        final List<SimpleTaskData> result = repo.convertCoreTasksToSimpleTaskData(inputTasks, false);
+        final List<SimpleTask> result = repo.convertCoreTasksToSimpleTaskData(inputTasks, false);
         
         assertThat(result.size(), is(1));
         
@@ -94,7 +94,7 @@ public class TasckClientTest {
                 Arrays.asList(JOHN_USER,
                 		MARY_USER)));
         
-        final List<SimpleTaskData> result = repo.convertCoreTasksToSimpleTaskData(inputTasks, false);
+        final List<SimpleTask> result = repo.convertCoreTasksToSimpleTaskData(inputTasks, false);
         
         assertThat(result.size(), is(1));
         
@@ -123,7 +123,7 @@ public class TasckClientTest {
                 Arrays.asList(JOHN_USER,
                         MARY_USER)));
 
-        final List<SimpleTaskData> result = repo.convertCoreTasksToSimpleTaskData(inputTasks, true);
+        final List<SimpleTask> result = repo.convertCoreTasksToSimpleTaskData(inputTasks, true);
 
         assertThat(result.size(), is(2));
 

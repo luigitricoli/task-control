@@ -6,11 +6,16 @@
 
 package br.com.egs.task.control.web.model;
 
-/**
- *
- * @author t3276780
- */
-public class SimpleTaskData {
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
+
+import java.util.List;
+
+public class SimpleTask {
+    public static final String DEFAULT_DATE_PATTERN = "dd/MM/yyyy";
+    private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormat.forPattern(DEFAULT_DATE_PATTERN);
+
     private String description;
     private String startDate;
     private String foreseenEndDate;
@@ -20,7 +25,7 @@ public class SimpleTaskData {
     private String application;
     private String owners;
 
-    public SimpleTaskData(String description, String startDate, String foreseenEndDate, String endDate, Integer foreseenWorkHours, String source, String application, String owners) {
+    public SimpleTask(String description, String startDate, String foreseenEndDate, String endDate, Integer foreseenWorkHours, String source, String application, String owners) {
         this.description = description;
         this.startDate = startDate;
         this.foreseenEndDate = foreseenEndDate;
@@ -30,6 +35,8 @@ public class SimpleTaskData {
         this.application = application;
         this.owners = owners;
     }
+
+
 
     public String getDescription() {
         return description;

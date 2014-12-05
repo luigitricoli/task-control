@@ -183,11 +183,11 @@ public class TaskClient implements TaskRepository {
     }
 
     @Override
-    public List<SimpleTaskData> listTasks(Integer month, Integer year) {
+    public List<SimpleTask> listTasks(Integer month, Integer year) {
         jsonClient.at("tasks").addUrlParam("year", year.toString()).addUrlParam("month", month.toString());
         List<CoreTask> tasks = CoreTask.unmarshalList(jsonClient.getAsJson().getContent());
 
-        List<SimpleTaskData> result = convertCoreTasksToSimpleTaskData(tasks, false);
+        List<SimpleTask> result = convertCoreTasksToSimpleTaskData(tasks, false);
         return result;
     }
 
@@ -199,7 +199,7 @@ public class TaskClient implements TaskRepository {
         }
     }
 
-    public List<SimpleTaskData> listActiveTasks(String date, String dateFormat) throws InvalidDateException {
+    public List<SimpleTask> listActiveTasks(String date, String dateFormat) throws InvalidDateException {
         TaskDate td = new TaskDate(date, dateFormat);
 
         jsonClient.at("tasks")
@@ -208,7 +208,7 @@ public class TaskClient implements TaskRepository {
                 .addUrlParam("excludeForeseenTasks", "true");
         List<CoreTask> tasks = CoreTask.unmarshalList(jsonClient.getAsJson().getContent());
 
-        List<SimpleTaskData> result = convertCoreTasksToSimpleTaskData(tasks, true);
+        List<SimpleTask> result = convertCoreTasksToSimpleTaskData(tasks, true);
         return result;
     }
 
@@ -219,13 +219,13 @@ public class TaskClient implements TaskRepository {
      *                                         output is generated, and the owner name is a composition of all
      *                                         the owners.
      */
-    List<SimpleTaskData> convertCoreTasksToSimpleTaskData(List<CoreTask> tasks, boolean replicateTasksWithMultipleOwners) {
-        List<SimpleTaskData> result = new ArrayList<>();
+    List<SimpleTask> convertCoreTasksToSimpleTaskData(List<CoreTask> tasks, boolean replicateTasksWithMultipleOwners) {
+        List<SimpleTask> result = new ArrayList<>();
         for (CoreTask coreTask : tasks) {
 
             if (replicateTasksWithMultipleOwners) {
                 for (CoreUser coreUser : coreTask.getOwners()) {
-                    SimpleTaskData std = toSimpleTaskData(coreTask, coreUser.getName());
+                    SimpleTask std = toSimpleTaskData(coreTask, coreUser.getName());
                     result.add(std);
                 }
 
@@ -237,19 +237,19 @@ public class TaskClient implements TaskRepository {
                     }
                     ownersDescription.append(coreUser.getName());
                 }
-                SimpleTaskData std = toSimpleTaskData(coreTask, ownersDescription.toString());
+                SimpleTask std = toSimpleTaskData(coreTask, ownersDescription.toString());
                 result.add(std);
             }
         }
         return result;
     }
 
-    private SimpleTaskData toSimpleTaskData(CoreTask coreTask, String ownerDescription) {
+    private SimpleTask toSimpleTaskData(CoreTask coreTask, String ownerDescription) {
         String startDate = coreTask.getStartDate().toString();
         String foreseenEndDate = coreTask.getForeseenEndDate().toString();
         String endDate = coreTask.getEndDate() != null ? coreTask.getEndDate().toString() : null;
 
-        return new SimpleTaskData(
+        return new SimpleTask(
                 coreTask.getDescription(),
                 startDate,
                 foreseenEndDate,

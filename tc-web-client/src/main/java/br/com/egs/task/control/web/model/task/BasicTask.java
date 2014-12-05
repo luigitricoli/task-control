@@ -1,10 +1,12 @@
 package br.com.egs.task.control.web.model.task;
 
+import br.com.egs.task.control.web.model.ForeseenType;
 import br.com.egs.task.control.web.model.Post;
 import br.com.egs.task.control.web.model.Task;
 import br.com.egs.task.control.web.model.User;
 import br.com.egs.task.control.web.model.exception.InvalidDateException;
 import br.com.egs.task.control.web.rest.client.task.TaskDate;
+import org.joda.time.DateTime;
 
 import java.util.Calendar;
 import java.util.Collections;
@@ -120,5 +122,11 @@ public class BasicTask implements Task {
     @Override
     public void setDefaultDateFormat(String defaultDateFormat) {
         this.defaultDateFormat = defaultDateFormat;
+    }
+
+    public static class Builder{
+
+
+
     }
 }

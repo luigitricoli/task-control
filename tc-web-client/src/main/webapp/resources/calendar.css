@@ -173,7 +173,12 @@
 #iteraction-form{
     display: none;
 }
-.startDay, .foreseenDay {
+.startDay {
     width: 180px;
     margin-right: 10px;
+}
+
+.foreseenQtd, .float-window select.foreseenType {
+    width: 99px;
+    margin-right: 5px;
 }

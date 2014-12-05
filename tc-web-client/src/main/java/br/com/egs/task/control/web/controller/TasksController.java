@@ -3,7 +3,9 @@ package br.com.egs.task.control.web.controller;
 import br.com.caelum.vraptor.*;
 import br.com.caelum.vraptor.view.Results;
 import br.com.egs.task.control.web.interceptor.AuthRequired;
+import br.com.egs.task.control.web.model.ForeseenType;
 import br.com.egs.task.control.web.model.SessionUser;
+import br.com.egs.task.control.web.model.SimpleTask;
 import br.com.egs.task.control.web.model.Task;
 import br.com.egs.task.control.web.model.exception.TaskControlWebClientException;
 import br.com.egs.task.control.web.model.exception.UpdateException;
@@ -56,26 +58,25 @@ public class TasksController {
     }
 
     @Post("/tarefas")
-    public void addTask(String start, String foreseen, String type, String system, String description, List<String> owners, String idType, String idValue) {
-        if (!isValidTask(start, foreseen, type, system, description, owners, idType, idValue)) {
+    public void addTask(String start, ForeseenType foreseenType, Integer foreseenQtd, String type, String system, String description, List<String> owners, String idType, String idValue) {
+        if (!isValidTask(start, foreseenQtd, type, system, description, owners, idType, idValue)) {
             return;
         }
 
-        description = String.format("%s%s - %s", idType, idValue, description);
-        log.debug("Description: {}", description);
-        if (tasks.add(start, foreseen, type, system, description, owners)) {
+        Task task = new SimpleTask(start, foreseenType, foreseenQtd, type, system, owners, idType, idValue, description);
+        if (tasks.add(start, "", type, system, description, owners)) {
             result.use(Results.http()).body(SUCCESS_RESPONSE_CODE);
         } else {
             result.use(Results.http()).body(FAIL_RESPONSE_CODE);
         }
     }
 
-    public boolean isValidTask(String start, String foreseen, String type, String system, String description, List<String> owners, String idType, String idValue) {
+    public boolean isValidTask(String start, Integer foreseenQtd, String type, String system, String description, List<String> owners, String idType, String idValue) {
         Pattern pValidDate = Pattern.compile("([0-2][0-9]|3[0-1])\\/(0[1-9]|1[0-2])\\/[1-9][0-9]");
         if (start == null || !pValidDate.matcher(start).matches()) {
             result.use(Results.http()).body("Data de início inválida");
             return false;
-        } else if (foreseen == null || !pValidDate.matcher(foreseen).matches()) {
+        } else if (foreseenQtd == null || foreseenQtd <= 0) {
             result.use(Results.http()).body("Data fim inválida");
             return false;
         } else if (description == null || description.equals(EMPTY)) {

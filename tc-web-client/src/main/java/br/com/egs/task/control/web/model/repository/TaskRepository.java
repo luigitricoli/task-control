@@ -25,12 +25,12 @@ public interface TaskRepository {
 
     public void replan(String taskId, String dateFormat, String start, String foreseen) throws InvalidDateException, UpdateException;
     
-    public List<SimpleTaskData> listTasks(Integer month, Integer year);
+    public List<SimpleTask> listTasks(Integer month, Integer year);
 
     void delete(String task) throws TaskControlWebClientException;
 
     void update(Task task) throws InvalidDateException, UpdateException;
 
-    public List<SimpleTaskData> listActiveTasks(String date, String dateFormat) throws InvalidDateException;
+    public List<SimpleTask> listActiveTasks(String date, String dateFormat) throws InvalidDateException;
 
 }
