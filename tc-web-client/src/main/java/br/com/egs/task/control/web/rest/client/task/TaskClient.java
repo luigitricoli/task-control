@@ -108,7 +108,7 @@ public class TaskClient implements TaskRepository {
             owners.add(new User(user.getName(), user.getLogin(), user.getEmail(), user.getApplications()));
         }
 
-        return new BasicTask(task.getId(),task.getDescription(),task.getStartDate().toCalendar(),task.getForeseenEndDate().toCalendar(),task.getSource(),task.getApplication(),posts, owners);
+        return new BasicTask(task.getId(),task.getDescription(),task.getStartDate().toDateTime(),task.getForeseenEndDate().toDateTime(),task.getSource(),task.getApplication(),posts, owners, task.getForeseenWorkHours());
     }
 
     @Override
@@ -117,22 +117,14 @@ public class TaskClient implements TaskRepository {
     }
 
     @Override
-    public boolean add(String start, String foreseen, String type, String system, String description, List<String> users) {
-        List<CoreUser> owners = new LinkedList<>();
-        for (String login : users) {
-            owners.add(new CoreUser(login));
-        }
-
-        CoreTask task = null;
-        try {
-            task = new CoreTask(new TaskDate(start, BRAZILIAN_FORMAT), new TaskDate(foreseen, BRAZILIAN_FORMAT), null, description, type, system, owners);
-        } catch (InvalidDateException e) {
-            log.error(e.getMessage());
-            return false;
-        }
-
-        Response response = jsonClient.at("tasks").postAsJson(task.toJson());
+    public boolean add(Task task) {
+        Response response = jsonClient.at("tasks").postAsJson(new CoreTask(task).toJson());
         if (response.isSuccess()) {
+            CoreTask coreTask = CoreTask.unmarshal(response.getContent());
+            if(task.getWorkHours() != null){
+                Post post = new Post(coreTask.getStartDate().toCalendar(), session.getUser().getNickname(), session.getUser().getName(), String.format("%s #horasutilizadas", task.getWorkHours()));
+                add(post, coreTask.getId());
+            }
             return true;
         }
 
@@ -228,7 +220,6 @@ public class TaskClient implements TaskRepository {
                     SimpleTask std = toSimpleTaskData(coreTask, coreUser.getName());
                     result.add(std);
                 }
-
             } else {
                 StringBuilder ownersDescription = new StringBuilder();
                 for (CoreUser coreUser : coreTask.getOwners()) {

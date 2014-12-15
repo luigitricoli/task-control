@@ -14,7 +14,6 @@ import java.util.List;
 
 public class SimpleTask {
     public static final String DEFAULT_DATE_PATTERN = "dd/MM/yyyy";
-    private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormat.forPattern(DEFAULT_DATE_PATTERN);
 
     private String description;
     private String startDate;

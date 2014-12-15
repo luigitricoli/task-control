@@ -182,3 +182,17 @@
     width: 99px;
     margin-right: 5px;
 }
+
+.field span.label{
+    font-size: 14px;
+    margin: 0px 10px;
+}
+
+.repeat-field {
+    margin-top: 5px;
+    min-height: 0px !important;
+}
+
+#repeat-value{
+    width: 299px;
+}

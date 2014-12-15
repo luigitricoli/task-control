@@ -50,6 +50,10 @@ public class TaskDate implements Comparable<TaskDate> {
 	public Calendar toCalendar(){
 		return time.toGregorianCalendar();
 	}
+
+    public DateTime toDateTime(){
+        return time;
+    }
 	
 	@Override
 	public int hashCode() {

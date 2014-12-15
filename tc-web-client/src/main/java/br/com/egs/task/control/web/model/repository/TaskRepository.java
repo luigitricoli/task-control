@@ -17,7 +17,7 @@ public interface TaskRepository {
 
     public List<Post> postsBy(String taskId);
 
-    public boolean add(String start, String foreseen, String type, String system, String description, List<String> owners);
+    public boolean add(Task task);
     
     public boolean add(Post p, String taskId);
 

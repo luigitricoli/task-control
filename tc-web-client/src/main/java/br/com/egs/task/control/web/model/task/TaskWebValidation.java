@@ -51,6 +51,11 @@ public class TaskWebValidation implements Task {
     }
 
     @Override
+    public Integer getWorkHours() {
+        return task.getWorkHours();
+    }
+
+    @Override
     public String getSource() {
         return task.getSource();
     }

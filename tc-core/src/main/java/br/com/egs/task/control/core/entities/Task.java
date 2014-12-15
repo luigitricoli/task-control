@@ -423,7 +423,7 @@ public class Task {
      * If the post does not report worked hours, no change is made.
      * @throws ValidationException
      */
-    private void handleWorkHoursPost(Post p) throws ValidationException {
+    private void  handleWorkHoursPost(Post p) throws ValidationException {
         Pattern workedHoursExpression = Pattern.compile(
                 messages.get(Messages.Keys.PARAMETER_TASK_WORKED_HOURS_POST_EXPRESSION));
         Pattern workedHoursWithDateExpression = Pattern.compile(

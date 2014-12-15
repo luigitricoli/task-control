@@ -11,11 +11,17 @@
         </div>
         <div class="field half-right">
             <label>Fim</label>
-            <select name="foreseenType" class="foreseenType">
+            <select name="foreseenType" class="foreseenType" id="foreseen-type">
                 <option value="days">Dias</option>
                 <option value="hours">Horas</option>
             </select>
             <input type="text" name="foreseenQtd" id="foreseenQtd" class="foreseenQtd" required>
+        </div>
+        <div class="field repeat-field">
+            <input type="checkbox" name="repeat" id="repeat" disabled>
+            <span class="label">Repetir por:</span>
+            <input type="text" name="repeatValue" id="repeat-value" disabled>
+            <span class="label">dias</span>
         </div>
         <div class="field half-left">
             <label>Tipo</label>

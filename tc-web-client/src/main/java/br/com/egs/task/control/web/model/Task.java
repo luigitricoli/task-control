@@ -19,6 +19,8 @@ public interface Task {
 
     public String getForeseenEndDateAsString();
 
+    Integer getWorkHours();
+
     public String getSource();
 
     public String getApplication();

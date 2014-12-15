@@ -510,6 +510,22 @@ $(document).ready(function() {
         }
     });
 
+    $("#foreseen-type").change(function(event){
+        if($(this).val() == "hours"){
+            $("#repeat").prop("disabled", false);
+        } else {
+            $("#repeat").prop("disabled", true);
+        }
+    });
+
+    $("#repeat").change(function(event){
+        if($(this).prop("checked")){
+            $("#repeat-value").prop("disabled", false);
+        } else {
+            $("#repeat-value").prop("disabled", true);
+        }
+    });
+
     $("#startDay").datepicker({
                         "dateFormat": "dd/mm/y",
                         "showOn": "button",

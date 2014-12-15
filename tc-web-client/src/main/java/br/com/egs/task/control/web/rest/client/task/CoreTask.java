@@ -1,6 +1,7 @@
 package br.com.egs.task.control.web.rest.client.task;
 
 import br.com.egs.task.control.web.model.Task;
+import br.com.egs.task.control.web.model.User;
 import br.com.egs.task.control.web.rest.client.gson.OwnersUnmarshaller;
 import br.com.egs.task.control.web.rest.client.user.CoreUser;
 import com.google.gson.Gson;
@@ -25,6 +26,20 @@ public class CoreTask {
     private List<CorePost> posts;
 
     private CoreTask(){}
+
+    public CoreTask(Task task) {
+        this.startDate = new TaskDate(task.getStartDate());
+        this.foreseenEndDate = new TaskDate(task.getForeseenEndDate());
+        this.foreseenWorkHours = task.getWorkHours();
+        this.description = task.getDescription();
+        this.source = task.getSource();
+        this.application = task.getApplication();
+
+        this.owners = new LinkedList<>();
+        for (User user : task.getOwners()) {
+            this.owners.add(new CoreUser(user.getNickname()));
+        }
+    }
 
     public CoreTask(TaskDate startDate, TaskDate foreseenEndDate, Integer foreseenWorkHours,
             String description, String source, 
@@ -52,12 +67,6 @@ public class CoreTask {
         this.id = id;
         this.startDate = startDate;
         this.foreseenEndDate = foreseenEndDate;
-    }
-
-    public CoreTask(Task task){
-        this.id = task.getId();
-        this.startDate = new TaskDate(task.getStartDate());
-        this.foreseenEndDate = new TaskDate(task.getForeseenEndDate());
     }
 
     public String getId() {
