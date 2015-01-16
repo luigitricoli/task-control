@@ -283,6 +283,8 @@ public class BasicTask implements Task {
                 throw new InvalidTask("Descrição inválida");
             } else if (foreseenType == null || application == null || owners.size() == 0) {
                 throw new InvalidTask("Identificação inválida");
+            } else if (foreseenType == ForeseenType.hours && qtd > 8) {
+                throw new InvalidTask("Um tarefa em horas não pode durar mais que 8 horas.");
             }
             return true;
         }

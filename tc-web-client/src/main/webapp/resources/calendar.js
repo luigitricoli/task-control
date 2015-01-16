@@ -458,10 +458,10 @@ function addTask(){
 	    if("success" === data) {
             loadMonth();
             $("#cancel-register-btn")[0].click();
-	    }else if(data.message) {
-            showFloatWindowAlert("#add-task-container", data.message);
+	    }else if("fail" !== data && "" !== data) {
+            showFloatWindowAlert("#add-task-container", data);
         } else {
-            showFloatWindowAlert("#add-task-container", "Campos preenchidos incorretametne.");
+            showFloatWindowAlert("#add-task-container", "Campos preenchidos incorretamente.");
 	    }
 	});
 }
@@ -476,6 +476,13 @@ function closeFloatWindow(){
     $(".block-screen").hide();
 }
 
+
+function disableRepeat() {
+    $("#repeat").prop("disabled", true);
+    $("#repeat").prop("checked", false);
+    $("#repeat-value").val("");
+    $("#repeat-value").prop("disabled", true);
+}
 
 $(document).ready(function() {
         $.ajaxSetup({
@@ -498,6 +505,7 @@ $(document).ready(function() {
 	});
 	$("#cancel-register-btn").click(function(event) {
 		closeFloatWindow();
+		disableRepeat();
 	});
 	$("#salve-register-btn").click(function(event){
         addTask();
@@ -514,7 +522,7 @@ $(document).ready(function() {
         if($(this).val() == "hours"){
             $("#repeat").prop("disabled", false);
         } else {
-            $("#repeat").prop("disabled", true);
+            disableRepeat();
         }
     });
 
