@@ -25,77 +25,20 @@
             <h3 id="calendar-month-label"></h3>
         </div>
         <div id="tasks-in-calendar">
-            <table id="calendar-layer">
-                <thead>
-                    <tr class="subline">
-                        <th>Dom</th>
-                        <th>Seg</th>
-                        <th>Ter</th>
-                        <th>Qua</th>
-                        <th>Qui</th>
-                        <th>Sex</th>
-                        <th>S&aacute;b</th>
-                    </tr>
-                </thead>
-                <tr id="calendar-week-1" class="subline days">
-                    <td class="border-right"></td>
-                    <td class="border-right"></td>
-                    <td class="border-right"></td>
-                    <td class="border-right"></td>
-                    <td class="border-right"></td>
-                    <td class="border-right"></td>
-                    <td></td>
-                </tr>
-                <tr id="calendar-week-2" class="subline days border-top">
-                    <td class="border-right"></td>
-                    <td class="border-right"></td>
-                    <td class="border-right"></td>
-                    <td class="border-right"></td>
-                    <td class="border-right"></td>
-                    <td class="border-right"></td>
-                    <td>29</td>
-                </tr>
-                <tr id="calendar-week-3" class="subline days border-top">
-                    <td class="border-right"></td>
-                    <td class="border-right"></td>
-                    <td class="border-right"></td>
-                    <td class="border-right"></td>
-                    <td class="border-right"></td>
-                    <td class="border-right"></td>
-                    <td>16</td>
-                </tr>
-                <tr id="calendar-week-4" class="subline days border-top">
-                    <td class="border-right"></td>
-                    <td class="border-right"></td>
-                    <td class="border-right"></td>
-                    <td class="border-right"></td>
-                    <td class="border-right"></td>
-                    <td class="border-right"></td>
-                    <td>23</td>
-                </tr>
-                <tr id="calendar-week-5" class="subline days border-top">
-                    <td class="border-right"></td>
-                    <td class="border-right"></td>
-                    <td class="border-right"></td>
-                    <td class="border-right"></td>
-                    <td class="border-right"></td>
-                    <td class="border-right"></td>
-                    <td>30</td>
-                </tr>
-                <tr id="calendar-week-6" class="subline days border-top">
-                    <td class="border-right"></td>
-                    <td class="border-right"></td>
-                    <td class="border-right"></td>
-                    <td class="border-right"></td>
-                    <td class="border-right"></td>
-                    <td class="border-right"></td>
-                    <td>7</td>
-                </tr>
-            </table>
+            <div id="task-board">
+                <div class="day">
+                    <h4 class="day-label">1, Qui</h4>
+                </div>
+                <div class="day">
+                    <h4 class="day-label">2, Sex</h4>
+                </div>
+            </div>
 
+            <!--
             <div id="tasks-layer">
 
             </div>
+            -->
         </div>
         <div id="task-history">
         </div>

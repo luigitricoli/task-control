@@ -8,9 +8,6 @@
     font-size: 12px;
     text-align: center;
 }
-#calendar-layer td,th{
-    padding: 1px;
-}
 .border-top{
     border-top: 1px solid #636363;
 }
@@ -20,8 +17,7 @@
 #calendar-layer td {
     font-size: 11px;
     text-align: right;
-    vertical-align: top;  
-    width: 131px;       
+    vertical-align: top;
 }
 .subline td{
     height: 70px;
@@ -196,3 +192,93 @@
 #repeat-value{
     width: 299px;
 }
+
+/* New calendar */
+
+#task-board {
+    overflow: scroll-bottom;
+    margin-bottom: 20px;
+    border: 1px solid red;
+    height: 500px;
+}
+
+#task-board .day{
+    border: 1px solid #f3f3f3;
+    float: left;
+    width: 100px;
+    height: 100px;
+}
+
+#calendar-layer th{
+    height: 29px;
+    font-size: 14px;
+}
+
+.late .foreseen{
+    background: #ed4230;
+}
+
+.task-line td {
+    background-color: #fff;
+}
+
+.task-line div {
+    width: 25px;
+    height: 25px;
+    margin: 0px;
+}
+
+.task-line .cell-weekend{
+    background-color: #f3f3f3;
+}
+
+.task-line .cell-weekend .in-task{
+    border-top: 2px solid #4F4F4F;
+    border-bottom: 2px solid #4F4F4F;
+}
+
+.task-line .cell-waiting {
+    background-color: #a8a8a8;
+    cursor: pointer;
+    border-top: 2px solid #4F4F4F;
+    border-bottom: 2px solid #4F4F4F;
+}
+
+.task-line .cell-doing {
+    background-color: #37b247;
+    cursor: pointer;
+    border-top: 2px solid #4F4F4F;
+    border-bottom: 2px solid #4F4F4F;
+}
+
+.task-line .head {
+    border-left: 2px solid #4F4F4F;
+}
+
+.task-line .tail {
+    border-right: 2px solid #4F4F4F;
+}
+
+.task-line .cell-finished {
+    background-color: #2a7bc1;
+    cursor: pointer;
+}
+
+.task-line .task-label{
+    position: absolute;
+    margin: -9px 10px 0px;
+    padding: 1px 5px;
+    color: #4F4F4F;
+    font-size: 12px;
+    background-color: #fff;
+    border: 1px solid #4F4F4F;
+    border-radius: 3px;
+}
+
+.task-line-header {
+    font-size: 16px;
+    font-weight: bold;
+}
+
+
+
