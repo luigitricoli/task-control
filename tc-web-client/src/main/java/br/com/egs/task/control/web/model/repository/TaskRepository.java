@@ -4,14 +4,15 @@ import br.com.egs.task.control.web.model.*;
 import br.com.egs.task.control.web.model.exception.InvalidDateException;
 import br.com.egs.task.control.web.model.exception.TaskControlWebClientException;
 import br.com.egs.task.control.web.model.exception.UpdateException;
+import br.com.egs.task.control.web.model.task.BasicTask;
 
 import java.util.List;
 
 public interface TaskRepository {
 
-	public List<Week> weeksBy(Integer month, Integer year);
+	public List<Task> get(Integer month, Integer year);
 	
-	public List<Week> weeksBy(Integer month, Integer year, List<String> filters, String users);
+	public List<Task> get(Integer month, Integer year, List<String> filters, String users);
 
     public Task get(String taskId);
 

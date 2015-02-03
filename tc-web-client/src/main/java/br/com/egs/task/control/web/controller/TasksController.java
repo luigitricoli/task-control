@@ -5,13 +5,15 @@ import br.com.caelum.vraptor.view.Results;
 import br.com.egs.task.control.web.interceptor.AuthRequired;
 import br.com.egs.task.control.web.model.ForeseenType;
 import br.com.egs.task.control.web.model.SessionUser;
+import br.com.egs.task.control.web.model.SimpleTask;
 import br.com.egs.task.control.web.model.Task;
 import br.com.egs.task.control.web.model.exception.TaskControlWebClientException;
 import br.com.egs.task.control.web.model.exception.UpdateException;
 import br.com.egs.task.control.web.model.repository.TaskRepository;
-import br.com.egs.task.control.web.model.task.BasicTask;
-import br.com.egs.task.control.web.model.task.InvalidTask;
-import br.com.egs.task.control.web.model.task.TaskWebValidation;
+import br.com.egs.task.control.web.model.task.*;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,18 +51,21 @@ public class TasksController {
         String[] datePartials = date.split("-");
         int month = Integer.valueOf(datePartials[0]);
         int year = Integer.valueOf(datePartials[1]);
+        List<Task> monthTasks;
         if (filters == null) {
-            result.include("weeks", tasks.weeksBy(month, year));
+            monthTasks = tasks.get(month, year);
+
         } else {
-            result.include("weeks", tasks.weeksBy(month, year, Arrays.asList(filters.split(",")), users));
+            monthTasks = tasks.get(month, year, Arrays.asList(filters.split(",")), users);
         }
+        result.use(Results.http()).body(BasicTask.marshaller().toJson(monthTasks));
 
     }
 
     @Post("/tarefas")
     public void addTask(String start, ForeseenType foreseenType, Integer foreseenQtd, String type, String system,
                         String description, List<String> owners, String idType, String idValue, boolean repeat, Integer repeatValue) {
-        BasicTask.Builder tasker = new BasicTask.Builder();
+        TaskBuilder tasker = new TaskBuilder();
         tasker.setStartDate(start).setForeseenType(foreseenType).setForeseenQtd(foreseenQtd).setSource(type);
         tasker.setApplication(system).setDescription(description).setTaskType(idType.concat(idValue));
         tasker.addOwnersAsString(owners);

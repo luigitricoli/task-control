@@ -310,12 +310,14 @@ public class Task {
                 for (Post post : posts) {
                     String text = post.getText().toLowerCase();
                     String latePostExpression = messages.get(Messages.Keys.PARAMETER_TASK_LATE_POST_EXPRESSION);
-                    if (text.matches(latePostExpression)) {
+                    if (text.replaceAll("\\n"," ").matches(latePostExpression)) {
                         atrasoCommentExists = true;
                         break;
                     }
                 }
             }
+
+
 
             if (!atrasoCommentExists) {
                 throw new LateTaskException();

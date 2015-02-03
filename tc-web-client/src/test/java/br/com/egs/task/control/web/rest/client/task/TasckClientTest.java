@@ -24,32 +24,6 @@ public class TasckClientTest {
     private static final CoreUser JOHN_USER = new CoreUser("john", "John Programmer", null, null, null, null);
     private static final CoreUser MARY_USER = new CoreUser("mary", "Mary Developer", null, null, null, null);
 
-	@Test
-    public void numberOfWeeks() {
-        String json = "[]";
-        JsonClient client = mock(JsonClient.class);
-        when(client.at("tasks")).thenReturn(client);
-        when(client.addUrlParam("year", "2014")).thenReturn(client);
-        when(client.addUrlParam("month", "1")).thenReturn(client);
-
-        Response resp = mock(Response.class);
-        when(resp.getContent()).thenReturn(json);
-
-        when(client.getAsJson()).thenReturn(resp);
-
-        User mockUser = mock(User.class);
-        when(mockUser.getNickname()).thenReturn("john");
-
-        SessionUser mockSession = mock(SessionUser.class);
-        when(mockSession.isAdmin()).thenReturn(false);
-        when(mockSession.getUser()).thenReturn(mockUser);
-
-        TaskRepository repo = new TaskClient(new FilterFormat(), client, mockSession);
-        List<Week> weeks = repo.weeksBy(1, 2014);
-
-        assertThat(weeks.size(), is(6));
-    }
-
     @Test
     public void convertCoreTasksToSimpleTaskData() throws Exception {
         TaskClient repo = new TaskClient(null, null, null);

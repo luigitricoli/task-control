@@ -6,15 +6,20 @@
 
 package br.com.egs.task.control.web.model;
 
+import br.com.egs.task.control.web.rest.client.task.CoreTask;
+import br.com.egs.task.control.web.rest.client.task.TaskDate;
+import br.com.egs.task.control.web.rest.client.task.split.*;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
+import java.util.Calendar;
 import java.util.List;
 
 public class SimpleTask {
     public static final String DEFAULT_DATE_PATTERN = "dd/MM/yyyy";
 
+    private String id;
     private String description;
     private String startDate;
     private String foreseenEndDate;
@@ -23,8 +28,10 @@ public class SimpleTask {
     private String source;
     private String application;
     private String owners;
+    private String status;
 
-    public SimpleTask(String description, String startDate, String foreseenEndDate, String endDate, Integer foreseenWorkHours, String source, String application, String owners) {
+    public SimpleTask(String id, String description, String startDate, String foreseenEndDate, String endDate, Integer foreseenWorkHours, String source, String application, String owners) {
+        this.id = id;
         this.description = description;
         this.startDate = startDate;
         this.foreseenEndDate = foreseenEndDate;
@@ -35,7 +42,7 @@ public class SimpleTask {
         this.owners = owners;
     }
 
-
+    public String getId() { return id; }
 
     public String getDescription() {
         return description;

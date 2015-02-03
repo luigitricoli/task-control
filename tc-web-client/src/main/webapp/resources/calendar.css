@@ -38,11 +38,7 @@
   width: 100%;
   height: 58px;
 }
-.task{
-    font-size: 0px;
-    margin: 3px 5px 5px 0px;
-    position: relative;
-}
+/*
 .foreseen{
     border: 1px solid #fff;
     background: #a8a8a8;
@@ -53,7 +49,7 @@
     border-top-left-radius: 50px;
     border-bottom-right-radius: 50px;
     cursor:pointer;
-}
+}*/
 .task-description {
     color: #fff;
     margin: 0px 15px;
@@ -68,9 +64,6 @@
 }
 .finished{
     background: #2a7bc1;
-}
-.doing{
-     background: #37b247;
 }
 .late .foreseen{
     background: #ed4230;
@@ -195,6 +188,7 @@
 
 /* New calendar */
 
+<<<<<<< Updated upstream
 #task-board {
     overflow: scroll-bottom;
     margin-bottom: 20px;
@@ -280,5 +274,128 @@
     font-weight: bold;
 }
 
+/* New CSS*/
 
+#task-board-scroll{
+    overflow: auto;
+    height: 500px;
+}
 
+#task-board {
+    margin-bottom: 20px;
+    border: 1px solid #d3d3d3;
+    height: 460px;
+    width: 3162px;
+    position: relative;
+    overflow: hidden;
+}
+
+#task-board .day{
+    border-right: 1px solid #d3d3d3;
+    float: left;
+    width: 100px;
+    height: 460px;
+}
+
+.day h4 {
+    border-bottom: 1px solid #d3d3d3;
+    font-size: 14px;
+    text-align: center;
+    padding: 10px 0px;
+}
+
+.day.weekend{
+    background-color: #f0f0f0;
+    position: relative;
+}
+
+.day.today{
+    background-color: #fffdcd;
+}
+
+.day.today h4{
+    font-weight: bold;
+}
+
+.task{
+    cursor: pointer;
+    position: absolute;
+    border-top-left-radius: 50px;
+    border-bottom-right-radius: 50px;
+    background-color: #d3d3d3;
+    overflow: hidden;
+}
+
+.task.no_end, .task.no_end div{
+    border-bottom-right-radius: 0px !important;
+}
+
+.task.no_begin, .task.no_begin div{
+    border-top-left-radius: 0px !important;
+}
+
+.task .task-label{
+    color: #242425;
+    font-size: 11px;
+    position: relative;
+    z-index: 999999;
+    padding: 3px 0px 1px 30px;
+    width: 3000px;
+    border-top-left-radius: 50px;
+    border-bottom-right-radius: 50px;
+}
+
+.weekend .task-continuation{
+    border-top-left-radius: 0px !important;
+    border-bottom-right-radius: 0px !important;
+    height: 20px !important;
+    padding: 0px 0px !important;
+}
+
+.task .progress {
+    padding: 3px 0px;
+    border-top-left-radius: 50px;
+    border-bottom-right-radius: 50px;
+    position: relative;
+}
+
+.task.doing{
+    background-color: #99cc99;
+}
+
+.task.doing .progress {
+    background-color: #37b247;
+}
+
+.task.late{
+    background-color: #f9aba2;
+}
+
+.task.late .progress {
+    background-color: red;
+}
+.task.late .foreseen{
+    border-top-left-radius: 50px;
+    border-bottom-right-radius: 50px;
+    background-color: #9C9;
+    padding: 12px 0px;
+    position: absolute;
+}
+
+.task.waiting {
+    background-color: #a8a8a8;
+}
+
+.task.finished {
+    background-color: #a3b6c8;
+}
+
+.task.finished .progress {
+    background-color: #2a7bc1;
+}
+
+#task-amount{
+    float: left;
+    font-size: 15px;
+    padding-top: 7px;
+}

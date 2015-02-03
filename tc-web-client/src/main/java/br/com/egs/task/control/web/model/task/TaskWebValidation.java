@@ -51,6 +51,16 @@ public class TaskWebValidation implements Task {
     }
 
     @Override
+    public Calendar getEndDate() {
+        return task.getEndDate();
+    }
+
+    @Override
+    public String getEndDateAsString() {
+        return task.getEndDateAsString();
+    }
+
+    @Override
     public Integer getWorkHours() {
         return task.getWorkHours();
     }

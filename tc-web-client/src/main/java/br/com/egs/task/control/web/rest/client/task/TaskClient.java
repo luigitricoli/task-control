@@ -6,11 +6,12 @@ import br.com.egs.task.control.web.model.exception.TaskControlWebClientException
 import br.com.egs.task.control.web.model.exception.UpdateException;
 import br.com.egs.task.control.web.model.repository.TaskRepository;
 import br.com.egs.task.control.web.model.task.BasicTask;
+import br.com.egs.task.control.web.model.task.InvalidTask;
+import br.com.egs.task.control.web.model.task.TaskBuilder;
 import br.com.egs.task.control.web.rest.client.JsonClient;
 import br.com.egs.task.control.web.rest.client.Response;
-import br.com.egs.task.control.web.rest.client.task.split.TaskSpliter;
-import br.com.egs.task.control.web.rest.client.task.split.TaskSpliterFactory;
 import br.com.egs.task.control.web.rest.client.user.CoreUser;
+import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,12 +45,12 @@ public class TaskClient implements TaskRepository {
     }
 
     @Override
-    public List<Week> weeksBy(Integer month, Integer year) {
-        return weeksBy(month, year, new ArrayList<String>(), null);
+    public List<Task> get(Integer month, Integer year) {
+        return get(month, year, new ArrayList<String>(), null);
     }
 
     @Override
-    public List<Week> weeksBy(Integer month, Integer year, List<String> filters, String users) {
+    public List<Task> get(Integer month, Integer year, List<String> filters, String users) {
         jsonClient.at("tasks").addUrlParam("year", year.toString()).addUrlParam("month", month.toString());
 
         if (users != null && !users.equals(EMPTY)) {
@@ -66,23 +67,33 @@ public class TaskClient implements TaskRepository {
         }
 
         List<CoreTask> tasks = CoreTask.unmarshalList(jsonClient.getAsJson().getContent());
-        List<Week> weeks = loadWeeks();
+        List<Task> results = new ArrayList<>();
+        for (CoreTask task : tasks) {
+            TaskBuilder builder = new TaskBuilder();
+            builder.setId(task.getId());
+            builder.setDescription(task.getDescription());
+            builder.setStartDate(task.getStartDate().toDateTime());
+            builder.setForeseenEndDate(task.getForeseenEndDate().toDateTime());
+            builder.setEndDate(task.getEndDate() != null ? task.getEndDate().toDateTime() : null);
+            builder.setSource(task.getSource());
+            builder.setApplication(task.getApplication());
 
-        Calendar referenceMonth = Calendar.getInstance();
-        referenceMonth.set(Calendar.YEAR, year);
-        referenceMonth.set(Calendar.MONTH, month - 1);
+            List<User> owners = new LinkedList<>();
+            for (CoreUser user : task.getOwners()) {
+                owners.add(new User(user.getName(), user.getLogin(), user.getEmail(), user.getApplications()));
+            }
 
-        for (CoreTask coreTask : tasks) {
-            TaskSpliter spliter = TaskSpliterFactory.getInstance(coreTask, referenceMonth);
-            spliter.split(coreTask);
-            weeks.get(0).add(spliter.firstWeek());
-            weeks.get(1).add(spliter.secondWeek());
-            weeks.get(2).add(spliter.thirdWeek());
-            weeks.get(3).add(spliter.fourthWeek());
-            weeks.get(4).add(spliter.fifthWeek());
-            weeks.get(5).add(spliter.sixthWeek());
+            builder.addOwners(owners);
+
+            try {
+                results.add(builder.build());
+            } catch (InvalidTask invalidTask) {
+                log.error("Invalid task found in core [{}]", task);
+            }
         }
-        return weeks;
+
+
+        return results;
     }
 
     private List<Week> loadWeeks() {
@@ -108,7 +119,8 @@ public class TaskClient implements TaskRepository {
             owners.add(new User(user.getName(), user.getLogin(), user.getEmail(), user.getApplications()));
         }
 
-        return new BasicTask(task.getId(),task.getDescription(),task.getStartDate().toDateTime(),task.getForeseenEndDate().toDateTime(),task.getSource(),task.getApplication(),posts, owners, task.getForeseenWorkHours());
+        DateTime end = task.getEndDate() != null ? task.getEndDate().toDateTime() : null;
+        return new BasicTask(task.getId(),task.getDescription(),task.getStartDate().toDateTime(),task.getForeseenEndDate().toDateTime(),end,task.getSource(),task.getApplication(),posts, owners, task.getForeseenWorkHours());
     }
 
     @Override
@@ -241,6 +253,7 @@ public class TaskClient implements TaskRepository {
         String endDate = coreTask.getEndDate() != null ? coreTask.getEndDate().toString() : null;
 
         return new SimpleTask(
+                coreTask.getId(),
                 coreTask.getDescription(),
                 startDate,
                 foreseenEndDate,

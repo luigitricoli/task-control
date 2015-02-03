@@ -1,3 +1,14 @@
+var DAY_LABELS = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sab"];
+var FIRST_DAY_OF_MONTH = new Date();
+var LAST_DAY_OF_MONTH = new Date();
+
+/* TODO improve it */
+var TODAY = new Date();
+TODAY.setHours(0);
+TODAY.setMinutes(0);
+TODAY.setSeconds(0);
+TODAY.setMilliseconds(0);
+
 var CURRENT_MONTH = "currentMonth";
 var CURRENT_YEAR = "currentYear";
 var activeFilters = "";
@@ -11,7 +22,6 @@ function isAdmin(){
         return false;
     }
 }
-
 function getIntCookie(name){
 	return parseInt($.cookie(name));
 }
@@ -25,104 +35,6 @@ function setMonthCookie(value) {
 		path : '/'
 	});
 }
-function ajustMonthLines() {
-	$(".subline.days td").height(70);
-	var tasks = $(".hashtags");
-	tasks.each(function() {
-		var task = $(this).parent();
-		ajustHashtagLineHeight(task);
-	});
-
-	$(".week").each(
-			function() {
-				var tasksCount = $(this).children(".task").length;
-				var extraTasks = tasksCount - 3;
-				if (extraTasks > 0) {
-					var weekCalendarId = "#"
-							+ $(this).attr("id").replace("task", "calendar");
-					var weekCalendarColumn = $(weekCalendarId + " td");
-
-					var extraHeight = extraTasks * 19.35;
-					weekCalendarColumn.height($(weekCalendarId).height()
-							+ extraHeight);
-					$(this).height($(this).height() + extraHeight);
-				}
-			});
-}
-function ajustHashtagLineHeight(task) {
-	if (task.data("added-hashtags") === undefined) {
-		task.css("margin-bottom", 15);
-
-		var weekTask = task.parent();
-		weekTask.height(weekTask.height() + 10);
-
-		var weekCalendarId = "#"
-				+ weekTask.attr("id").replace("task", "calendar");
-		var weekCalendarColumn = $(weekCalendarId + " td");
-		weekCalendarColumn.height($(weekCalendarId).height() + 8);
-
-		task.data("added-hashtags", true);
-	}
-}
-function populateCalendar(days) {
-	$(".subline.days").children().each(function(index) {
-		var value = days[index];
-
-		// highlight today
-		$(this).removeClass("today");
-		if (/hoje/i.test(value)) {
-			$(this).addClass("today");
-		}
-
-		$(this).text(value);
-	});
-}
-function getMonth(month, year) {
-	var url = DOMAIN + "calendario/mes/" + month + "-" + year;
-	$.getJSON(url, function(data) {
-		$("#calendar-month-label").text(data.label);
-		populateCalendar(data.days);
-	});
-}
-
-function nextMonth() {
-    var year = getIntCookie(CURRENT_YEAR);
-	var month = getIntCookie(CURRENT_MONTH) + 1;
-	if (month >= 13) {
-		month = 1;
-		year += 1;
-	}
-	setMonthCookie(month);
-	setYearCookie(year);
-	getMonth(month, year);
-	getTasks(month, year);
-}
-function prevMonth() {
-	var year = getIntCookie(CURRENT_YEAR);
-	var month = getIntCookie(CURRENT_MONTH) - 1;
-	if (month <= 0) {
-		month = 12;
-        year -= 1;
-	}
-	setMonthCookie(month);
-	setYearCookie(year);
-	getMonth(month, year);
-	getTasks(month, year);
-}
-function loadMonth() {
-    var year = $.cookie(CURRENT_YEAR);
-	var month = $.cookie(CURRENT_MONTH);
-	if (month === undefined || year ===  undefined) {
-		var date = new Date();
-		month = date.getMonth() + 1;
-		setMonthCookie(month);
-		setYearCookie(date.getFullYear());
-	}
-	getMonth(month, year);
-	cleanTimeline();
-	getTasks(month, year);
-}
-
 function formatUrlFilters(params) {
 	var params = {};
 	var filters = []
@@ -141,41 +53,38 @@ function formatUrlFilters(params) {
 	}
 	return params;
 }
-
-function getTasks(month, year) {
-	var url = DOMAIN + "tarefas/mes/" + month + "-" + year;
-
-	var params = formatUrlFilters(params);
-	if (!jQuery.isEmptyObject(params)) {
-		url = url + "?" + jQuery.param(params);
-	}
-	$.get(url, function(data) {
-		$("#tasks-layer").empty();
-		$("#tasks-layer").append(data);
-
-		ajustMonthLines();
-		addClickActionToTasks();
-		openTask();
-	});
-
-}
-
-function openTask() {
-    try{
-        if (OPEN_TASK !== undefined) {
-            var id = "#task-" + OPEN_TASK;
-            OPEN_TASK = undefined;
-            $(id)[0].click();
-        }
-    } catch (error){}
-}
-
 function addClickActionToTasks() {
 	$(".task").click(function() {
 		populateTimeline($(this));
 	});
 }
-
+function addHoverActionToTasks(){
+    $(".task").hover(
+        function(){
+            var parent_day = $(this).parent().data('number');
+            var position = $(this).data('position');
+            var tasks = $(".task")
+                .filter("[data-position={0}]".format([position]))
+                .filter(function(index){
+                    if($(this).parent().data('number') >= parent_day ){
+                        return true;
+                    }
+                    return false;
+                })
+                .not(this);
+            tasks.find(".task-label").css('opacity', '0');
+            var element = $(this);
+            setTimeout(function(){
+                $(".task").css('overflow', 'hidden');
+                element.css('overflow', 'visible');
+            }, 100);
+        },
+        function(){
+            $(".task[data-position=" + $(this).data('position') + "]").find(".task-label").css('opacity', '1');
+            $(".task").css('overflow', 'hidden');
+        }
+    );
+}
 function cleanTimeline() {
 	$("#task-history").empty();
 	$("#task-history").hide();
@@ -184,7 +93,7 @@ function cleanTimeline() {
 function populateTimeline(task) {
 	cleanTimeline();
 
-	var url = DOMAIN + "tarefas/" + task.data("id") + "/historico";
+	var url = DOMAIN + "tarefas/" + task.attr("id") + "/historico";
 	$.get(url, function(data) {
 		$("#task-history").show();
 		var html = $($.parseHTML(data));
@@ -199,9 +108,7 @@ function populateTimeline(task) {
 		$(".post:contains('#horasextra')").addClass("overtime");
 		$(".post:contains('#horaextras')").addClass("overtime");
 
-		$("#task-description").text(task.find(".task-description").text());
-
-		if (task.find(".stage").hasClass("doing")) {
+		if (task.hasClass("doing") || task.hasClass("late")) {
 			$("#iteraction-form").show();
 
 			$("#iteraction-form").data("task-id", task.attr("id"));
@@ -268,7 +175,7 @@ function removeTask(){
 }
 
 function activeReplan(task){
-        if(task.find(".stage").hasClass("finished")){
+        if(task.hasClass("finished")){
             return;
         }
 
@@ -276,7 +183,7 @@ function activeReplan(task){
             return;
         }
 
-        if(task.find(".stage").hasClass("waiting")){
+        if(task.hasClass("waiting")){
             $("#replan-task-form .startDay").val("");
             $("#replan-task-form .startDay").removeAttr("disabled");
         }
@@ -296,6 +203,11 @@ function activeReplan(task){
             replan();
             event.preventDefault();
         });
+
+        var startParts = $(".startDay").val().split("/");
+        startParts[2] = startParts[2].replace("20","");
+        $(".startDay").val("{0}/{1}/{2}".format(startParts));
+
         $(".startDay").mask('00/00/00');
         $(".foreseenDay").mask('00/00/00');
         $("#replan").show();
@@ -485,10 +397,10 @@ function disableRepeat() {
 }
 
 $(document).ready(function() {
-        $.ajaxSetup({
-            cache: false
-        });
-    
+    $.ajaxSetup({
+        cache: false
+    });
+
 	$(".filter-group input:checkbox").click(function(event) {
 		toogleFilterTasks($(this));
 	});
