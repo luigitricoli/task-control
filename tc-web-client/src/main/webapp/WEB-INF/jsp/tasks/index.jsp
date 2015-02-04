@@ -8,8 +8,8 @@
             OPEN_TASK="<c:out value="${openTask}" />";
         </c:if>
 	</script>
-    <script src="/tc-web-client/resources/task.js"></script>
-    <script src="/tc-web-client/resources/new_calendar.js"></script>
+	<script src="<c:url value="/resources/task.js"/>"></script>
+	<script src="<c:url value="/resources/new_calendar.js"/>"></script>
 </head>
 <body>
     <header id="top-main">

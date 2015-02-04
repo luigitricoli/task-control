@@ -8,7 +8,7 @@ function Task(obj){
     var d = obj.startDate.split("/");
     this.startDate = new Date(d[2], d[1]-1, d[0], 0, 0, 0, 0);
     if(this.startDate < FIRST_DAY_OF_MONTH){
-        this.startDate = FIRST_DAY_OF_MONTH;
+        this.startDate = new Date(FIRST_DAY_OF_MONTH.getTime());
         while(this.start_date_on_weekend()){
             this.startDate.setDate(this.startDate.getDate()+1);
         }
@@ -18,7 +18,10 @@ function Task(obj){
     var f = obj.foreseenEndDate.split("/");
     this.foreseenDate = new Date(f[2], f[1]-1, f[0], 0, 0, 0, 0);
     if(this.foreseenDate > LAST_DAY_OF_MONTH){
-        this.foreseenDate = LAST_DAY_OF_MONTH;
+        this.foreseenDate = new Date(LAST_DAY_OF_MONTH.getTime());
+        while(this.foreseen_date_on_weekend()){
+            this.foreseenDate.setDate(this.foreseenDate.getDate()-1);
+        }
         this.end = false;
     }
 

@@ -174,7 +174,7 @@ public class TaskBuilder {
         }
 
         if(foreseenType.equals(ForeseenType.days)){
-            int weekends = qtd/5;
+            int weekends = Math.round(qtd/5) - 1;
             qtd += weekends*2;
             foreseenEndDate = startDate.plusDays(qtd - 1);
             if(foreseenEndDate.getDayOfWeek() == BasicTask.SUNDAY || foreseenEndDate.getDayOfWeek() == BasicTask.SATURDAY){

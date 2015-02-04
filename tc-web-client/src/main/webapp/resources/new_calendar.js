@@ -51,8 +51,8 @@ function loadMonth() {
 }
 function getMonth(month, year) {
 	/* TODO new code */
-	FIRST_DAY_OF_MONTH = new Date(year, month - 1, 1);
-    LAST_DAY_OF_MONTH = new Date(year, month, 0);
+	FIRST_DAY_OF_MONTH = new Date(year, month - 1, 1,0,0,0,0);
+    LAST_DAY_OF_MONTH = new Date(year, month, 0,0,0,0,0);
 
     $("#calendar-month-label").text(month + "/" + year);
     $("#task-board").empty();
