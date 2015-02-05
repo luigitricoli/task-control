@@ -48,7 +48,7 @@ public class BasicTask implements Task {
     }
 
     private String generateStatus() {
-        DateTime today = new DateTime();
+        DateTime today = new DateTime().withMillisOfDay(0);
         if (isFinished()) {
             return "finished";
         } else if (isBeyondTheForeseen(today)) {
