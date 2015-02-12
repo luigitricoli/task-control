@@ -93,9 +93,9 @@ public class TaskClient implements TaskRepository {
         }
 
 
+
         return results;
     }
-
     private List<Week> loadWeeks() {
         List<Week> weeks = new LinkedList<>();
         for (int count = 0; count < 6; count++) {
