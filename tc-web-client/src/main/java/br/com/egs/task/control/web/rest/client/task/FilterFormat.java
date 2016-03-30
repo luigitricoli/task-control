@@ -1,18 +1,27 @@
 package br.com.egs.task.control.web.rest.client.task;
 
-import br.com.egs.task.control.web.model.filter.Applications;
-import br.com.egs.task.control.web.model.filter.Sources;
-import br.com.egs.task.control.web.model.filter.Status;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.inject.Inject;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import br.com.egs.task.control.web.model.filter.Applications;
+import br.com.egs.task.control.web.model.filter.Sources;
+import br.com.egs.task.control.web.model.filter.Status;
+
 public class FilterFormat {
 
 	private Logger log = LoggerFactory.getLogger(FilterFormat.class);
+	
+	@Inject
+	private Sources sources;
+	
+	@Inject
+	private Applications applications;
 
 	public Map<String, String> formatParams(List<String> selected){
 		Map<String, String> formatted = new HashMap<>();
@@ -36,14 +45,17 @@ public class FilterFormat {
 	}
 
     public String getFilterKey(String filter){
-        if(new Applications().contains(filter)){
+        if(applications.contains(filter)){
             return "application";
         }
         try{
             Status.valueOf(filter);
             return "status";
-        } catch(IllegalArgumentException e){}
-        if(new Sources().contains(filter)){
+        } catch(IllegalArgumentException e){
+        	log.error(e.getMessage());
+        }
+        
+        if(sources.contains(filter)){
             return "sources";
         }
         return null;

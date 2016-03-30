@@ -33,9 +33,9 @@ public class Applications implements Serializable{
     private Map<String, String> labels;
     private String selected;
 
-    public Applications(){
-        whenApplicationStarts(null);
-    }
+//    public Applications(){
+//        whenApplicationStarts(null);
+//    }
 
     public void whenApplicationStarts(@Observes ServletContext context) {
 
