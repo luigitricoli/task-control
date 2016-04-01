@@ -12,14 +12,19 @@ import java.util.Arrays;
  * Encapsulates the MongoClient.
  *
  */
-@Singleton
 public class MongoDbConnection {
 
-	private MongoClient mongo;
-	private DbConfiguration properties;
+	private static MongoClient mongo;
+	private static DbConfiguration properties;
 	
 	@Inject
 	public MongoDbConnection(DbConfiguration props) {
+		if(mongo == null && properties == null){
+			init(props);
+		}
+	}
+	
+	private void init(DbConfiguration props){
 		MongoClientOptions options = MongoClientOptions.builder()
 									.connectionsPerHost(props.getDatabaseMaxConnections())
 									.build();
@@ -76,6 +81,7 @@ public class MongoDbConnection {
 		if (mongo != null) {
 			mongo.close();
 			mongo = null;
+			properties = null;
 		}
 	}
 }
