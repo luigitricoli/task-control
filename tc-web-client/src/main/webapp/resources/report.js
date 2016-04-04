@@ -134,5 +134,3 @@ function updateMonthName() {
     var monthName = $("#cboReportMonth option").filter(":selected").text();
     $("#hidReportMonthName").val(monthName);
 }
-
-function loadMonth(){}
