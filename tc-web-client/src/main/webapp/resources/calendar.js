@@ -184,7 +184,7 @@ function activeReplan(task){
         }
 
         if(task.hasClass("waiting")){
-            $("#replan-task-form .startDay").val("");
+            //$("#replan-task-form .startDay").val("");
             $("#replan-task-form .startDay").removeAttr("disabled");
         }
 
