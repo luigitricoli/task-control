@@ -166,7 +166,7 @@ function removeTask(){
                     } else if (data.message) {
                         showFloatWindowAlert("#cancel-task-container", data.message);
                     } else {
-                        showFloatWindowAlert("#cancel-task-container", "Não foi possível remover esta tarefa, entre em contato com o Gestor.");
+                        showFloatWindowAlert("#cancel-task-container", "NÃ£o foi possÃ­vel remover esta tarefa, entre em contato com o Gestor.");
                     }
 
         }
@@ -237,12 +237,12 @@ function replan(){
     var foreseenValue = $("#replan-foreseen").val();
 
     if("" === startValue){
-        showFloatWindowAlert("#replan-task-container", "Data de Início não pode estar vazia.");
+        showFloatWindowAlert("#replan-task-container", "Data de InÃ­cio nÃ£o pode estar vazia.");
         return;
     }
 
     if("" === foreseenValue){
-        showFloatWindowAlert("#replan-task-container", "Data de Fim não pode estar vazia.");
+        showFloatWindowAlert("#replan-task-container", "Data de Fim nÃ£o pode estar vazia.");
         return;
     }
 
@@ -250,7 +250,7 @@ function replan(){
     var foreseen = new BrazilianDate(foreseenValue);
 
     if(foreseen.compare(start) < 0){
-        showFloatWindowAlert("#replan-task-container", "A data Fim não pode ser menor que a data de Início.");
+        showFloatWindowAlert("#replan-task-container", "A data Fim nÃ£o pode ser menor que a data de InÃ­cio.");
         return;
     }
 
@@ -270,7 +270,7 @@ function replan(){
                     } else if (data.message) {
                         showFloatWindowAlert("#replan-task-container", data.message);
                     } else {
-                        showFloatWindowAlert("#replan-task-container", "Não foi possível replanejar esta tarefa, entre em contato com o Gestor.");
+                        showFloatWindowAlert("#replan-task-container", "NÃ£o foi possÃ­vel replanejar esta tarefa, entre em contato com o Gestor.");
                     }
 
         }
@@ -319,7 +319,7 @@ function closeFloatWindowAlert(idElement){
 }
 
 function finish(task){
-    var url = DOMAIN + "tarefas/" + task.data("id") + "/finalizacao";
+    var url = DOMAIN + "tarefas/" + task.attr("id") + "/finalizacao";
 
     var today = new Date();
     var month = today.getMonth() + 1;
@@ -335,10 +335,10 @@ function finish(task){
                         loadMonth();
                     } else if (task.hasClass("late")) {
                        closePostAlert();
-                       showPostAlert("É necessário justificar o atraso da tarefa com uma das seguintes hashtag: #atraso ou #atrasado ou #atrasada.")
+                       showPostAlert("Ã‰ necessÃ¡rio justificar o atraso da tarefa com uma das seguintes hashtag: #atraso ou #atrasado ou #atrasada.")
                     } else {
                        closePostAlert();
-                       showPostAlert("Não foi possível finalizar a tarefa.")
+                       showPostAlert("NÃ£o foi possÃ­vel finalizar a tarefa.")
                     }
 
         }
