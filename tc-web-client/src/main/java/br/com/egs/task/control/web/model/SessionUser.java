@@ -40,4 +40,28 @@ public class SessionUser implements Serializable{
     public User getUser(){
         return user;
     }
+
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((user.getNickname() == null) ? 0 : user.getNickname().hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == null)
+			return false;
+		User other = (User) obj;
+		if (user.getNickname() == null) {
+			if (other.getNickname() != null)
+				return false;
+		} else if (!user.getNickname().equals(other.getNickname()))
+			return false;
+		return true;
+	} 
+
+    
 }

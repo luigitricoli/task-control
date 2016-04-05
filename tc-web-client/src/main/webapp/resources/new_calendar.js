@@ -40,8 +40,9 @@ function loadMonth() {
 	if (month === undefined || year ===  undefined) {
 		var date = new Date();
 		month = date.getMonth() + 1;
+		year = date.getFullYear();
 		setMonthCookie(month);
-		setYearCookie(date.getFullYear());
+		setYearCookie(year);
 	}
 
 	getMonth(month, year);
@@ -177,3 +178,8 @@ function loadTask(tasks){
 
     });
 }
+
+
+$(document).ready(function() {
+	loadMonth();
+});

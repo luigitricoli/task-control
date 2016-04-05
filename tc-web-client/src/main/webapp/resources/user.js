@@ -5,6 +5,7 @@ function userInfoActions(selected, evt){
     if("changePass" == selected.value){
         $("#block-screen-main").show();
         $("#add-changePass-container").show();
+        $("#add-changePass-container").find("#login").val($("#change-pass").data("login"));
     }
 
     resetUserNick();
@@ -42,7 +43,6 @@ function changePass() {
 		showAddAlertPass("O preenchimento e obrigatorio para todos os campos!");
 		return;
 	}
-	
 	var url = DOMAIN + "senha";
 	var formData = $("#change-pass-form").serialize();
 	var successFunction = function(data) {
@@ -196,6 +196,12 @@ $(document).ready(function() {
 
     $(".line-btn.delete").click(function(event) {
         removeUser($(this).data("login"));
+    });
+    
+    $(".line-btn.changePw").click(function(event) {
+        $("#block-screen-main").show();
+        $("#add-changePass-container").show();
+        $("#add-changePass-container").find("#login").val($(this).data("login"));
     });
 
     $("#new-user-btn").click(function(event) {

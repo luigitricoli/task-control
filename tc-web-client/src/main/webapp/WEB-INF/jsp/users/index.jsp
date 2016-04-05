@@ -30,6 +30,7 @@
                         <th>E-mail</th>
                         <th>Sistemas</th>
                         <th colspan="1"></th>
+						<th colspan="1"></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -44,6 +45,7 @@
                                 </c:forEach>
                             </td>
                             <!-- <td class="btn"><button class="edit">Editar</button></td> -->
+							<td class="btn"><button class="line-btn changePw" data-login="${user.nickname}">Alterar Senha</button></td>
                             <td class="btn"><button class="line-btn delete" data-login="${user.nickname}">Excluir</button></td>
                         <tr>
                     </c:forEach>

@@ -453,6 +453,4 @@ $(document).ready(function() {
 
     $(".startDay").mask('00/00/00');
     $(".foreseenDay").mask('00/00/00');
-
-	loadMonth();
 });

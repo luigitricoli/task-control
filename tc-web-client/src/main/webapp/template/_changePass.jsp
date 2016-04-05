@@ -6,6 +6,8 @@
 			<p></p>
 		</div>
 
+		<input type="hidden" name="login" id="login">
+
 		<div class="field">
 			<label>Senha Antiga</label> <input type="password" name="oldPass" 
 				class="changePass-input" id="oldPass" required>

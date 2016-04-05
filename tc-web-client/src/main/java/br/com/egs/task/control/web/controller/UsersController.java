@@ -46,10 +46,12 @@ public class UsersController {
     }
 
 	@Post("/senha")
-	public void changePass(String oldPass, String newPass, String newcPass) {
+	public void changePass(String login, String oldPass, String newPass, String newcPass) {
 		try{
-			
-			User user = users.authenticate(sessionUser.getUser().getNickname(), oldPass);
+			User user = users.authenticate(new User(login).getNickname(), oldPass);
+			if (!sessionUser.isAdmin() && !sessionUser.equals(user)) {
+				throw new UpdateException("Usuário não tem privilégios para mudar a senha de outros usuários");
+			}
 			user = user.changePassword(newPass, newcPass);
 			users.updatePassword(user);
 			result.use(Results.http()).body("sucess");
@@ -61,7 +63,6 @@ public class UsersController {
 			result.use(Results.http()).body("Senha antiga incorreta!");
 		}
 	}
-
 	
 	@Post("/usuarios")
 	public void saveUser(String name, String email, String login,String type, String pass, List<String> applications) {

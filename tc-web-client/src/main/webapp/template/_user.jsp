@@ -7,7 +7,7 @@
             <option value="my data">Meus Dados</option>
             <option value="help">Ajuda</option>
             -->
-            <option value="changePass">Alterar Senha</option>
+            <option id="change-pass" value="changePass" data-login="${sessionUser.user.nickname}">Alterar Senha</option>
             <option value="logout">Logout</option>
         </select>
     </div>

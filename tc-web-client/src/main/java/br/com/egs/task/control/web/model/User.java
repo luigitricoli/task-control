@@ -2,6 +2,7 @@ package br.com.egs.task.control.web.model;
 
 import br.com.egs.task.control.web.model.exception.UpdateException;
 import br.com.egs.task.control.web.model.filter.Applications;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -80,4 +81,6 @@ public class User implements Serializable {
 		}
         return new User(this.name, this.login, this.email, this.type, pass, this.systems);
 	}
+	
+	
 }

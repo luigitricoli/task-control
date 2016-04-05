@@ -54,7 +54,10 @@
     background: #e03f33;
 }
 
+.table-content button.changePw {
+    background: #21618C;
+}
+
 /** DEV */
 #registers-list{
 }
-
