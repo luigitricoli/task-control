@@ -4,7 +4,9 @@ import br.com.egs.task.control.web.model.ForeseenType;
 import br.com.egs.task.control.web.model.Post;
 import br.com.egs.task.control.web.model.Task;
 import br.com.egs.task.control.web.model.User;
+
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeConstants;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
@@ -174,12 +176,14 @@ public class TaskBuilder {
         }
 
         if(foreseenType.equals(ForeseenType.days)){
-            int weekends = Math.round(qtd/5) - 1;
-            qtd += weekends*2;
-            foreseenEndDate = startDate.plusDays(qtd - 1);
-            if(foreseenEndDate.getDayOfWeek() == BasicTask.SUNDAY || foreseenEndDate.getDayOfWeek() == BasicTask.SATURDAY){
-                foreseenEndDate = foreseenEndDate.plusDays(2);
-            }
+            DateTime foreseenEndDate = startDate.toDateTime();
+            
+    		for (int i = 1; i < qtd; i++) {
+    	        if (foreseenEndDate.getDayOfWeek() == DateTimeConstants.FRIDAY)
+    	        	foreseenEndDate = foreseenEndDate.plusDays(3);
+    	        else
+    	        	foreseenEndDate = foreseenEndDate.plusDays(1);
+    		}
 
             return new BasicTask(id, description, startDate, foreseenEndDate, endDate, source, application, posts, owners, null);
         } else{
