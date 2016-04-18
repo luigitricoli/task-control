@@ -23,6 +23,7 @@ public class SimpleTask {
     private String status;
     private String theId;
 	private String theDescription;
+	private String formattedApplication;
 
     public SimpleTask(String id, String description, String startDate, String foreseenEndDate, String endDate, Integer foreseenWorkHours, String source, String application, String owners) {
         this.id = id;
@@ -34,12 +35,23 @@ public class SimpleTask {
         this.source = source;
         this.application = application;
         this.owners = owners;
-        this.theId = formatId(description);
-        this.theDescription = formatDescription(description);
+        this.theId = formatId();
+        this.theDescription = formatDescription();
         this.status = generateStatus();
+        this.formattedApplication = formatApplication();
     }
 
-    private String formatId(String description) {
+    private String formatApplication() {
+    	if(application.equals("roaming")) {
+    		return "CapSettle";
+    	}
+    	if(application.equals("bill_presentment")) {
+    		return "Bill Presentment";
+    	}
+		return application.toUpperCase();
+	}
+
+	private String formatId() {
 		if(description.contains("-")) {
 			return description.split("-")[0];
 		}
@@ -48,7 +60,7 @@ public class SimpleTask {
 		}
 	}
 
-	private String formatDescription(String description) {
+	private String formatDescription() {
 		if(description.contains("-")) {
 			return description.split("-", 2)[1];
 		}
@@ -125,6 +137,10 @@ public class SimpleTask {
     
     public String getStatus() {
     	return status;
+    }
+    
+    public String getFormattedApplication() {
+    	return formattedApplication;
     }
     
 }

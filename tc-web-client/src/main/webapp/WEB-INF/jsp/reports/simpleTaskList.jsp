@@ -13,7 +13,7 @@
     
     <display:column title="ID" property="theId" sortable="true" />
     <display:column title="Demanda/Atividade" property="theDescription" sortable="true" value="${description.split('/-(.+)?/')[1]}"/>
-    <display:column title="Sistema" property="application" sortable="true" />
+    <display:column title="Sistema" property="formattedApplication" sortable="true" />
     <display:column title="Origem" property="source" sortable="true" /> 
     <display:column title="Data Início" sortProperty="startDate" sortable="true">
         <fmt:parseDate pattern="yyyy-MM-dd" type="date" var="startDate" value="${task.startDate}" />
