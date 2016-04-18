@@ -6,15 +6,7 @@
 
 package br.com.egs.task.control.web.model;
 
-import br.com.egs.task.control.web.rest.client.task.CoreTask;
-import br.com.egs.task.control.web.rest.client.task.TaskDate;
-import br.com.egs.task.control.web.rest.client.task.split.*;
 import org.joda.time.DateTime;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
-
-import java.util.Calendar;
-import java.util.List;
 
 public class SimpleTask {
     public static final String DEFAULT_DATE_PATTERN = "dd/MM/yyyy";
@@ -29,6 +21,8 @@ public class SimpleTask {
     private String application;
     private String owners;
     private String status;
+    private String theId;
+	private String theDescription;
 
     public SimpleTask(String id, String description, String startDate, String foreseenEndDate, String endDate, Integer foreseenWorkHours, String source, String application, String owners) {
         this.id = id;
@@ -40,9 +34,54 @@ public class SimpleTask {
         this.source = source;
         this.application = application;
         this.owners = owners;
+        this.theId = formatId(description);
+        this.theDescription = formatDescription(description);
+        this.status = generateStatus();
     }
 
-    public String getId() { return id; }
+    private String formatId(String description) {
+		if(description.contains("-")) {
+			return description.split("-")[0];
+		}
+		else {
+			return description;
+		}
+	}
+
+	private String formatDescription(String description) {
+		if(description.contains("-")) {
+			return description.split("-", 2)[1];
+		}
+		else {
+			return description;
+		}
+	}
+	
+	private String generateStatus() {
+        DateTime today = new DateTime().withMillisOfDay(0);
+        if (isFinished()) {
+            return "Finalizada";
+        } else if (isBeyondTheForeseen(today)) {
+            return "Atrasada";
+        } else if (isStarted(today)) {
+            return "Em andamento";
+        }
+        return "Não iniciada";
+    }
+	
+	   private boolean isStarted(DateTime today) {
+	        return today.compareTo(new DateTime(this.startDate)) >= 0;
+	    }
+
+	    private boolean isBeyondTheForeseen(DateTime today) {
+	        return today.compareTo(new DateTime(this.foreseenEndDate)) > 0;
+	    }
+
+	    private boolean isFinished() {
+	        return this.endDate != null;
+	    }
+
+	public String getId() { return id; }
 
     public String getDescription() {
         return description;
@@ -76,5 +115,16 @@ public class SimpleTask {
         return owners;
     }
     
+    public String getTheId() {
+    	return theId;
+    }
+    
+    public String getTheDescription() {
+    	return theDescription;
+    }
+    
+    public String getStatus() {
+    	return status;
+    }
     
 }

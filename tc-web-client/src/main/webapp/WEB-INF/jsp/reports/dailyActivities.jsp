@@ -11,8 +11,8 @@
                pagesize="20" id="task">
     <%@include file="_displayTag-setup.jsp" %>
     
-    <display:column title="Reponsável" property="owners" sortable="true" />
-    <display:column title="Descrição" property="description" sortable="true" />
+    <display:column title="ID" property="theId" sortable="true" />
+    <display:column title="Demanda/Atividade" property="theDescription" sortable="true" />
     <display:column title="Sistema" property="application" sortable="true" />
     <display:column title="Origem" property="source" sortable="true" />
     <display:column title="Data Início" sortProperty="startDate" sortable="true">
@@ -23,7 +23,6 @@
         <fmt:parseDate pattern="yyyy-MM-dd" type="date" var="foreseenEndDate" value="${task.foreseenEndDate}" />
         <fmt:formatDate pattern="dd/MM/yyyy" value="${foreseenEndDate}" />
     </display:column>
-    <display:column title="Horas Previstas" property="foreseenWorkHours" sortable="true" />
     <display:column title="Data Fim" sortProperty="endDate" sortable="true">
         <c:if test="${task.endDate ne null}">
             <fmt:parseDate pattern="yyyy-MM-dd" type="date" var="endDate" value="${task.endDate}" />
@@ -32,7 +31,10 @@
         <c:if test="${task.endDate eq null}">
             -
         </c:if>
-    </display:column>    
+    </display:column>
+    <display:column title="Horas Previstas" property="foreseenWorkHours" sortable="true" />
+    <display:column title="Reponsável" property="owners" sortable="true" />  
+    <display:column title="Status" property="status" sortable="true" />  
 </display:table>
 
 <script lang="javascript">
