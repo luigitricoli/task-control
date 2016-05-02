@@ -1,6 +1,32 @@
 package br.com.egs.task.control.web.rest.client.task;
 
-import br.com.egs.task.control.web.model.*;
+import java.io.File;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+
+import javax.enterprise.context.RequestScoped;
+import javax.inject.Inject;
+
+import org.joda.time.DateTime;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.thoughtworks.xstream.io.json.JsonWriter.Format;
+
+import br.com.caelum.vraptor.observer.upload.UploadedFile;
+import br.com.egs.task.control.web.model.Post;
+import br.com.egs.task.control.web.model.SessionUser;
+import br.com.egs.task.control.web.model.SimpleTask;
+import br.com.egs.task.control.web.model.Task;
+import br.com.egs.task.control.web.model.User;
+import br.com.egs.task.control.web.model.Week;
 import br.com.egs.task.control.web.model.exception.InvalidDateException;
 import br.com.egs.task.control.web.model.exception.TaskControlWebClientException;
 import br.com.egs.task.control.web.model.exception.UpdateException;
@@ -11,14 +37,6 @@ import br.com.egs.task.control.web.model.task.TaskBuilder;
 import br.com.egs.task.control.web.rest.client.JsonClient;
 import br.com.egs.task.control.web.rest.client.Response;
 import br.com.egs.task.control.web.rest.client.user.CoreUser;
-import org.joda.time.DateTime;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.enterprise.context.RequestScoped;
-import javax.inject.Inject;
-import java.util.*;
-import java.util.Map.Entry;
 
 @RequestScoped
 public class TaskClient implements TaskRepository {
@@ -92,8 +110,6 @@ public class TaskClient implements TaskRepository {
             }
         }
 
-
-
         return results;
     }
     private List<Week> loadWeeks() {
@@ -111,7 +127,14 @@ public class TaskClient implements TaskRepository {
 
         List<Post> posts = new LinkedList<>();
         for (CorePost post : task.getPosts()) {
-            posts.add(new Post(post.getTimestamp(), post.getLogin(), post.getName(), post.getText()));
+        	List<File> fileList = new LinkedList<File>();
+        	if(existFiles(post.getTimestamp(), task.getId())) {
+        		fileList.addAll(populateFileList(post.getTimestamp(), task.getId()));
+                posts.add(new Post(post.getTimestamp(), post.getLogin(), post.getName(), post.getText(), fileList));
+        	}
+        	else {
+        		posts.add(new Post(post.getTimestamp(), post.getLogin(), post.getName(), post.getText(), null));
+        	}       
         }
 
         List<User> owners = new LinkedList<>();
@@ -123,7 +146,7 @@ public class TaskClient implements TaskRepository {
         return new BasicTask(task.getId(),task.getDescription(),task.getStartDate().toDateTime(),task.getForeseenEndDate().toDateTime(),end,task.getSource(),task.getApplication(),posts, owners, task.getForeseenWorkHours());
     }
 
-    @Override
+	@Override
     public List<Post> postsBy(String taskId) {
         return get(taskId).getPosts();
     }
@@ -134,8 +157,8 @@ public class TaskClient implements TaskRepository {
         if (response.isSuccess()) {
             CoreTask coreTask = CoreTask.unmarshal(response.getContent());
             if(task.getWorkHours() != null){
-                Post post = new Post(coreTask.getStartDate().toCalendar(), session.getUser().getNickname(), session.getUser().getName(), String.format("%s #horasutilizadas", task.getWorkHours()));
-                add(post, coreTask.getId());
+                Post post = new Post(coreTask.getStartDate().toCalendar(), session.getUser().getNickname(), session.getUser().getName(), String.format("%s #horasutilizadas", task.getWorkHours()),null);
+                add(post, coreTask.getId(), null);
             }
             return true;
         }
@@ -144,19 +167,33 @@ public class TaskClient implements TaskRepository {
     }
 
     @Override
-    public boolean add(Post p, String taskId) {
+    public boolean add(Post p, String taskId, UploadedFile upload) {
+    	if(upload != null && !p.getText().isEmpty()) {
+    		String filePath = buildPath(p.getTime(), taskId);
+    		new File(filePath).mkdirs();
+    		
+    		StringBuilder fileName = new StringBuilder();
+    		fileName.append(upload.getFileName().replace(" ", "_"));
+    		
+    		File fileToUpload = new File(filePath.toString(),fileName.toString());
+    		try {
+				upload.writeTo(fileToUpload);
+			} catch (IOException e) {
+				return false;
+			}
+    	}
         CorePost post = new CorePost(p.getTime(), p.getLogin(), p.getText(), p.getText());
 
         Response response = jsonClient.at(String.format("tasks/%s", taskId)).postAsJson(post.toJson());
         if (response.isSuccess()) {
-            return true;
+        	return true;
         }
         return false;
     }
 
-    @Override
+	@Override
     public void finish(String taskId, String date) throws InvalidDateException, UpdateException {
-        CoreTask task = new CoreTask(taskId, new TaskDate(date));
+		CoreTask task = new CoreTask(taskId, new TaskDate(date));
 
         Response response = jsonClient.at(String.format("tasks/%s", taskId)).putAsJson(task.toJson());
         if (!response.isSuccess()) {
@@ -263,4 +300,33 @@ public class TaskClient implements TaskRepository {
                 coreTask.getApplication(),
                 ownerDescription);
     }
+
+    private String buildPath(Calendar time, String taskId) {
+    	StringBuilder filePath = new StringBuilder();
+		filePath.append(System.getProperty("catalina.base"));
+		filePath.append("/webapps/static/");
+		filePath.append(taskId);
+		filePath.append("/");
+		filePath.append(new SimpleDateFormat("dd-MM-yyyy").format(time.getTime()));
+		return filePath.toString();
+	}
+    
+    private LinkedList<File> populateFileList(Calendar timestamp, String id) {
+    	File postPath = new File(buildPath(timestamp,id));
+    	LinkedList<File> fileList = new LinkedList<File>();
+    	if(postPath.listFiles().length > 0) {
+        	for(File f : postPath.listFiles()) {
+        		fileList.add(f);
+        	}
+    	}
+    	return fileList;
+ 	}
+    
+	private boolean existFiles(Calendar timestamp, String id) {
+		File[] fileList = new File(buildPath(timestamp,id)).listFiles();
+		if(fileList != null) {
+			return fileList.length > 0;
+		}
+		return false;
+	}
 }

@@ -114,7 +114,26 @@ function populateTimeline(task) {
 			$("#iteraction-form").data("task-id", task.attr("id"));
 
 			$("#add_comentary").click(function() {
-				addPost(task, url);
+				var form = new FormData();
+				form.append("text", $("#iteraction-form").find("#comentary").val());
+				
+				var file = $("#iteraction-form").find("#upload")[0].files[0];
+				if(undefined !== file){	
+					form.append("upload", file, file.name);					
+				}
+
+				$.ajax({
+				    url: url,
+				    type: "POST",
+				    data: form,
+				    contentType: false,
+					processData: false,
+				    success: function(data) {
+				    	populateTimeline(task);
+				    },
+				    error: function() {
+				    }
+				  });
 			});
 
             $("#finish").click(function() {
@@ -159,6 +178,7 @@ function removeTask(){
     $.ajax({
         "url": url,
         "type": "DELETE",
+        
         "success": function(data) {
                     if("success" === data) {
                         closeFloatWindowAlert("#cancel-task-container");
@@ -357,9 +377,7 @@ function closePostAlert() {
 }
 
 function addPost(task, url) {
-	$.post(url, {
-		"text" : $("#iteraction-form").find("#comentary").val()
-	}, function(data) {
+	$.post(url, {"text" : $("#iteraction-form").find("#comentary").val()}, function(data) {
 		populateTimeline(task);
 	});
 }

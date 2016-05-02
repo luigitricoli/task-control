@@ -1,50 +1,67 @@
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 
 <h3>Hist&oacute;rico de Itera&ccedil;&otilde;es</h3>
 <p id="task-description">${task.description}</p>
-<p class="detail-label">Dura&ccedil;&atilde;o prevista de <span>${task.startDateAsString}</span> &agrave; <span>${task.foreseenEndDateAsString}</span></p>
-<p class="detail-label">Respons&aacute;vel:
-    <c:forEach var="user" items="${task.owners}" varStatus="status">
-        <span>${user.name}</span>
-    </c:forEach>
+<p class="detail-label">
+	Dura&ccedil;&atilde;o prevista de <span>${task.startDateAsString}</span>
+	&agrave; <span>${task.foreseenEndDateAsString}</span>
+</p>
+<p class="detail-label">
+	Respons&aacute;vel:
+	<c:forEach var="user" items="${task.owners}" varStatus="status">
+		<span>${user.name}</span>
+	</c:forEach>
 </p>
 <div id="iteraction-menu">
-    <a id="finish" class="btn green"><span class="icon add">E</span>Encerrar</a>
-    <a id="replan" class="btn green"><span class="icon add">R</span>Replanejar</a>
-    <a id="cancel" class="btn red"><span class="icon add">X</span>Remover</a>
+	<a id="finish" class="btn green"><span class="icon add">E</span>Encerrar</a>
+	<a id="replan" class="btn green"><span class="icon add">R</span>Replanejar</a>
+	<a id="cancel" class="btn red"><span class="icon add">X</span>Remover</a>
 </div>
 <div id="iteraction-form">
-    <form>
-        <label>No que voc&ecirc; est&aacute; pensando?</label>
-        <div class="alert begin">
-            <p></p>
-        </div>
-        <textarea id="comentary" name="text"></textarea>
-        <button id="add_comentary" type="button" class="btn green"><span class="icon add">+</span></button>
-        <button id="remove_comentary" type="reset" class="btn red"><span class="icon remove">X</span></button>
-    </form>
+	<!-- form action="/tc-web-client/tarefas/${task.id}/historico" method="POST" enctype="multipart/form-data" -->
+	<form>
+		<label>No que voc&ecirc; est&aacute; pensando?</label>
+		<div class="alert begin">
+			<p></p>
+		</div>
+		<textarea id="comentary" name="text"></textarea>
+		<button id="add_comentary" type="button" class="btn green">
+			<span class="icon add">+</span>
+		</button>
+		<button id="remove_comentary" type="reset" class="btn red">
+			<span class="icon remove">X</span>
+		</button>
+		<input type="file" id="upload">
+	</form>
 </div>
 <div id="timeline">
-    <c:forEach var="post" items="${task.posts}" varStatus="status">
-        <div class="post">
-            <span class="datetime"><fmt:formatDate value="${post.time.time}" pattern="dd/MM/yyyy HH:mm:ss" /></span>
+	<c:forEach var="post" items="${task.posts}" varStatus="status">
+		<div class="post">
+			<span class="datetime"><fmt:formatDate
+					value="${post.time.time}" pattern="dd/MM/yyyy HH:mm:ss" /></span>
 
-            <div class="timeline_dot">
-                <div class="dot"></div>
-                <div class="speak_ballon">
-                    <div class="arrow"></div>
-                    <p class="speaker">${post.name}:</p>
-                    <p class="message">${post.textHtml}</p>
-                </div>
-            </div>
-        </div>
-    </c:forEach>
+			<div class="timeline_dot">
+				<div class="dot"></div>
+				<div class="speak_ballon">
+					<div class="arrow"></div>
+					<p class="speaker">${post.name}:</p>
+					<p class="message">${post.textHtml}</p>
+					<div>
+						<c:forEach var="file" items="${post.attachmentList}">
+							<!-- <a href="/static/${task.id}/<fmt:formatDate value="${post.time.time}" pattern="dd-MM-yyyy" />/${file}">${file}</a> -->
+							<a href="${file}">${file}</a>
+						</c:forEach>
+					</div>
+				</div>
+			</div>
+		</div>
+	</c:forEach>
 </div>
 <div id="replan-block-screen" class="block-screen">
-    <jsp:include page="_replan.jsp"/>
+	<jsp:include page="_replan.jsp" />
 </div>
 <div id="cancel-block-screen" class="block-screen">
-    <jsp:include page="_cancel.jsp"/>
+	<jsp:include page="_cancel.jsp" />
 </div>

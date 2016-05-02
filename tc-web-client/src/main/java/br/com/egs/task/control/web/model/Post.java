@@ -1,7 +1,11 @@
 package br.com.egs.task.control.web.model;
 
+import java.io.File;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -17,12 +21,19 @@ public class Post {
     private String text;
     private transient Set<String> hashtags;
     private transient String html;
+    private List<File> attachmentList;
 
-    public Post(Calendar time, String login, String name, String text) {
+    public Post(Calendar time, String login, String name, String text, List<File> attachmentList) {
         this.time = time;
         this.login = login;
         this.name = name;
         this.hashtags = new HashSet<>();
+        if(attachmentList == null) {
+        	this.attachmentList = new LinkedList<File>();
+        }
+        else {
+        	this.attachmentList = attachmentList;
+        }
 
         if(text != null){
             this.text = text;
@@ -34,7 +45,24 @@ public class Post {
         }
     }
 
-    private void extractHashtags(String text) {
+   /* public Post(Calendar time, String login, String name, String text, List<File> attachmentList) {
+        this.time = time;
+        this.login = login;
+        this.name = name;
+        this.hashtags = new HashSet<>();
+        this.attachmentList = attachmentList;
+
+        if(text != null){
+            this.text = text;
+            extractHashtags(text);
+            createHtml(text);
+        } else {
+        	this.text = EMPTY;
+        	this.html = EMPTY;
+        }
+	}*/
+
+	private void extractHashtags(String text) {
         Pattern hashtag = Pattern.compile("(#\\w+)");
         Matcher matcher = hashtag.matcher(text);
         if (matcher.find()) {
@@ -74,4 +102,12 @@ public class Post {
     public String getTextHtml() {
         return html;
     }
+
+	public List<File> getAttachmentList() {
+		return Collections.unmodifiableList(attachmentList);
+	}
+
+	public void addFile(File file) {
+		attachmentList.add(file);
+	}
 }

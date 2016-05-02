@@ -1,26 +1,37 @@
 package br.com.egs.task.control.web.controller;
 
-import br.com.caelum.vraptor.*;
+import java.io.File;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.List;
+
+import javax.inject.Inject;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import br.com.caelum.vraptor.Controller;
+import br.com.caelum.vraptor.Delete;
+import br.com.caelum.vraptor.Get;
+import br.com.caelum.vraptor.Post;
+import br.com.caelum.vraptor.Put;
+import br.com.caelum.vraptor.Result;
+import br.com.caelum.vraptor.observer.upload.UploadedFile;
 import br.com.caelum.vraptor.view.Results;
+import br.com.caelum.vraptor.observer.upload.*;
 import br.com.egs.task.control.web.interceptor.AuthRequired;
+import br.com.egs.task.control.web.model.AddResponse;
 import br.com.egs.task.control.web.model.ForeseenType;
 import br.com.egs.task.control.web.model.SessionUser;
-import br.com.egs.task.control.web.model.SimpleTask;
 import br.com.egs.task.control.web.model.Task;
 import br.com.egs.task.control.web.model.exception.TaskControlWebClientException;
 import br.com.egs.task.control.web.model.exception.UpdateException;
 import br.com.egs.task.control.web.model.repository.TaskRepository;
-import br.com.egs.task.control.web.model.task.*;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import org.joda.time.DateTime;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.inject.Inject;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.List;
+import br.com.egs.task.control.web.model.task.BasicTask;
+import br.com.egs.task.control.web.model.task.InvalidTask;
+import br.com.egs.task.control.web.model.task.TaskBuilder;
+import br.com.egs.task.control.web.model.task.TaskWebValidation;
 
 @Controller
 @AuthRequired
@@ -134,14 +145,12 @@ public class TasksController {
     }
 
     @Post("/tarefas/{taskId}/historico")
-    public void addPost(String taskId, String text) {
-        br.com.egs.task.control.web.model.Post post = new br.com.egs.task.control.web.model.Post(
-                Calendar.getInstance(), session.getUser().getNickname(), null, text);
-        if (tasks.add(post, taskId)) {
-            result.use(Results.http()).body(SUCCESS_RESPONSE_CODE);
-        } else {
-            result.use(Results.http()).body(FAIL_RESPONSE_CODE);
-        }
+    public void addPost(String taskId, String text, UploadedFile upload) throws IOException {
+        br.com.egs.task.control.web.model.Post post = new br.com.egs.task.control.web.model.Post(Calendar.getInstance(), session.getUser().getNickname(), null, text, null);
+            if (tasks.add(post, taskId, upload)) {
+                result.use(Results.http()).body(SUCCESS_RESPONSE_CODE);
+            } else {
+                result.use(Results.http()).body(FAIL_RESPONSE_CODE);
+            }
     }
-
 }

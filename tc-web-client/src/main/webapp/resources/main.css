@@ -203,16 +203,16 @@ h1{
 #comentary{
     border: 1px solid #636363;
     height: 70px;
-    width: 851px;
+    width: 800px;
     margin: 10px 0px 5px;
     border-radius: 4px;
 }
-#add_comentary,#remove_comentary{
+#add_comentary,#remove_comentary,#file_upload{
     padding: 16px;
     margin-left: 5px;
     top: 30px;
 }
-#add_comentary span,#remove_comentary span{
+#add_comentary span,#remove_comentary span, #file_upload span{
     top:5px;
     left:6px;
 }
