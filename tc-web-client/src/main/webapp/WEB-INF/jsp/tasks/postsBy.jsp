@@ -51,7 +51,7 @@
 					<div>
 						<c:forEach var="file" items="${post.attachmentList}">
 							<!-- <a href="/static/${task.id}/<fmt:formatDate value="${post.time.time}" pattern="dd-MM-yyyy" />/${file}">${file}</a> -->
-							<a href="${file}">${file}</a>
+							<a href="${file}">${file.name}</a>
 						</c:forEach>
 					</div>
 				</div>

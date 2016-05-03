@@ -309,9 +309,7 @@ public class TaskClient implements TaskRepository {
 		filePath.append("/webapps/static/");
 		filePath.append(taskId);
 		filePath.append("/");
-		filePath.append(new SimpleDateFormat("dd-MM-yyyy").format(time.getTime()));
-		filePath.append("/");
-		filePath.append(new SimpleDateFormat("HH-mm").format(time.getTime()));
+		filePath.append(new SimpleDateFormat("dd-MM-yyyy-HH-mm-ss").format(time.getTime()));
 		return filePath.toString();
 	}
     
