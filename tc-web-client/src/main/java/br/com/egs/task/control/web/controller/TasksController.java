@@ -8,6 +8,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,9 +20,7 @@ import br.com.caelum.vraptor.Put;
 import br.com.caelum.vraptor.Result;
 import br.com.caelum.vraptor.observer.upload.UploadedFile;
 import br.com.caelum.vraptor.view.Results;
-import br.com.caelum.vraptor.observer.upload.*;
 import br.com.egs.task.control.web.interceptor.AuthRequired;
-import br.com.egs.task.control.web.model.AddResponse;
 import br.com.egs.task.control.web.model.ForeseenType;
 import br.com.egs.task.control.web.model.SessionUser;
 import br.com.egs.task.control.web.model.Task;
@@ -106,6 +105,7 @@ public class TasksController {
     public void delete(String taskId) {
         try {
             tasks.delete(taskId);
+            removeFiles(taskId);
             result.use(Results.http()).body(SUCCESS_RESPONSE_CODE);
         } catch (TaskControlWebClientException e) {
             log.error(e.getMessage());
@@ -113,7 +113,7 @@ public class TasksController {
         }
     }
 
-    @Put(value = "/tarefas/{taskId}/finalizacao")
+	@Put(value = "/tarefas/{taskId}/finalizacao")
     public void finish(String taskId, String date) {
         try {
             tasks.finish(taskId, date);
@@ -145,7 +145,7 @@ public class TasksController {
     }
 
     @Post("/tarefas/{taskId}/historico")
-    public void addPost(String taskId, String text, UploadedFile upload) throws IOException {
+    public void addPost(String taskId, String text, List<UploadedFile> upload) throws IOException {
         br.com.egs.task.control.web.model.Post post = new br.com.egs.task.control.web.model.Post(Calendar.getInstance(), session.getUser().getNickname(), null, text, null);
             if (tasks.add(post, taskId, upload)) {
                 result.use(Results.http()).body(SUCCESS_RESPONSE_CODE);
@@ -153,4 +153,16 @@ public class TasksController {
                 result.use(Results.http()).body(FAIL_RESPONSE_CODE);
             }
     }
+    
+    private void removeFiles(String taskId) throws TaskControlWebClientException {
+    	StringBuilder filePath = new StringBuilder();
+    	filePath.append(System.getProperty("catalina.base"));
+		filePath.append("/webapps/static/");
+		filePath.append(taskId);
+		try {
+			FileUtils.deleteDirectory(new File(filePath.toString()));
+		} catch (IOException e) {
+			throw new TaskControlWebClientException("Nao foi possivel remover os arquivos");
+		}
+	}	
 }

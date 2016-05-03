@@ -167,20 +167,22 @@ public class TaskClient implements TaskRepository {
     }
 
     @Override
-    public boolean add(Post p, String taskId, UploadedFile upload) {
+    public boolean add(Post p, String taskId, List<UploadedFile> upload) {
     	if(upload != null && !p.getText().isEmpty()) {
     		String filePath = buildPath(p.getTime(), taskId);
     		new File(filePath).mkdirs();
     		
-    		StringBuilder fileName = new StringBuilder();
-    		fileName.append(upload.getFileName().replace(" ", "_"));
-    		
-    		File fileToUpload = new File(filePath.toString(),fileName.toString());
-    		try {
-				upload.writeTo(fileToUpload);
-			} catch (IOException e) {
-				return false;
-			}
+    		for(UploadedFile f : upload) {
+    			StringBuilder fileName = new StringBuilder();
+        		fileName.append(f.getFileName().replace(" ", "_"));
+        		
+        		File fileToUpload = new File(filePath.toString(),fileName.toString());
+        		try {
+    				f.writeTo(fileToUpload);
+    			} catch (IOException e) {
+    				return false;
+    			}
+    		}
     	}
         CorePost post = new CorePost(p.getTime(), p.getLogin(), p.getText(), p.getText());
 
@@ -308,6 +310,8 @@ public class TaskClient implements TaskRepository {
 		filePath.append(taskId);
 		filePath.append("/");
 		filePath.append(new SimpleDateFormat("dd-MM-yyyy").format(time.getTime()));
+		filePath.append("/");
+		filePath.append(new SimpleDateFormat("HH-mm").format(time.getTime()));
 		return filePath.toString();
 	}
     

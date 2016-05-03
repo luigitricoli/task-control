@@ -3,7 +3,6 @@ package br.com.egs.task.control.web.model.repository;
 import java.util.List;
 
 import br.com.caelum.vraptor.observer.upload.UploadedFile;
-import br.com.egs.task.control.web.model.AddResponse;
 import br.com.egs.task.control.web.model.Post;
 import br.com.egs.task.control.web.model.SimpleTask;
 import br.com.egs.task.control.web.model.Task;
@@ -23,7 +22,7 @@ public interface TaskRepository {
 
     public boolean add(Task task);
     
-    public boolean add(Post p, String taskId, UploadedFile upload);
+    public boolean add(Post p, String taskId, List<UploadedFile> upload);
 
     public void finish(String taskId, String date) throws InvalidDateException, UpdateException;
 

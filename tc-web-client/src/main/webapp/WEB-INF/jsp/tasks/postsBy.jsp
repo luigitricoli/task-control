@@ -33,7 +33,7 @@
 		<button id="remove_comentary" type="reset" class="btn red">
 			<span class="icon remove">X</span>
 		</button>
-		<input type="file" id="upload">
+		<input type="file" id="upload" name="upload[]" multiple>
 	</form>
 </div>
 <div id="timeline">

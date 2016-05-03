@@ -117,9 +117,12 @@ function populateTimeline(task) {
 				var form = new FormData();
 				form.append("text", $("#iteraction-form").find("#comentary").val());
 				
-				var file = $("#iteraction-form").find("#upload")[0].files[0];
-				if(undefined !== file){	
-					form.append("upload", file, file.name);					
+				var files = $("#iteraction-form").find("#upload")[0].files;
+
+				if(undefined !== files) {	
+					for(var i = 0; i < files.length; i++) {
+						form.append('upload[]', files[i]);
+					}				
 				}
 
 				$.ajax({
