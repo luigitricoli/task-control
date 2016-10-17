@@ -2,34 +2,34 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <form id="report-options-form">
     <div class="filter-group">
-        <h4>Tipo</h4>
+        <h4>Type</h4>
 
         <div class="constraint">
             <input type="radio" id="optReportType-taskList" name="optReportType" value="taskList" />
-            <label for="optReportType-taskList">Relatório Mensal</label>
+            <label for="optReportType-taskList">Monthly Report</label>
         </div>
 
         <div class="constraint">
             <input type="radio" id="optReportType-dailyActivities" name="optReportType" value="dailyActivities" />
-            <label for="optReportType-dailyActivities">Atividades Diárias</label>
+            <label for="optReportType-dailyActivities">Daily Activities</label>
         </div>
     </div>
     
     <div class="filter-group" id="reportParamGroup-yearMonth">
-        <label class="reportFilterLabel">Período</label>
+        <label class="reportFilterLabel">Period</label>
         <select id="cboReportMonth" name="month">
-            <option value="1">Janeiro</option>
-            <option value="2">Fevereiro</option>
-            <option value="3">Marco</option>
-            <option value="4">Abril</option>
-            <option value="5">Maio</option>
-            <option value="6">Junho</option>
-            <option value="7">Julho</option>
-            <option value="8">Agosto</option>
-            <option value="9">Setembro</option>
-            <option value="10">Outubro</option>
-            <option value="11">Novembro</option>
-            <option value="12">Dezembro</option>
+            <option value="1">January</option>
+            <option value="2">February</option>
+            <option value="3">March</option>
+            <option value="4">April</option>
+            <option value="5">May</option>
+            <option value="6">June</option>
+            <option value="7">July</option>
+            <option value="8">August</option>
+            <option value="9">September</option>
+            <option value="10">October</option>
+            <option value="11">November</option>
+            <option value="12">December</option>
         </select>
         <input type="hidden" id="hidReportMonthName" name="monthName"></input>
         <select id="cboReportYear" name="year">
@@ -42,12 +42,12 @@
     <div class="alert"></div>
 
     <div class="filter-group" id="reportParamGroup-date">
-        <label class="reportFilterLabel">Data</label>
+        <label class="reportFilterLabel">Date</label>
         <input id="txtReportDate" name="date" />
     </div>
     
     <div class="filter-group" id="reportSubmit">
-        <a href="#" id="btSubmitReport" class="btn-no-icon green">Visualizar</a>
+        <a href="#" id="btSubmitReport" class="btn-no-icon green">View</a>
     </div>
 
 </form>

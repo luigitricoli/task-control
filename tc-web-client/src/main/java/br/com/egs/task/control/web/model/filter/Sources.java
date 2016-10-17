@@ -20,8 +20,8 @@ public class Sources implements Serializable{
         labels = new HashMap<>();
 
         labels.put("ccc", "CCC");
-        labels.put("interna", "Interna");
-        labels.put("sup_prod", "Sup. Produção");
+        labels.put("internal", "Internal");
+        labels.put("sup_prod", "Sup. Production");
     }
 
     public String getLabel(String key){

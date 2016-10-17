@@ -50,7 +50,7 @@ public class UsersController {
 		try{
 			User user = users.authenticate(new User(login).getNickname(), oldPass);
 			if (!sessionUser.isAdmin() && !sessionUser.equals(user)) {
-				throw new UpdateException("Usuário não tem privilégios para mudar a senha de outros usuários");
+				throw new UpdateException("User does not have privileges to change the password for other users");
 			}
 			user = user.changePassword(newPass, newcPass);
 			users.updatePassword(user);
@@ -60,7 +60,7 @@ public class UsersController {
 			result.use(Results.http()).body(cause.getMessage());
 			
 		}catch (AuthenticateException cause) {
-			result.use(Results.http()).body("Senha antiga incorreta!");
+			result.use(Results.http()).body("Incorrect old password!");
 		}
 	}
 	

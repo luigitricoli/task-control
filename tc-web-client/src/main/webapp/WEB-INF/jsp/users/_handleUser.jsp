@@ -1,7 +1,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <div id="add-handleUser-container" class="float-window handleUserWindow">
 	<form id="handle-user-form">
-		<h4>Cadastro de Usu�rio</h4>
+		<h4>User Signup</h4>
 		<div class="alert begin">
 			<p></p>
 		</div>
@@ -11,12 +11,12 @@ listUser();
 <table>
 	<thead>
 		<tr>
-			<th>Nome</th>
-			<th>Login</th>
+			<th>Name</th>
+			<th>Username</th>
 			<th>Email</th>
-			<th>Sistema</th>
-			<th>Editar</th>
-			<th>Remover</th>
+			<th>Application</th>
+			<th>Edit</th>
+			<th>Delete</th>
 		</tr>
 	</thead>
 	<tbody>

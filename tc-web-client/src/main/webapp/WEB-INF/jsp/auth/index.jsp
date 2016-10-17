@@ -18,11 +18,11 @@
     <section id="main">
         <div id="login-container">
             <form action="<c:url value='/login'/>" method="POST">
-                <label>Login</label>
+                <label>Username</label>
                 <input type="text" name="nickname">
-                <label>Senha</label>
+                <label>Password</label>
                 <input type="password" name="pass">
-                <button id="login-btn" type="submit" class="btn green">Entrar</button>
+                <button id="login-btn" type="submit" class="btn green">Log In</button>
             </form>
         </div>
     </section>

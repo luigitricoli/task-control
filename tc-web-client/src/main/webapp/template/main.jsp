@@ -32,11 +32,11 @@
         <h1>TaskControl<span class="sub1">RC</span><span class="sub2">1</span></h1>
         <c:if test="${sessionUser.admin}">
             <ul id="top-menu">
-                <li><a href="<c:url value="/tarefas"/>">Calend&aacute;rio</a></li>
+                <li><a href="<c:url value="/tarefas"/>">Calendar</a></li>
                 <li class="separator">|</li>
-                <li><a href="<c:url value="/usuarios"/>">Usu&aacute;rios</a></li>
+                <li><a href="<c:url value="/usuarios"/>">Users</a></li>
                 <li class="separator">|</li>
-                <li><a href="<c:url value="/relatorios"/>">Relat&oacute;rios</a></li>
+                <li><a href="<c:url value="/relatorios"/>">Reports</a></li>
             </ul>
         </c:if>
         <jsp:include page="_user.jsp"/>

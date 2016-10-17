@@ -2,22 +2,22 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 
-<h3>Hist&oacute;rico de Itera&ccedil;&otilde;es</h3>
+<h3>Iterations History</h3>
 <p id="task-description">${task.description}</p>
-<p class="detail-label">Dura&ccedil;&atilde;o prevista de <span>${task.startDateAsString}</span> &agrave; <span>${task.foreseenEndDateAsString}</span></p>
-<p class="detail-label">Respons&aacute;vel:
+<p class="detail-label">Foreseen duration from <span>${task.startDateAsString}</span> to <span>${task.foreseenEndDateAsString}</span></p>
+<p class="detail-label">Owners:
     <c:forEach var="user" items="${task.owners}" varStatus="status">
         <span>${user.name}</span>
     </c:forEach>
 </p>
 <div id="iteraction-menu">
-    <a id="finish" class="btn green"><span class="icon add">E</span>Encerrar</a>
-    <a id="replan" class="btn green"><span class="icon add">R</span>Replanejar</a>
-    <a id="cancel" class="btn red"><span class="icon add">X</span>Remover</a>
+    <a id="finish" class="btn green"><span class="icon add">E</span>Finish</a>
+    <a id="replan" class="btn green"><span class="icon add">R</span>Replan</a>
+    <a id="cancel" class="btn red"><span class="icon add">X</span>Cancel</a>
 </div>
 <div id="iteraction-form">
     <form>
-        <label>No que voc&ecirc; est&aacute; pensando?</label>
+        <label>What's on your mind?</label>
         <div class="alert begin">
             <p></p>
         </div>

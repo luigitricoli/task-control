@@ -77,7 +77,7 @@ public class User implements Serializable {
     
 	public User changePassword(String pass, String cPass) throws UpdateException {
 		if (!pass.equals(cPass)){
-			throw new UpdateException("Confirmação de senha incorreta!");
+			throw new UpdateException("Incorrect password confirmation!");
 		}
         return new User(this.name, this.login, this.email, this.type, pass, this.systems);
 	}

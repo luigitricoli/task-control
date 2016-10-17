@@ -6,7 +6,7 @@
 </head>
 <body>
     <header id="top-main">
-        <a href="#" id="new-user-btn" class="btn green"><span class="icon add">+</span>Novo Usu&aacute;rio</a>
+        <a href="#" id="new-user-btn" class="btn green"><span class="icon add">+</span>New User</a>
     </header>
     <div id="container-left">
         <jsp:include page="_filters.jsp"/>
@@ -19,16 +19,16 @@
                 <a id="next-page" href="#" class="btn green next">&gt;</a>
             </div>
             -->
-            <h3>Usu&aacute;rios</h3>
+            <h3>Users</h3>
         </div>
         <div id="registers-list">
             <table class="table-content">
                 <thead>
                     <tr>
-                        <th>Nome</th>
-                        <th>Login</th>
-                        <th>E-mail</th>
-                        <th>Sistemas</th>
+                        <th>Name</th>
+                        <th>Username</th>
+                        <th>Email</th>
+                        <th>Applications</th>
                         <th colspan="1"></th>
 						<th colspan="1"></th>
                     </tr>
@@ -45,8 +45,8 @@
                                 </c:forEach>
                             </td>
                             <!-- <td class="btn"><button class="edit">Editar</button></td> -->
-							<td class="btn"><button class="line-btn changePw" data-login="${user.nickname}">Alterar Senha</button></td>
-                            <td class="btn"><button class="line-btn delete" data-login="${user.nickname}">Excluir</button></td>
+							<td class="btn"><button class="line-btn changePw" data-login="${user.nickname}">Change Password</button></td>
+                            <td class="btn"><button class="line-btn delete" data-login="${user.nickname}">Delete</button></td>
                         <tr>
                     </c:forEach>
                 </tbody>

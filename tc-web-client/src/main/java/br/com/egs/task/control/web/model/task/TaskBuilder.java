@@ -170,9 +170,9 @@ public class TaskBuilder {
         }
 
         if (foreseenType == null) {
-            throw new InvalidTask("Identificação inválida");
+            throw new InvalidTask("Invalid identification");
         } else if (foreseenType == ForeseenType.hours && qtd > 8) {
-            throw new InvalidTask("Um tarefa em horas não pode durar mais que 8 horas.");
+            throw new InvalidTask("A task in hours can not last longer than 8 hours.");
         }
 
         if(foreseenType.equals(ForeseenType.days)){
@@ -188,7 +188,7 @@ public class TaskBuilder {
             return new BasicTask(id, description, startDate, foreseenEndDate, endDate, source, application, posts, owners, null);
         } else{
             if (qtd == null || qtd <= 0) {
-                throw new InvalidTask("Data fim inválida");
+                throw new InvalidTask("Date order is invalid");
             }
 
             foreseenEndDate = startDate.plusHours(qtd);
@@ -199,11 +199,11 @@ public class TaskBuilder {
     public boolean validTask() throws InvalidTask {
         Pattern pValidDate = Pattern.compile("([0-2][0-9]|3[0-1])\\/(0[1-9]|1[0-2])\\/[1-9][0-9]");
         if (startDate == null || !pValidDate.matcher(startDate.toString("dd/MM/yy")).matches()) {
-            throw new InvalidTask("Data de início inválida");
+            throw new InvalidTask("Invalid start date");
         } else if (description == null || description.equals(EMPTY)) {
-            throw new InvalidTask("Descrição inválida");
+            throw new InvalidTask("Invalid description");
         } else if (application == null || owners.size() == 0) {
-            throw new InvalidTask("Identificação inválida");
+            throw new InvalidTask("Invalid identification");
         }
         return true;
     }

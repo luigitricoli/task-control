@@ -60,13 +60,13 @@ public class SimpleTask {
 	private String generateStatus() {
         DateTime today = new DateTime().withMillisOfDay(0);
         if (isFinished()) {
-            return "Finalizada";
+            return "Finished";
         } else if (isBeyondTheForeseen(today)) {
-            return "Atrasada";
+            return "Late";
         } else if (isStarted(today)) {
-            return "Em andamento";
+            return "In progress";
         }
-        return "Não iniciada";
+        return "Not started";
     }
 	
 	   private boolean isStarted(DateTime today) {

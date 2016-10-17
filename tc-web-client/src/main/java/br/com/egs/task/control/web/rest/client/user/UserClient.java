@@ -47,7 +47,7 @@ public class UserClient implements UserRepository {
         }
 
         //return null;
-        throw new AuthenticateException("Usuário Inválido!");
+        throw new AuthenticateException("Invalid User!");
 	}
 
     @Override
@@ -68,7 +68,7 @@ public class UserClient implements UserRepository {
           
           String json = coreUser.toJson();
           
-          log.debug("UserCliente JSON [{}]", json);
+          log.debug("UserClient JSON [{}]", json);
           Response response = jsonClient.at("users/").postAsJson(json);
           
           if(response.isSuccess()){

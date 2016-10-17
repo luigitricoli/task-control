@@ -13,7 +13,7 @@
 </head>
 <body>
     <header id="top-main">
-        <a href="#" id="btn_new" class="btn green"><span class="icon add">+</span>Nova Tarefa</a>
+        <a href="#" id="btn_new" class="btn green"><span class="icon add">+</span>New Task</a>
     </header>
     <div id="container-left">
         <jsp:include page="_filters.jsp"/>

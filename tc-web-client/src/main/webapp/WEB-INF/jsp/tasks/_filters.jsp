@@ -1,6 +1,6 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <div class="filter-group">
-    <h4>Sistema</h4>
+    <h4>Application</h4>
     <c:if test="${sessionUser.admin}">
         <c:forEach var="app" items="${applications.getValues()}">
             <div class="constraint">
@@ -36,19 +36,19 @@
     <h4>Status</h4>
     <div class="constraint">
         <input type="checkbox" data-filter="finished" id="chb-finished">
-        <label for="chb-finished" data-filter="finished">Finalizado</label>
+        <label for="chb-finished" data-filter="finished">Finished</label>
     </div>
     <div class="constraint">
         <input type="checkbox" data-filter="doing" id="chb-doing">
-        <label for="chb-doing" data-filter="doing">Em andamento</label>
+        <label for="chb-doing" data-filter="doing">In Progress</label>
     </div>
     <div class="constraint">
         <input type="checkbox" data-filter="late" id="chb-late">
-        <label for="chb-late" data-filter="late">Atrasado</label>
+        <label for="chb-late" data-filter="late">Late</label>
     </div>
 </div>
 <div class="filter-group">
-    <h4>Tipo da Demanda</h4>
+    <h4>Demand type</h4>
     <c:forEach var="source" items="${sources.getValues()}">
         <div class="constraint">
             <input type="checkbox" data-filter="${source}" id="chb-${source}">

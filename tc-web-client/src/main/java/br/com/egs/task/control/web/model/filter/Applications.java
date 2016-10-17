@@ -18,7 +18,7 @@ public class Applications implements Serializable{
     private static final Logger log = LoggerFactory.getLogger(Applications.class);
 
     public static final String GERAL = "geral";
-    public static final String ADMINISTRATIVO = "administrativo";
+    public static final String ADMINISTRATIVO = "administrative";
     public static final String EMA = "ema";
     public static final String EMM = "emm";
     public static final String ESDP = "esdp";
@@ -41,7 +41,7 @@ public class Applications implements Serializable{
 
         labels = new TreeMap<>();
         labels.put(GERAL, "Geral");
-        labels.put(ADMINISTRATIVO, "Administrativo");
+        labels.put(ADMINISTRATIVO, "Administrative");
         labels.put(EMA, "EMA");
         labels.put(EMM, "EMM");
         labels.put(ESDP, "ESDP");
